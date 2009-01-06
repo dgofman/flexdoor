@@ -1,0 +1,168 @@
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>FlexDoor (Adobe Flex Explorer)</title>
+<script type="text/javascript" src="flexdoor.js"></script>
+<script type="text/javascript" src="flexLoader.js"></script>
+<script type="text/javascript" src="utils.js"></script>
+
+<script type="text/javascript" src="scripts/FlexExplorerUtils.js"></script>
+<script type="text/javascript" src="scripts/FlexExplorerControls.js"></script>
+<script type="text/javascript" src="scripts/FlexExplorerButtons.js"></script>
+<script type="text/javascript" src="scripts/FlexExplorerDateControls.js"></script>
+<script type="text/javascript" src="scripts/FlexExplorerLoaderControls.js"></script>
+<script type="text/javascript" src="scripts/FlexExplorerMenuControls.js"></script>
+<script type="text/javascript" src="scripts/FlexTextControls.js"></script>
+<script type="text/javascript" src="scripts/FlexContainers.js"></script>
+<script type="text/javascript" src="scripts/FlexRepeaterControls.js"></script>
+<script type="text/javascript" src="scripts/FlexPrintControls.js"></script>
+<script type="text/javascript" src="scripts/FlexValidators.js"></script>
+<script type="text/javascript" src="scripts/FlexFormatters.js"></script>
+<script type="text/javascript" src="scripts/FlexEffects.js"></script>
+<script type="text/javascript" src="scripts/FlexViewStates.js"></script>
+<script type="text/javascript" src="scripts/FlexTransition.js"></script>
+<script type="text/javascript" src="scripts/FlexChartControls.js"></script>
+<script type="text/javascript" src="scripts/FlexChartSeries.js"></script>
+<script type="text/javascript" src="scripts/FlexChartEffects.js"></script>
+
+<style media="screen" type="text/css">
+body { margin: 0px; overflow:hidden }
+</style>
+</head>
+<body scroll="no">
+<div id="flashlogger" style="position:absolute;width:1px;height:1px"></div>
+
+<div align="center">
+	<div id="flashcontent"></div>
+</div>
+
+<div id="flvdiv" style="position:absolute;width:180px;height:16px;bottom:0px"></div>
+
+<script language="JavaScript" type="text/javascript">
+	Utils.loggerID = "ASLoggerID";
+	var loggerUri = "http://online-as-logger.googlecode.com/svn/trunk/demo/";
+	FlexLoader.createSWF("flashlogger", Utils.loggerID, "Logger.swf", loggerUri);
+
+	var id  = "explorer";
+	var src  = "explorer.swf";	
+	var flashvars = "bridgeName=explorer";
+	var remoteUri = "http://examples.adobe.com/flex2/inproduct/sdk/explorer/";
+	
+	FlexDoor.addEventListener(FlexDoor.INITIALIZED, onInit);
+	FlexLoader.createSWF("flashcontent", id, src, remoteUri, flashvars, remoteUri);
+	FlexDoor.replace(id, document, true);
+
+	//Global Variables
+	var FD = FlexDoor;
+	var flexVersion;
+	var flexApp;
+	var swfLoader;
+	var tree;
+	var nodes;
+	var PAUSE_INTERVAL = 1500;
+	var initStartTime = new Date();
+	
+	var testcases = [
+		FlexExplorerControls,
+		FlexExplorerButtons,
+		FlexExplorerDateControls,
+		FlexExplorerLoaderControls,
+		FlexExplorerMenuControls,
+		FlexTextControls,
+		FlexContainers,
+		FlexRepeaterControls,
+		FlexPrintControls,
+		FlexValidators,
+		FlexFormatters,
+		FlexEffects,
+		FlexViewStates,
+		FlexTransition,
+		FlexChartControls,
+		FlexChartSeries,
+		FlexChartEffects,
+		this
+	];
+		
+	function initilize(testcase, msg, releaseAll){
+		if(msg) Utils.begin(msg);
+		
+		var startTime = new Date();
+		
+		if(releaseAll == true)
+			FlexDoor.releaseAll();
+
+		testcase.done = window.onerror = function(desc, page, line){
+			var ms = (new Date().getTime() - startTime.getTime()) / 1000;
+			var time = Utils.formatTime(ms);
+     			  	   
+			if(desc && page && !isNaN(line)){
+				Utils.error(desc + "\n"+ line + "\n" + page, 'error');
+				Utils.end("TESTCASE FAILED. Total time: " + time);
+			}else if(Utils.totalErrors > 0){
+				Utils.end("TESTCASE FAILED. Total time: " + time);
+			}else{
+				Utils.end("TESTCASE SUCCESSFUL. Total time: " + time);
+			}
+			if(testcase.nextTestCase && testcase.nextTestCase.run){
+				testcase.nextTestCase.run();
+			}
+		};
+	}
+	
+	function initComplete(dataProvider){
+		var root = dataProvider.getItemAt(0);
+		tree.expandChildrenOf(root, true); //Expend All Nodes
+		var ApplicationRef = FD.getRef("mx.core.Application");
+		flexVersion = ApplicationRef.VERSION();
+		var rootNode = FD.stringToXML(root.value);
+		nodes = rootNode.getElementsByTagName("node");
+		
+		for(var i = 0; i < testcases.length; i++){
+			var testcase = testcases[i];
+			if(i < testcases.length)
+				testcase.nextTestCase = testcases[i + 1];
+		}
+		testcases[0].run();
+	}
+	
+	function onInit(event){    	
+		flexApp = FD.getApp();
+		var onEnterFrameHandler = function(){
+			//var vsBox = FlexDoor.getApp().vs(); //bottom pane;
+			tree = flexApp.compLibTree();
+			swfLoader = flexApp.swfLoader();
+
+			var dataProvider = tree.dataProvider();
+			if(!dataProvider.length()) return false;
+			Utils.info("Initialized");
+			setTimeout(Utils.delegate(this, initComplete, dataProvider), 500);
+			return true;
+		};
+		Utils.enterFrame(flexApp, onEnterFrameHandler, this);
+
+		playMusic(true);
+	}
+	
+	function run(){
+		//Utils.memoryObjects(); /*Check for and free memory leaks*/
+		FD.releaseAll();
+		var ms = (new Date().getTime() - initStartTime.getTime()) / 1000;
+		Utils.end("Number of testcases: " + (testcases.length - 1) + ". Total time: " + Utils.formatTime(ms));
+		document.getElementById("flvdiv").innerHTML = "";
+	}
+
+	function playMusic(autoStart){
+		var file = "http://flexdoor.googlecode.com/svn/trunk/assets/yngwie_malmsteen_mono.mp3";
+		document.getElementById("flvdiv").innerHTML = "<OBJECT WIDTH='100%' HEIGHT='100%'>" +
+			"<param name='SRC' value='" + file + "'>" +
+			"<param name='AUTOPLAY' VALUE='" + autoStart + "'>" + 
+			"<param name='CONTROLLER' VALUE='TRUE'>" + 
+			"<param name='LOOP' VALUE='TRUE'>" + 
+			"<EMBED SRC='" + file + "' WIDTH='100%' HEIGHT='100%' " +
+			"CONTROLLER='TRUE' AUTOSTART='" + autoStart + "' LOOP='TRUE'></EMBED></OBJECT>";
+	}
+
+	playMusic(false);
+</script>
+</body>
+</html>
