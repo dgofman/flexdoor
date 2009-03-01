@@ -85,6 +85,7 @@ var FlexExplorerLoaderControls = new function(){
 	
 	function testVideoDisplay(app, panel){
 		Utils.log("testVideoDisplay");
+		FD.setFrameRate(24); //Play video in normal mode
 		var playing;
 		var control = getChild(panel, "mx.controls::VideoDisplay");
 		FD.addEventListener("stateChange", videoPlayer_stateChangeHandler, control);
@@ -109,6 +110,7 @@ var FlexExplorerLoaderControls = new function(){
 				control.close();
 			}else if(videoEvent.state() == "disconnected"){
 				FD.removeEventListener("stateChange", videoPlayer_stateChangeHandler, control);
+				FD.setFrameRate(1); //Reset frame rate
 				runNextTest(FlexExplorerLoaderControls);
 			}
 		};
