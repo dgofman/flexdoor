@@ -140,16 +140,13 @@ function closeAlertWindow(){
 	var MouseEventRef = FlexDoor.getRef("flash.events.MouseEvent");
 	var event = FlexDoor.create(MouseEventRef, ["click"]);
 	var sysManager = flexApp.systemManager();
-	var numChildren = sysManager.numChildren();
-	for(var i = 0; i < numChildren; i++){
-		var child = sysManager.getChildAt(i);
-		if(child.__TYPE__ == "mx.controls::Alert"){
-			var alertForm = child.getChildAt(0);
-			var button = alertForm.getChildByName("OK");
-			if(button == null)
-				button = alertForm.getChildByName("YES");
-			button.dispatchEvent(event);
-		}
+	var alertControl = getChild(sysManager, "mx.controls::Alert");
+	if(alertControl){
+		var alertForm = alertControl.getChildAt(0);
+		var button = alertForm.getChildByName("OK");
+		if(button == null)
+			button = alertForm.getChildByName("YES");
+		button.dispatchEvent(event);
 	}
 	FlexDoor.resetRefHistory(tempHistory);
 }
