@@ -152,8 +152,8 @@ var FlexLoader = new function(){
 		
 		if(flashvars)
 			flashParams.flashvars = flashvars;
-		//if(baseURI)
-			//flashParams.base = baseURI;
+		if(baseURI)
+			flashParams.base = baseURI;
 					
 		if (hasRequestedVersion) {
 			// if we've detected an acceptable version
