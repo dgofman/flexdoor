@@ -1,16 +1,17 @@
 var Utils = new function(){
-	
+
 	var pauseWindowW = 255;
 	var pauseWindowH = 105;
 
+	this.pauseUrl     = 'Pause.html';
 	this.pauseWindowX = window.screen.width  - pauseWindowW;
 	this.pauseWindowY = window.screen.height - pauseWindowH;
 	this.pauseWindowDelay;
-	
+
 	this.totalErrors = 0;
 	this.logWindow;
 	this.loggerID;
-	
+
 	this.loadXML = function(file){
 		var xmlDoc;
 		if (window.ActiveXObject){
@@ -33,7 +34,7 @@ var Utils = new function(){
 		}
 		return function() { return func.apply(target, params); }
 	};
-	
+
 	this.enterFrame = function(ref, funcHandlerRef, scope){
 		var onEnterFrameHandler = function(event){
 			try{
@@ -46,21 +47,20 @@ var Utils = new function(){
 		};
 		FlexDoor.addEventListener("enterFrame", onEnterFrameHandler, ref);
 	};
-	
+
 	this.pause = function(msec, freeze) {
 		if(freeze != true){
 			try{
-				var url = 'Pause.html';
 				this.pauseWindowDelay = msec;
 				if(document.all){
 					var position = (this.pauseWindowX == undefined || this.pauseWindowY == undefined) ? 'center=1' :
 						'dialogLeft=' + this.pauseWindowX + '; dialogTop=' + this.pauseWindowY;
-					window.showModalDialog(url, this, 'dialogWidth:' + pauseWindowW+ 'px; dialogHeight:' + pauseWindowH + 'px; status:0; scroll:0;' + position);
+					window.showModalDialog(this.pauseUrl, this, 'dialogWidth:' + pauseWindowW+ 'px; dialogHeight:' + pauseWindowH + 'px; status:0; scroll:0;' + position);
 				}else{
 					var position = (this.pauseWindowX == undefined || this.pauseWindowY == undefined) ? 'centerscreen' :
 						'left=' + this.pauseWindowX + ', top=' + this.pauseWindowY;
 					netscape.security.PrivilegeManager.enablePrivilege('UniversalBrowserWrite');
-					window.open(url, 'FlexDoorPauseWindow' + new Date().getTime(), 'width=' + pauseWindowW + 'px, height=' + pauseWindowH + 'px, chrome, dependent=1, dialog=1, modal=1, resizable=0, scrollbars=0, location=0, status=0, menubar=0, toolbar=0, ' + position);
+					window.open(this.pauseUrl, 'FlexDoorPauseWindow' + new Date().getTime(), 'width=' + pauseWindowW + 'px, height=' + pauseWindowH + 'px, chrome, dependent=1, dialog=1, modal=1, resizable=0, scrollbars=0, location=0, status=0, menubar=0, toolbar=0, ' + position);
 				}
 			}catch(e){
 				alert("Warning: Thread sleep has been disabled.\n" + e.message);
@@ -70,7 +70,7 @@ var Utils = new function(){
 			while(new Date() - startTime < msec);
 		}
 	};
-	
+
 	this.getAttribute = function(node, name){
 		if(node){
 			var value = node.getAttribute(name);
@@ -91,7 +91,7 @@ var Utils = new function(){
 			}
 		}
 	};
-	
+
 	this.assert = function(msg, param1, param2){
 		if(param2 == undefined && !param1){
 			this.error(msg + ' ['+ param1 + ']');
@@ -102,14 +102,14 @@ var Utils = new function(){
 		}
 		return null;
 	};
-	
+
 	this.formatTime = function(ms){
 		function pad(num){ return num > 9 ? num : '0' + num; }
 		return pad(Math.floor(ms / 3600)) + ":" +
 			   pad(Math.floor((ms % 3600) / 60)) + ":" +
 			   pad(Math.floor((ms % 3600) % 60));
 	};
-	
+
 	this.begin = function(o){
 		this.trace(o, 'group');
 	};
@@ -146,9 +146,9 @@ var Utils = new function(){
 		if(this.loggerID != undefined){
 			try{
 				var logger = (document.all ? window[this.loggerID] : document[this.loggerID]);
-	    		logger.js_trace(key, o);
-	    		return o;
-	    	}catch(e){}
+				logger.js_trace(key, o);
+				return o;
+			}catch(e){}
 		}
 		try{console[key](o);
 		}catch(e){}
@@ -173,7 +173,7 @@ var Utils = new function(){
 				this.logWindow.addLog(key, String(o).split('\n').join('\r\n'));
 		}catch(e){}
 	};
-		
+
 	this.winOnTop = function(){
 		try{
 			if(this.logWindow && !this.logWindow.closed){
@@ -184,7 +184,7 @@ var Utils = new function(){
 			}
 		}catch(e){}
 	};
-	
+
 	this.memoryObjects = function(){
 		var flashIds = FlexDoor.swfObjectIds();
 		var jsIds = FlexDoor.jsObjectIds();
