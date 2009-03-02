@@ -210,6 +210,10 @@ var FlexDoor = new function(){
 		return oldHistory;
 	};
 	
+	this.setFrameRate = function(sec){
+		getMovie().js_frameRate(sec);
+	};
+	
 	this.openProperties = function(){
 		var info = getMovie().js_topInfo();
 		var result    = info[0];
