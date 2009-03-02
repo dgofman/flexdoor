@@ -36,12 +36,10 @@ var FlexExplorerMenuControls = new function(){
 	}
 	
 	function selectMenuByIndex(menu, index, menuBar){
-		if(menu){
-	        menu.selectedIndex(index);
-	        doMenuEvent(menu, index, "label", "itemClick", menuBar);
-	        closeAlertWindow();
-	        FD.getRef(menu, "hideAllMenus");
-		}
+        menu.selectedIndex(index);
+        doMenuEvent(menu, index, "label", "itemClick", menuBar);
+        closeAlertWindow();
+        FD.getRef(menu, "hideAllMenus");
 	}
 	//Test Menu END
 	
@@ -75,7 +73,7 @@ var FlexExplorerMenuControls = new function(){
     				if(menuData.firstChild().hasChildNodes()){ //Sub Menu
     					menuItem.dispatchEvent(mouseOverEvent);
     					FD.getRef(menu, "openSubMenu", menuItem, false); //Execute mx::openSubMenu, false - skip return reference
-    					Utils.pause(1500); //Wait menu effect
+    					Utils.pause(500); //Wait menu effect
     					selectMenuByIndex(menuItem.menu(), 0, control);
     				}else{
     					selectMenuByIndex(menu, index, control);

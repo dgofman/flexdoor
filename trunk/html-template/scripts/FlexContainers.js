@@ -65,12 +65,10 @@ var FlexContainers = new function(){
 		var event = FD.create(MouseEventRef, ["click"]);
 		var numChildren = control.numChildren();
 		for(var i = numChildren - 1; i >= 0; i--){
-			var header = getChild(hBox, "mx.controls::Button", i);
-			doEvent(header, event, true, 2000); //Expand delay
+			doEvent(getChild(hBox, "mx.controls::Button", i), event);
 			var child = control.selectedChild();
-			var childControl = getChild(child, "mx.controls::Label");
 			Utils.info("Title: " + child.label());
-			Utils.info("Label: " + childControl.text());
+			Utils.info("Label: " + getChild(child, "mx.controls::Label").text());
 		}
 		var headerButton = control.getHeaderAt(1);
 		doEvent(headerButton, event);
@@ -113,9 +111,8 @@ var FlexContainers = new function(){
 		}
 		var controlBar2 = getChild(app, "mx.containers::ApplicationControlBar");
 		var textInput = getChild(controlBar2, "mx.controls::TextInput");
-		var button = getChild(controlBar2, "mx.controls::Button");
 		textInput.text("Search");
-		doEvent(button, event4);
+		doEvent(getChild(controlBar2, "mx.controls::Button"), event4);
 		runNextTest(FlexContainers);
 	}
 	//Test ApplicationControlBar END
