@@ -16,12 +16,11 @@ var FlexDoor = new function(){
 	    {prefix:"flash", baseURL:"http://livedocs.adobe.com/flex/3/langref/"}
 	];
 	
-	this.replace = function(id, parent, secure, uri){
+	this.replace = function(id, parent, baseURI, uri){
 		try{
 			var obj = getMovie(id, parent);
 			
 			if(!uri) uri = "FlexDoor.swf";
-			if(!secure) secure = "";
 			src = obj.src; //FireFox
 			flashvars = obj.getAttribute("flashvars"); //FireFox
 			if(!src || !src.length)
@@ -36,7 +35,7 @@ var FlexDoor = new function(){
 				}
 			}
 			var url = uri + (uri.indexOf('?') != -1 ? '&' : '?') + 
-				"__src__=" + src + "&__secure__=" + secure + "&" + flashvars;
+				"__src__=" + src + "&" + flashvars + (baseURI ? "&base=" + baseURI : "");
 			if(!document.all){ //FireFox ignored movie reloading
 				var parent = obj.parentNode;
 				if(parent != undefined){
