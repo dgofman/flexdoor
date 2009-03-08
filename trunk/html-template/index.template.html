@@ -125,8 +125,10 @@ body { margin: 0px; overflow:hidden }
 		testcases[0].run();
 	}
 	
-	function onInit(event){    	
+	function onInit(event){
+		FD.setFrameRate(1);
 		flexApp = FD.getApp();
+		
 		var onEnterFrameHandler = function(){
 			//var vsBox = FlexDoor.getApp().vs(); //bottom pane;
 			tree = flexApp.compLibTree();
@@ -138,9 +140,9 @@ body { margin: 0px; overflow:hidden }
 			setTimeout(Utils.delegate(this, initComplete, dataProvider), 500);
 			return true;
 		};
-		//Utils.enterFrame(flexApp, onEnterFrameHandler, this);
-
-		//playMusic(true);
+		Utils.enterFrame(flexApp, onEnterFrameHandler, this);
+		
+		playMusic(true);
 	}
 	
 	function run(){

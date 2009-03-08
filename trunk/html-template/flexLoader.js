@@ -150,11 +150,11 @@ var FlexLoader = new function(){
 			type:"application/x-shockwave-flash"
 		};
 		
-		if(flashvars)
-			flashParams.flashvars = flashvars;
 		if(baseURI)
 			flashParams.base = baseURI;
-					
+		if(flashvars)
+			flashParams.flashvars = flashvars;
+			
 		if (hasRequestedVersion) {
 			// if we've detected an acceptable version
 			// embed the Flash Content SWF when all tests are passed

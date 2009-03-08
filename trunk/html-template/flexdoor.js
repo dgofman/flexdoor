@@ -16,21 +16,23 @@ var FlexDoor = new function(){
 	    {prefix:"flash", baseURL:"http://livedocs.adobe.com/flex/3/langref/"}
 	];
 	
-	this.replace = function(id, parent, swfPath){
+	this.replace = function(id, parent, swfPath, flashvars){
 		try{
 			var obj = getMovie(id, parent);
 			
 			if(!swfPath) swfPath = "FlexDoor.swf";
 			src = obj.src; //FireFox
-			flashvars = obj.getAttribute("flashvars"); //FireFox
 			if(!src || !src.length)
 				src = obj.movie; //IE
-			if(!flashvars || !flashvars.length){
-				var params = obj.getElementsByTagName("param"); //IE
-				for(var i = 0; i < params.length; i++){
-					if(params[i].getAttribute("name").toLowerCase() == "flashvars"){
-						flashvars = params[i].getAttribute("value"); //IE
-						break;
+			if(!flashvars){
+				flashvars = obj.getAttribute("flashvars"); //FireFox
+				if(!flashvars || !flashvars.length){
+					var params = obj.getElementsByTagName("param"); //IE
+					for(var i = 0; i < params.length; i++){
+						if(params[i].getAttribute("name").toLowerCase() == "flashvars"){
+							flashvars = params[i].getAttribute("value"); //IE
+							break;
+						}
 					}
 				}
 			}
