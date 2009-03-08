@@ -49,8 +49,8 @@ body { margin: 0px; overflow:hidden }
 	var remoteUri = "http://examples.adobe.com/flex2/inproduct/sdk/explorer/";
 	
 	FlexDoor.addEventListener(FlexDoor.INITIALIZED, onInit);
-	FlexLoader.createSWF("flashcontent", id, src, remoteUri, flashvars, remoteUri);
-	FlexDoor.replace(id, document, true);
+	FlexLoader.createSWF("flashcontent", id, src, remoteUri, flashvars);
+	FlexDoor.replace(id, document);
 
 	//Global Variables
 	var FD = FlexDoor;
