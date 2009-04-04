@@ -160,7 +160,7 @@ var Utils = new function(){
 			this.logWindow = window.open("", "FlexDoorLogWindow", "left=0,top=0,width=500,height=150,scrollbars=yes,status=yes,resizable=yes");
 			if(this.logWindow == null || typeof(this.logWindow) == "undefined" || this.logWindow.closed){ 
 				alert("Your popup blocker seems to be blocking this popup window.\nPlease turn off for now.");
-				return;
+				return false;
 			}
 			this.logWindow.document.write("<HTML><HEAD><TITLE>FlexDoor Log Window</TITLE>\n");
 			this.logWindow.document.write("<SCRIPT>\nfunction addLog(key, o){ \n" +
@@ -175,7 +175,9 @@ var Utils = new function(){
 				this.logWindow.document.body.innerHTML = o;
 			else
 				this.logWindow.addLog(key, String(o).split('\n').join('\r\n'));
+			return true;
 		}catch(e){}
+		return false;
 	};
 
 	this.winOnTop = function(){
