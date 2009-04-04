@@ -158,6 +158,10 @@ var Utils = new function(){
 	this.writeLog = function(o, key){
 		if(!this.logWindow || this.logWindow.closed){
 			this.logWindow = window.open("", "FlexDoorLogWindow", "left=0,top=0,width=500,height=150,scrollbars=yes,status=yes,resizable=yes");
+			if(this.logWindow == null || typeof(this.logWindow) == "undefined" || this.logWindow.closed){ 
+				alert("Your popup blocker seems to be blocking this popup window.\nPlease turn off for now for for this testing.");
+				return; 
+			}
 			this.logWindow.document.write("<HTML><HEAD><TITLE>FlexDoor Log Window</TITLE>\n");
 			this.logWindow.document.write("<SCRIPT>\nfunction addLog(key, o){ \n" +
 					"document.getElementById('pre').appendChild(document.createTextNode(key ? '(' + key + ') ' + o : o));\n" +
