@@ -1,21 +1,21 @@
 var FlexDoor = new function(){
-	
+
 	//public
 	this.INITIALIZED = "initialized";
 	this.RESIZE		 = "resize";
-	
+
 	this.XML_ELEMENT_NODE_TYPE  = 1;
 	this.XML_DOCUMENT_NODE_TYPE = 9;
-	
+
 	this.TYPE_IS_GETTER;
 	this.TYPE_IS_TRAVERSE;
-	
+
 	this.showRefInfo = true;
 	this.asDocs = [
-	    {prefix:"mx", baseURL:"http://livedocs.adobe.com/flex/3/langref/"},
-	    {prefix:"flash", baseURL:"http://livedocs.adobe.com/flex/3/langref/"}
+		{prefix:"mx", baseURL:"http://livedocs.adobe.com/flex/3/langref/"},
+		{prefix:"flash", baseURL:"http://livedocs.adobe.com/flex/3/langref/"}
 	];
-	
+
 	this.replace = function(id, parent, swfPath, flashvars){
 		try{
 			var obj = getMovie(id, parent);
@@ -36,6 +36,19 @@ var FlexDoor = new function(){
 					}
 				}
 			}
+
+			if(src.charAt(0) == '/'){
+				src = document.location.protocol + "//"+ document.location.host + src;
+			}else if(/^\.\./.test(src)){
+				var href = (parent.src ? parent.src : document.location.href);
+				href = href.substring(0, href.lastIndexOf('/'));
+				while (/^\.\./.test(src)){
+					href = href.substring(0, href.lastIndexOf('/'));
+					src = src.substring(3);
+				}
+				src = href + '/' + src;
+			}
+
 			var url = swfPath + (swfPath.indexOf('?') != -1 ? '&' : '?') + 
 				"__src__=" + src + "&" + flashvars;
 			if(!document.all){ //FireFox ignored movie reloading
@@ -49,17 +62,17 @@ var FlexDoor = new function(){
 				obj.movie = url; //IE
 			}
 		}catch(e){
-			alert(e);
+			alert("FlexDoor::replace error: " + e.message);
 		}
 	};
-	
+
 	this.changeMovieByParent = function(parent){
 		if(movies[parent] != null)
 			movie = movies[parent];
 		else
 			throw new Error("Cannot find a flash movie for this parent: " + parent);
 	};
-	
+
 	this.addEventListener = function(type, listener, ref){
 		if(ref){
 			var refId = getRefId(ref);
@@ -81,7 +94,7 @@ var FlexDoor = new function(){
 			}
 		}
 	};
-	
+
 	this.dispatchEvent = function(type, eventRef, eventId){
 		if(type == this.INITIALIZED){
 			TYPE_IS_ERROR		  = this.getRef("FlexDoor", "TYPE_IS_ERROR");
@@ -104,7 +117,7 @@ var FlexDoor = new function(){
 			}
 		}
 	};
-	
+
 	this.stringToXML = function(value){
 		var xmlDoc;
 		value = value.replace(/\r|\n/g, '');
@@ -130,11 +143,11 @@ var FlexDoor = new function(){
 		}
 		return xml;
 	};
-	
+
 	this.xmlElement= function(xmlDoc){
 		return (document.all) ? xmlDoc.documentElement : xmlDoc.firstChild;
 	};
-	
+
 	//Bridge API
 	this.embed = function(){
 		return getMovie();
@@ -143,28 +156,28 @@ var FlexDoor = new function(){
 	this.root = function(ref, localName, value, keep_refs){
 		return deserialize(getMovie().js_root(getRefId(ref), localName, serialize(value), keep_refs == true));
 	}
-	
+
 	this.getApp = function(){
 		return deserialize(getMovie().js_app());
 	};
-	
+
 	this.getRef = function(ref, propName, args, keep_refs){
 		return call(ref, propName, args, keep_refs);
 	};
-	
+
 	this.getXmlRef = function(parentRefId, childRefId, keep_refs){
 		return deserialize(getMovie().js_node(getRefId(parentRefId), getRefId(childRefId), keep_refs != false));
 	};
-	
+
 	this.create = function(ref, params){
 		return deserialize(getMovie().js_create(getRefId(ref), serialize(params)));
 	};
-	
+
 	this.releaseAll = function(ref){
 		objects = {};
 		this.release(-1);
 	};
-	
+
 	this.release = function(ref){
 		if(ref instanceof RefObject){
 			ref = getRefId(ref);
@@ -172,19 +185,19 @@ var FlexDoor = new function(){
 		}
 		getMovie().js_release(ref);
 	};
-	
+
 	this.swfObjectIds = function(){
 		return getMovie().js_memory();
 	};
-	
+
 	this.jsObjectIds = function(){
 		return objects;
 	};
-	
+
 	this.base64 = function(ref, base64Str){
 		return getMovie().js_base64(getRefId(ref), base64Str);
 	};
-	
+
 	this.exit = function(){
 		for(var i = events.length - 1; i >= 0; i--){
 			var e = events[i];
@@ -194,27 +207,27 @@ var FlexDoor = new function(){
 			}
 		}
 		var error = new Error("Stopped by user");
-        error.name = "InterruptedException";
-        Utils.error(error);
-        throw error;
+		error.name = "InterruptedException";
+		Utils.error(error);
+		throw error;
 	};
-	
+
 	this.resetRefHistory = function(history){
 		if(refHistory instanceof Array)
 			this.release(refHistory);
 		refHistory = (history instanceof Array ? history : []);
 	};
-	
+
 	this.setRefHistory = function(history){
 		var oldHistory = (refHistory instanceof Array ? refHistory.slice() : null);
 		refHistory = history;
 		return oldHistory;
 	};
-	
+
 	this.setFrameRate = function(sec){
 		getMovie().js_frameRate(sec);
 	};
-	
+
 	this.openProperties = function(){
 		var info = getMovie().js_topInfo();
 		var result    = info[0];
@@ -223,8 +236,9 @@ var FlexDoor = new function(){
 		var root = FlexDoor.stringToXML(result.value);
 		var ref = new RefObject(result.refId, root.firstChild.getAttribute("name"));
 		initRefInfo(ref, root);
-		if(!propertyWin || propertyWin.closed)
-			propertyWin = window.open("","propertyWin","left=0,top=0,scrollbars=yes,resizable=yes");
+		if(propertyWin && !propertyWin.closed)
+			propertyWin.close();
+		propertyWin = window.open("", null,"left=0,top=0,scrollbars=yes,resizable=yes");
 		try{
 			propertyWin.document.write("<HTML><HEAD><TITLE>" + ref.__TYPE__ + "</TITLE>")
 			propertyWin.document.write("\n<STYLE>td{cursor:pointer;cursor:hand;color:blue}td.over{background-color: yellow;}td.out{background-color: white;}</STYLE>");
@@ -245,8 +259,7 @@ var FlexDoor = new function(){
 			this.writeHTML(childByRef, childByName, propertyWin.document);
 		}catch(e){}
 	};
-	
-	
+
 	this.writeHTML = function(childByRef, childByName, document){
 		if(!childByName || !document) return;
 		var tempHistory = FlexDoor.setRefHistory([]);
@@ -285,9 +298,9 @@ var FlexDoor = new function(){
 		}
 		FlexDoor.resetRefHistory(tempHistory);
 	};
-	
+
 	//private
-	
+
 	var movie = null;
 	var movies = [];
 	var events = [];
@@ -301,8 +314,8 @@ var FlexDoor = new function(){
 	var TYPE_IS_XML;
 	var TYPE_IS_ANONYMOUS;
 	var TYPE_IS_FUNCTION;
- 	var TYPE_IS_ASINSTANCE;
- 		
+	var TYPE_IS_ASINSTANCE;
+
 	//Base class 
 	function RefObject(refId, type, value) {
 		if(value != undefined)
@@ -312,14 +325,14 @@ var FlexDoor = new function(){
 		this.toString = function () { return this.__TYPE__ };
 		objects[refId] = this;
 	};
-	
+
 	//XML class 
 	function XML(xmlValue, refId, type){
 		RefObject.call(this, refId, type, xmlValue);
 	};
 	XML.prototype = new RefObject();
 	XML.prototype.constructor = XML;
-	
+
 	function getMovie(id, parent){
 		if(movie == null && id){
 			if(!movie && parent && parent.contentDocument)
@@ -352,7 +365,7 @@ var FlexDoor = new function(){
 		else
 			return serialize(ref);
 	};
-	
+
 	function addInfo(ref, key, info){
 		ref.toString = function(){
 			if(!ref || !ref.__INFO__)
@@ -363,7 +376,7 @@ var FlexDoor = new function(){
 		};
 		ref.__INFO__['{' + key + '}'] = info;
 	};
-	
+
 	function getAPIs(ref){
 		if(!ref || !ref.__INFO__)
 			return null;
@@ -374,7 +387,7 @@ var FlexDoor = new function(){
 		}
 		return array.sort();
 	};
-	
+
 	function serialize(ref){
 		if(ref instanceof XML){
 			return {refId:ref.refId, value:ref.value, type:TYPE_IS_XML};
@@ -393,7 +406,7 @@ var FlexDoor = new function(){
 			return ref;
 		}
 	};
-	
+
 	function deserialize(result) {
 		if (result == undefined || result == null) {
 			return null;
@@ -403,9 +416,9 @@ var FlexDoor = new function(){
 			switch (result.type) {
 				case TYPE_IS_ERROR:
 					var error = new Error(result.value);
-			        error.name = "FlashInternalError";
-			        Utils.error(error);
-			        return error;
+					error.name = "FlashInternalError";
+					Utils.error(error);
+					return error;
 				case TYPE_IS_NULL:
 					return null;
 				case TYPE_IS_ARRAY:
@@ -441,13 +454,13 @@ var FlexDoor = new function(){
 		}
 		return result;
 	}
-	
+
 	function getType(type) {
 		if (type.indexOf("::") != -1)
 			return type.substring(type.indexOf("::") + 2);
 		return type;
 	}
-	
+
 	function initRefInfo(ref, root) {
 		if(FlexDoor.showRefInfo != true)
 			return;
