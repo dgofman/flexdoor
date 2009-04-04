@@ -52,7 +52,7 @@ body { margin: 0px; overflow:hidden }
 	
 	FlexDoor.addEventListener(FlexDoor.INITIALIZED, onInit);
 	FlexLoader.createSWF("flashcontent", id, src, remoteUri, flashvars, remoteUri);
-	FlexDoor.replace(id, document, "/FlexDoor.swf");
+	FlexDoor.replace(id, document, "file:///flexdoor/FlexDoor.swf");
 
 	//Global Variables
 	var FD = FlexDoor;
