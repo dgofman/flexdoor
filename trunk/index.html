@@ -2,28 +2,28 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>FlexDoor (Adobe Flex Explorer)</title>
-<script type="text/javascript" src="html-template/flexdoor.js"></script>
-<script type="text/javascript" src="html-template/flexLoader.js"></script>
-<script type="text/javascript" src="html-template/utils.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/flexdoor.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/flexLoader.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/utils.js"></script>
 
-<script type="text/javascript" src="html-template/scripts/FlexExplorerUtils.js"></script>
-<script type="text/javascript" src="html-template/scripts/FlexExplorerControls.js"></script>
-<script type="text/javascript" src="html-template/scripts/FlexExplorerButtons.js"></script>
-<script type="text/javascript" src="html-template/scripts/FlexExplorerDateControls.js"></script>
-<script type="text/javascript" src="html-template/scripts/FlexExplorerLoaderControls.js"></script>
-<script type="text/javascript" src="html-template/scripts/FlexExplorerMenuControls.js"></script>
-<script type="text/javascript" src="html-template/scripts/FlexTextControls.js"></script>
-<script type="text/javascript" src="html-template/scripts/FlexContainers.js"></script>
-<script type="text/javascript" src="html-template/scripts/FlexRepeaterControls.js"></script>
-<script type="text/javascript" src="html-template/scripts/FlexPrintControls.js"></script>
-<script type="text/javascript" src="html-template/scripts/FlexValidators.js"></script>
-<script type="text/javascript" src="html-template/scripts/FlexFormatters.js"></script>
-<script type="text/javascript" src="html-template/scripts/FlexEffects.js"></script>
-<script type="text/javascript" src="html-template/scripts/FlexViewStates.js"></script>
-<script type="text/javascript" src="html-template/scripts/FlexTransition.js"></script>
-<script type="text/javascript" src="html-template/scripts/FlexChartControls.js"></script>
-<script type="text/javascript" src="html-template/scripts/FlexChartSeries.js"></script>
-<script type="text/javascript" src="html-template/scripts/FlexChartEffects.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/scripts/FlexExplorerUtils.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/scripts/FlexExplorerControls.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/scripts/FlexExplorerButtons.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/scripts/FlexExplorerDateControls.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/scripts/FlexExplorerLoaderControls.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/scripts/FlexExplorerMenuControls.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/scripts/FlexTextControls.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/scripts/FlexContainers.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/scripts/FlexRepeaterControls.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/scripts/FlexPrintControls.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/scripts/FlexValidators.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/scripts/FlexFormatters.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/scripts/FlexEffects.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/scripts/FlexViewStates.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/scripts/FlexTransition.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/scripts/FlexChartControls.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/scripts/FlexChartSeries.js"></script>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/scripts/FlexChartEffects.js"></script>
 
 <style media="screen" type="text/css">
 body { margin: 0px; overflow:hidden }
@@ -39,7 +39,7 @@ body { margin: 0px; overflow:hidden }
 <div id="flvdiv" style="position:absolute;width:180px;height:16px;bottom:0px"></div>
 
 <script language="JavaScript" type="text/javascript">
-	Utils.pauseUrl = "html-template/Pause.html";
+	Utils.pauseUrl = "http://flexdoor.googlecode.com/svn/trunk/html-template/Pause.html";
 	Utils.loggerID = "ASLoggerID";
 
 	var loggerUri = "http://online-as-logger.googlecode.com/svn/trunk/demo/";
@@ -52,7 +52,7 @@ body { margin: 0px; overflow:hidden }
 	
 	FlexDoor.addEventListener(FlexDoor.INITIALIZED, onInit);
 	FlexLoader.createSWF("flashcontent", id, src, remoteUri, flashvars, remoteUri);
-	FlexDoor.replace(id, document, "file:///flexdoor/FlexDoor.swf");
+	FlexDoor.replace(id, document);
 
 	//Global Variables
 	var FD = FlexDoor;
