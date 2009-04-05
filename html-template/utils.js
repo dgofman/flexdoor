@@ -157,10 +157,8 @@ var Utils = new function(){
 
 	this.writeLog = function(o, key){
 		if(!this.logWindow || this.logWindow.closed){
-			this.logWindow = window.open("", "FlexDoorLogWindow", "left=0,top=0,width=500,height=150,scrollbars=yes,status=yes,resizable=yes");
-			if(!this.logWindow || this.logWindow.closed){ 
-				alert("Your popup blocker seems to be blocking this popup window.\n" +
-					  "Please turn off pop-up blocker for this site permanently.");
+			this.logWindow = this.openWindow("", 500, 150, 1);
+			if(this.logWindow  == null){ 
 				this.writeLog = null;
 				return false;
 			}
@@ -181,6 +179,19 @@ var Utils = new function(){
 		}catch(e){}
 		return false;
 	};
+	
+	this.openWindow = function(url, width, height, flag, center){
+		var left = center != true ? window.screen.width  - width : 0;
+		var top = center != true ? window.screen.height - height : 0;
+		var win = window.open(url, "popupWindow", "left=" + left + ",top=" + top + ",width=" + width + ",height=" + height + "," + 
+								"scrollbars=" + flag + ",status=" + flag + ",resizable=" + flag);
+		if(!win || win.closed){ 
+			alert("Your popup blocker seems to be blocking this popup window.\n" +
+				  "Please turn off pop-up blocker for this site permanently.");
+			return null;
+		}
+		return win;
+	};
 
 	this.winOnTop = function(){
 		try{
@@ -196,7 +207,8 @@ var Utils = new function(){
 	this.memoryObjects = function(){
 		var flashIds = FlexDoor.swfObjectIds();
 		var jsIds = FlexDoor.jsObjectIds();
-		var win = window.open("", "FlexDoorMemoryWindow", "left=0,top=0,width=500,height=350,scrollbars=yes,status=yes,resizable=yes");
+		var win = this.openWindow("", 500, 350, 1);
+		if(win == null) return;	
 		win.document.write("<HTML><HEAD><TITLE>FlexDoor Memory Objects</TITLE>\n");
 		win.document.write("<BODY>\n");
 		win.document.write("<TABLE border='1' cellpadding='5'><TR><TH>ID</TH><TH width='100%'>TYPE</TH></TR>\n");
