@@ -8,8 +8,9 @@
 		if(!path || path.length == 0){
 			alert("Please browse and select FlexDoor.swf on your local machine");
 		}else{
-			alert(opener)
-			opener.FlexDoor.replace("explorer", opener.document, "file:///" + path.replace(/\\/g, '/'));
+			var parent = window.opener ? window.opener : window.dialogArguments;
+			alert(parent)
+			parent.FlexDoor.replace("explorer", parent.document, "file:///" + path.replace(/\\/g, '/'));
 		}
 	}
 //-->
