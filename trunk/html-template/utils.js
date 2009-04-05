@@ -52,16 +52,7 @@ var Utils = new function(){
 		if(freeze != true){
 			try{
 				this.pauseWindowDelay = msec;
-				if(document.all){
-					var position = (this.pauseWindowX == undefined || this.pauseWindowY == undefined) ? 'center=1' :
-						'dialogLeft=' + this.pauseWindowX + '; dialogTop=' + this.pauseWindowY;
-					window.showModalDialog(this.pauseUrl, this, 'dialogWidth:' + pauseWindowW+ 'px; dialogHeight:' + pauseWindowH + 'px; status:0; scroll:0;' + position);
-				}else{
-					var position = (this.pauseWindowX == undefined || this.pauseWindowY == undefined) ? 'centerscreen' :
-						'left=' + this.pauseWindowX + ', top=' + this.pauseWindowY;
-					netscape.security.PrivilegeManager.enablePrivilege('UniversalBrowserWrite');
-					window.open(this.pauseUrl, 'FlexDoorPauseWindow' + new Date().getTime(), 'width=' + pauseWindowW + 'px, height=' + pauseWindowH + 'px, chrome, dependent=1, dialog=1, modal=1, resizable=0, scrollbars=0, location=0, status=0, menubar=0, toolbar=0, ' + position);
-				}
+				this.openModalWindow(this.pauseUrl, pauseWindowW, pauseWindowH, this.pauseWindowX, this.pauseWindowY);
 			}catch(e){
 				alert("Warning: Thread sleep has been disabled.\n" + e.message);
 			}
@@ -180,10 +171,19 @@ var Utils = new function(){
 		return false;
 	};
 	
-	this.openWindow = function(url, width, height, flag, center){
-		var left = (center == true ? (window.screen.width - width) / 2 : 0);
-		var top = (center == true ? (window.screen.height - height) / 2 : 0);
-		var win = window.open(url, "popupWindow", "left=" + left + ",top=" + top + ",width=" + width + ",height=" + height + "," + 
+	this.openModalWindow = function(url, width, height, left, top){
+		if(document.all){
+			var position = (left == undefined || top == undefined) ? 'center=1' : 'dialogLeft=' + left + '; dialogTop=' + top;
+			window.showModalDialog(url, this, 'dialogWidth:' + width + 'px; dialogHeight:' + height + 'px; status:0; scroll:0;' + position);
+		}else{
+			var position = (left == undefined || top == undefined) ? 'centerscreen' : 'left=' + left + ', top=' + top;
+			netscape.security.PrivilegeManager.enablePrivilege('UniversalBrowserWrite');
+			window.open(url, 'popupModalWindow' + new Date().getTime(), 'width=' + width + 'px, height=' + height + 'px, chrome, dependent=1, dialog=1, modal=1, resizable=0, scrollbars=0, location=0, status=0, menubar=0, toolbar=0, ' + position);
+		}
+	};
+	
+	this.openWindow = function(url, width, height, flag){
+		var win = window.open(url, "popupWindow", "left=0,top=0,width=" + width + ",height=" + height + "," + 
 								"scrollbars=" + flag + ",status=" + flag + ",resizable=" + flag);
 		if(!win || win.closed){ 
 			alert("Your popup blocker seems to be blocking this popup window.\n" +
