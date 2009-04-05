@@ -47,10 +47,10 @@ body { margin: 0px; overflow:hidden }
 	var src  = "explorer.swf";	
 	var flashvars = "bridgeName=explorer";
 	var remoteUri = "http://examples.adobe.com/flex2/inproduct/sdk/explorer/";
-	
+
 	FlexDoor.addEventListener(FlexDoor.INITIALIZED, onInit);
 	FlexLoader.createSWF("flashcontent", id, src, remoteUri, flashvars, remoteUri);
-	
+alert(top.location)
 	if(top.location.protocol == "file:"){
 		FlexDoor.replace(id, document);
 	}else if(document.all){
@@ -69,7 +69,7 @@ body { margin: 0px; overflow:hidden }
 	var nodes;
 	var PAUSE_INTERVAL = 1500;
 	var initStartTime = new Date();
-	
+
 	var testcases = [
 		FlexExplorerControls,
 		FlexExplorerButtons,
@@ -90,19 +90,19 @@ body { margin: 0px; overflow:hidden }
 		FlexChartEffects,
 		this
 	];
-		
+
 	function initilize(testcase, msg, releaseAll){
 		if(msg) Utils.begin(msg);
-		
+
 		var startTime = new Date();
-		
+
 		if(releaseAll == true)
 			FlexDoor.releaseAll();
 
 		testcase.done = window.onerror = function(desc, page, line){
 			var ms = (new Date().getTime() - startTime.getTime()) / 1000;
 			var time = Utils.formatTime(ms);
-     			  	   
+
 			if(desc && page && !isNaN(line)){
 				Utils.error(desc + "\n"+ line + "\n" + page, 'error');
 				Utils.end("TESTCASE FAILED. Total time: " + time);
@@ -116,7 +116,7 @@ body { margin: 0px; overflow:hidden }
 			}
 		};
 	}
-	
+
 	function initComplete(dataProvider){
 		var root = dataProvider.getItemAt(0);
 		tree.expandChildrenOf(root, true); //Expend All Nodes
@@ -132,11 +132,11 @@ body { margin: 0px; overflow:hidden }
 		}
 		testcases[0].run();
 	}
-	
+
 	function onInit(event){
 		FD.setFrameRate(1);
 		flexApp = FD.getApp();
-		
+
 		var onEnterFrameHandler = function(){
 			//var vsBox = FlexDoor.getApp().vs(); //bottom pane;
 			tree = flexApp.compLibTree();
@@ -152,7 +152,7 @@ body { margin: 0px; overflow:hidden }
 		
 		playMusic(true);
 	}
-	
+
 	function run(){
 		//Utils.memoryObjects(); /*Check for and free memory leaks*/
 		FD.releaseAll();
