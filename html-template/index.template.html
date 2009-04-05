@@ -44,13 +44,13 @@ body { margin: 0px; overflow:hidden }
 	FlexLoader.createSWF("flashlogger", Utils.loggerID, "Logger.swf", loggerUri);
 
 	var id  = "explorer";
-	var src  = "explorer.swf";	
+	var src  = "explorer.swf";
 	var flashvars = "bridgeName=explorer";
 	var remoteUri = "http://examples.adobe.com/flex2/inproduct/sdk/explorer/";
 
 	FlexDoor.addEventListener(FlexDoor.INITIALIZED, onInit);
 	FlexLoader.createSWF("flashcontent", id, src, remoteUri, flashvars, remoteUri);
-	
+
 	if(opener != null){
 		var path = window.location.search.replace(/\\/g, '/');
 		path = path.substring(1, path.lastIndexOf('/'));
@@ -140,7 +140,7 @@ body { margin: 0px; overflow:hidden }
 	function onInit(event){
 		FD.setFrameRate(1);
 		flexApp = FD.getApp();
-alert("HERE")
+
 		var onEnterFrameHandler = function(){
 			//var vsBox = FlexDoor.getApp().vs(); //bottom pane;
 			tree = flexApp.compLibTree();
