@@ -174,8 +174,10 @@ var Utils = new function(){
 				window.showModalDialog(url, this, 'dialogWidth:' + width + 'px; dialogHeight:' + height + 'px; status:0; scroll:0;' + position);
 			}else{
 				var position = (left == undefined || top == undefined) ? 'centerscreen' : 'left=' + left + ', top=' + top;
-				user_pref("signed.applets.codebase_principal_support", true);
-				netscape.security.PrivilegeManager.enablePrivilege('UniversalBrowserWrite');
+				//netscape.security.PrivilegeManager.enablePrivilege('UniversalBrowserWrite');
+				
+				netscape.security.PrivilegeManager.enablePrivilege("UniversalPreferencesRead");   
+				alert("HEFRE")
 				window.open(url, 'popupModalWindow' + new Date().getTime(), 'width=' + width + 'px, height=' + height + 'px, chrome, dependent=1, dialog=1, modal=1, resizable=0, scrollbars=0, location=0, status=0, menubar=0, toolbar=0, ' + position);
 			}
 		}catch(e){
