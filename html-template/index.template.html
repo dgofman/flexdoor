@@ -53,11 +53,10 @@ body { margin: 0px; overflow:hidden }
 	
 	if(document.location.protocol == "file:"){
 		FlexDoor.replace(id, document);
-	}else (document.all){
+	}else if(document.all){
 		Utils.openModalWindow("BrowseFile.html", 500, 250);
 	}else{
-		alert("Please download and extract FlexDoor.zip file on your local machine\n" + 
-			  "and execute index.template.html file");
+		alert("Please download and extract FlexDoor.zip file on your local machine and run index file");
 		document.location = "http://flexdoor.googlecode.com/svn/trunk/html-template/FlexDoor.zip";
 	}
 
