@@ -1,0 +1,21 @@
+<HTML>
+<HEAD>
+<TITLE>FlexDoor</TITLE>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+	function con(){
+		var path = document.getElementById('path').value;
+		if(!path || path.length == 0){
+			alert("Please browse and select FlexDoor.swf on your local machine");
+		}else{
+			document.write("file:///" + path.replace(/\\/g, '/'));
+		}
+	}
+//-->
+</SCRIPT>
+</HEAD>
+<BODY>
+<INPUT TYPE="file" NAME="path" ID="path" STYLE="width:350"><BR><BR>
+<CENTER><INPUT TYPE="button" VALUE="Continue" onclick="con()"></CENTER>
+</BODY>
+</HTML>
