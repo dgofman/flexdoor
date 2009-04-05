@@ -49,13 +49,9 @@ var Utils = new function(){
 	};
 
 	this.pause = function(msec, freeze) {
-		if(freeze != true){
-			try{
-				this.pauseWindowDelay = msec;
-				this.openModalWindow(this.pauseUrl, pauseWindowW, pauseWindowH, this.pauseWindowX, this.pauseWindowY);
-			}catch(e){
-				alert("Warning: Thread sleep has been disabled.\n" + e.message);
-			}
+		if(freeze != true){	
+			this.pauseWindowDelay = msec;
+			this.openModalWindow(this.pauseUrl, pauseWindowW, pauseWindowH, this.pauseWindowX, this.pauseWindowY);		
 		}else{
 			var startTime = new Date();
 			while(new Date() - startTime < msec);
@@ -172,13 +168,17 @@ var Utils = new function(){
 	};
 	
 	this.openModalWindow = function(url, width, height, left, top){
-		if(document.all){
-			var position = (left == undefined || top == undefined) ? 'center=1' : 'dialogLeft=' + left + '; dialogTop=' + top;
-			window.showModalDialog(url, this, 'dialogWidth:' + width + 'px; dialogHeight:' + height + 'px; status:0; scroll:0;' + position);
-		}else{
-			var position = (left == undefined || top == undefined) ? 'centerscreen' : 'left=' + left + ', top=' + top;
-			netscape.security.PrivilegeManager.enablePrivilege('UniversalBrowserWrite');
-			window.open(url, 'popupModalWindow' + new Date().getTime(), 'width=' + width + 'px, height=' + height + 'px, chrome, dependent=1, dialog=1, modal=1, resizable=0, scrollbars=0, location=0, status=0, menubar=0, toolbar=0, ' + position);
+		try{
+			if(document.all){
+				var position = (left == undefined || top == undefined) ? 'center=1' : 'dialogLeft=' + left + '; dialogTop=' + top;
+				window.showModalDialog(url, this, 'dialogWidth:' + width + 'px; dialogHeight:' + height + 'px; status:0; scroll:0;' + position);
+			}else{
+				var position = (left == undefined || top == undefined) ? 'centerscreen' : 'left=' + left + ', top=' + top;
+				netscape.security.PrivilegeManager.enablePrivilege('UniversalBrowserWrite');
+				window.open(url, 'popupModalWindow' + new Date().getTime(), 'width=' + width + 'px, height=' + height + 'px, chrome, dependent=1, dialog=1, modal=1, resizable=0, scrollbars=0, location=0, status=0, menubar=0, toolbar=0, ' + position);
+			}
+		}catch(e){
+			alert("Warning: Popup modal window has been disabled.\n" + e.message);
 		}
 	};
 	
