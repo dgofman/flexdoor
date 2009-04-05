@@ -52,6 +52,7 @@ body { margin: 0px; overflow:hidden }
 	FlexLoader.createSWF("flashcontent", id, src, remoteUri, flashvars, remoteUri);
 	
 	if(opener != null){
+		alert(window.location.href + "+"+ window.location.search);
 		FlexDoor.replace(id, document, "file:///./FlexDoor.swf");
 	}else if(window.location.protocol == "file:"){
 		FlexDoor.replace(id, document);
