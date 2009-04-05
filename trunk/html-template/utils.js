@@ -158,7 +158,7 @@ var Utils = new function(){
 	this.writeLog = function(o, key){
 		if(!this.logWindow || this.logWindow.closed){
 			this.logWindow = window.open("", "FlexDoorLogWindow", "left=0,top=0,width=500,height=150,scrollbars=yes,status=yes,resizable=yes");
-			if(this.logWindow == null || typeof(this.logWindow) == "undefined" || this.logWindow.closed){ 
+			if(!this.logWindow || this.logWindow.closed){ 
 				alert("Your popup blocker seems to be blocking this popup window.\n" +
 					  "Please turn off pop-up blocker for this site permanently.");
 				this.writeLog = null;
