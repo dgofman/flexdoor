@@ -9,7 +9,7 @@
 			alert("Please browse and select FlexDoor.swf on your local machine");
 		}else{
 			var flexDoor = window.opener ? window.opener.FlexDoor : window.dialogArguments;
-			alert(flexDoor)
+			alert(flexDoor.replace)
 			flexDoor.replace("explorer", null, "file:///" + path.replace(/\\/g, '/'));
 		}
 	}
