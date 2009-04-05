@@ -50,8 +50,8 @@ body { margin: 0px; overflow:hidden }
 
 	FlexDoor.addEventListener(FlexDoor.INITIALIZED, onInit);
 	FlexLoader.createSWF("flashcontent", id, src, remoteUri, flashvars, remoteUri);
-alert(top.location)
-	if(top.location.protocol == "file:"){
+alert(parent.location)
+	if(parent.location.protocol == "file:"){
 		FlexDoor.replace(id, document);
 	}else if(document.all){
 		Utils.openModalWindow("BrowseFile.html", 500, 250);
