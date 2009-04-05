@@ -54,7 +54,6 @@ body { margin: 0px; overflow:hidden }
 	if(opener != null){
 		var path = window.location.search.replace(/\\/g, '/');
 		path = path.substring(1, path.lastIndexOf('/'));
-		alert(path + "/FlexDoor.swf")
 		FlexDoor.replace(id, document, path + "/FlexDoor.swf");
 	}else if(window.location.protocol == "file:"){
 		FlexDoor.replace(id, document);
@@ -141,7 +140,7 @@ body { margin: 0px; overflow:hidden }
 	function onInit(event){
 		FD.setFrameRate(1);
 		flexApp = FD.getApp();
-
+alert("HERE")
 		var onEnterFrameHandler = function(){
 			//var vsBox = FlexDoor.getApp().vs(); //bottom pane;
 			tree = flexApp.compLibTree();
