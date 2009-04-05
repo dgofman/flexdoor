@@ -168,10 +168,6 @@ var Utils = new function(){
 	};
 	
 	this.openModalWindow = function(url, width, height, left, top){
-		if(top.openModalWindow != undefined){
-			top.openModalWindow(url, width, height, left, top);
-			return;
-		}
 		try{
 			if(document.all){
 				var position = (left == undefined || top == undefined) ? 'center=1' : 'dialogLeft=' + left + '; dialogTop=' + top;
