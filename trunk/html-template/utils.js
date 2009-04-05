@@ -181,8 +181,8 @@ var Utils = new function(){
 	};
 	
 	this.openWindow = function(url, width, height, flag, center){
-		var left = (center == true ? window.screen.width - width : 0);
-		var top = (center == true ? window.screen.height - height : 0);
+		var left = (center == true ? (window.screen.width - width) / 2 : 0);
+		var top = (center == true ? (window.screen.height - height) / 2 : 0);
 		var win = window.open(url, "popupWindow", "left=" + left + ",top=" + top + ",width=" + width + ",height=" + height + "," + 
 								"scrollbars=" + flag + ",status=" + flag + ",resizable=" + flag);
 		if(!win || win.closed){ 
