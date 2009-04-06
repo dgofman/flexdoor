@@ -171,7 +171,7 @@ var Utils = new function(){
 		try{
 			if(document.all){
 				var position = (left == undefined || top == undefined) ? 'center=1' : 'dialogLeft=' + left + '; dialogTop=' + top;
-				window.showModalDialog(url, document, 'dialogWidth:' + width + 'px; dialogHeight:' + height + 'px; status:0; scroll:0;' + position);
+				window.showModalDialog(url, this, 'dialogWidth:' + width + 'px; dialogHeight:' + height + 'px; status:0; scroll:0;' + position);
 			}else{
 				var position = (left == undefined || top == undefined) ? 'centerscreen' : 'left=' + left + ', top=' + top;
 				netscape.security.PrivilegeManager.enablePrivilege("UniversalPreferencesRead");
