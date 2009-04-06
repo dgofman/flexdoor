@@ -10,14 +10,14 @@
 </center>
 
 <script type="text/javascript">
-	var parent = window.opener ? window.opener : window.dialogArguments;
-	alert(parent)
-	var ms = parent.Utils.pauseWindowDelay;
+	var o = window.opener ? window.opener : window.dialogArguments;
+	alert(o)
+	var ms = o.Utils.pauseWindowDelay;
 	var interval1;
 	var interval2;
 	
 	function wait(){
-		if(!isNaN(parent.Utils.pauseWindowDelay)){
+		if(!isNaN(o.Utils.pauseWindowDelay)){
 			var span = document.getElementById('time');
 			span.innerHTML = (ms / 1000);
 			interval1 = setInterval(function(){ closeWindow(); }, ms);
