@@ -1,0 +1,60 @@
+<HTML>
+<HEAD>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+	function createXMLHttp() {
+		if (typeof XMLHttpRequest != "undefined") {
+			return new XMLHttpRequest();
+		} else if (window.ActiveXObject) {
+			var aVersions = [ "MSXML2.XMLHttp.5.0",
+				"MSXML2.XMLHttp.4.0","MSXML2.XMLHttp.3.0",
+				"MSXML2.XMLHttp","Microsoft.XMLHttp"
+			];
+
+			for (var i = 0; i < aVersions.length; i++) {
+				try {
+					return new ActiveXObject(aVersions[i]);
+				} catch (oError) {
+					//Do nothing
+				}
+			}
+		}
+		throw new Error("XMLHttp object could be created.");
+	}
+
+	function stringToXML(value){
+		var xmlDoc;
+		value = value.replace(/\r|\n/g, '');
+		if(document.all){
+			xmlDoc = new ActiveXObject("MSXML2.DOMDocument");
+			xmlDoc.loadXML(value);
+		}else{
+			xmlDoc = new DOMParser().parseFromString(value, 'text/xml');
+		}
+		return (document.all) ? xmlDoc.documentElement : xmlDoc.firstChild;
+	}
+	
+	var xmlhttp = createXMLHttp();
+
+	function reset(){
+		xmlhttp.open("GET","http://www.dantar.ru/walk_conf.php?action=replace", true);
+		xmlhttp.onreadystatechange = function() {
+			if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+				var xmlDoc = stringToXML(xmlhttp.responseText);
+				alert(xmlDoc);
+			}
+		}
+		xmlhttp.send(null);
+	}
+
+//-->
+</SCRIPT>
+</HEAD>
+<BODY bgcolor="#CCFF99">
+<INPUT TYPE="button" VALUE="Reset" onclick="reset()">
+<INPUT TYPE="text" NAME="BEGINX">
+<INPUT TYPE="text" NAME="ENDX">
+<INPUT TYPE="button" VALUE="GO" onclick="go()">
+<INPUT TYPE="button" VALUE="TAKE" onclick="go()">
+</BODY>
+</HTML>
