@@ -57,11 +57,8 @@ body { margin: 0px; overflow:hidden }
 		FlexDoor.replace(id, document, path + "/FlexDoor.swf");
 	}else if(window.location.protocol == "file:"){
 		FlexDoor.replace(id, document);
-	}else if(document.all){
-		Utils.openModalWindow("BrowseFile.html", 500, 250);
 	}else{
-		alert("Please download and extract FlexDoor.zip file on your local machine and run index file");
-		document.location = "http://flexdoor.googlecode.com/svn/trunk/html-template/FlexDoor.zip";
+		Utils.openModalWindow("BrowseFile.html", 500, 250);
 	}
 
 	//Global Variables
