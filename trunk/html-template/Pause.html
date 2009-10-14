@@ -10,13 +10,13 @@
 </center>
 
 <script type="text/javascript">
-	var o = window.opener ? window.opener : window.dialogArguments;
-	var ms = o.Utils.pauseWindowDelay;
+	var parent = window.opener ? window.opener.Utils : window.dialogArguments;
+	var ms = parent.pauseWindowDelay;
 	var interval1;
 	var interval2;
 	
 	function wait(){
-		if(!isNaN(o.Utils.pauseWindowDelay)){
+		if(!isNaN(parent.pauseWindowDelay)){
 			var span = document.getElementById('time');
 			span.innerHTML = (ms / 1000);
 			interval1 = setInterval(function(){ closeWindow(); }, ms);
@@ -27,9 +27,9 @@
 	}
 	
 	function closeWindow(){
-		var parent = window.opener ? window.opener : window.dialogArguments;
-		parent.Utils.pauseWindowX = window.screenLeft != undefined ? window.screenLeft - 3 : window.screenX;
-    	parent.Utils.pauseWindowY = window.screenTop != undefined ? window.screenTop - 29 : window.screenY;
+		var parent = window.opener ? window.opener.Utils : window.dialogArguments;
+		parent.pauseWindowX = window.screenLeft != undefined ? window.screenLeft - 3 : window.screenX;
+    	parent.pauseWindowY = window.screenTop != undefined ? window.screenTop - 29 : window.screenY;
 	 	window.close()
 	}
 	
