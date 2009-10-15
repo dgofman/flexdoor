@@ -1,29 +1,15 @@
 <HTML>
 <HEAD>
-<TITLE>FlexDoor</TITLE>
-<SCRIPT LANGUAGE="JavaScript">
-<!--
-	function con(){
-		var path = document.getElementById('path').value;
-		if(!path || path.length == 0){
-			alert("Please browse and select FlexDoor.swf on your local machine");
-		}else{
-			var parent = window.opener ? window.opener : window.dialogArguments;
-			parent.flexDoor.replace("explorer", parent.document, "file:///" + path.replace(/\\/g, '/'));
-			window.close();
-		}
-	}
-//-->
-</SCRIPT>
+<TITLE>FlexDoor File Loader</TITLE>
+<script type="text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/flexLoader.js"></script>
 </HEAD>
 <BODY>
-<H2>Please follow to these steps...</H2>
-<OL>
-	<LI>Download <A HREF="http://flexdoor.googlecode.com/svn/trunk/html-template/FlexDoor.swf" target="blank">FlexDoor.swf</A> file on your local machine.
-	<LI>Select "Browse..." button and navigate to FlexDoor.swf file.
-	<LI>Click Continue button and relax...
-</OL>
-&nbsp;&nbsp;<INPUT TYPE="file" NAME="path" ID="path" STYLE="width:450px"><BR><BR>
-<CENTER><INPUT TYPE="button" VALUE="Continue" onclick="con()"></CENTER>
+<div align="center">
+	<div id="flexdoorfile"></div>
+</div>
+
+<script language="JavaScript" type="text/javascript">
+	FlexLoader.createSWF("flexdoorfile", "FlexDoorFile.swf", "FlexDoorFile.swf", "http://flexdoor.googlecode.com/svn/trunk/html-template/");
+</script>
 </BODY>
 </HTML>
