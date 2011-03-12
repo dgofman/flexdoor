@@ -51,8 +51,12 @@ var Utils = new function(){
 
 	this.pause = function(msec, freeze) {
 		if(freeze != true){	
-			this.pauseWindowDelay = msec;
-			this.openModalWindow(this.pauseUrl, pauseWindowW, pauseWindowH, this.pauseWindowX, this.pauseWindowY);		
+			if(FlexDoor.usingExternalTool == false){
+				this.pauseWindowDelay = msec;
+				this.openModalWindow(this.pauseUrl, pauseWindowW, pauseWindowH, this.pauseWindowX, this.pauseWindowY);
+			}else{
+				FlexDoor.sendProxy("sleep", msec);
+			}
 		}else{
 			var startTime = new Date();
 			while(new Date() - startTime < msec);

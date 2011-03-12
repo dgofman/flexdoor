@@ -16,6 +16,8 @@ var FlexDoor = new function(){
 		{prefix:"flash", baseURL:"http://livedocs.adobe.com/flex/3/langref/"}
 	];
 
+	this.usingExternalTool = false;
+
 	this.replace = function(id, parent, swfPath, flashvars){
 		try{
 			var obj = getMovie(id, parent);
@@ -97,15 +99,15 @@ var FlexDoor = new function(){
 
 	this.dispatchEvent = function(type, eventRef, eventId){
 		if(type == this.INITIALIZED){
-			TYPE_IS_ERROR		  = this.getRef("FlexDoor", "TYPE_IS_ERROR");
-			TYPE_IS_NULL		  = this.getRef("FlexDoor", "TYPE_IS_NULL");
-			TYPE_IS_ARRAY		  = this.getRef("FlexDoor", "TYPE_IS_ARRAY");
-			TYPE_IS_XML			  = this.getRef("FlexDoor", "TYPE_IS_XML");
-			TYPE_IS_ANONYMOUS	  = this.getRef("FlexDoor", "TYPE_IS_ANONYMOUS");
-			TYPE_IS_FUNCTION	  = this.getRef("FlexDoor", "TYPE_IS_FUNCTION");
-			TYPE_IS_ASINSTANCE	  = this.getRef("FlexDoor", "TYPE_IS_ASINSTANCE");
-			this.TYPE_IS_GETTER   = this.getRef("FlexDoor", "TYPE_IS_GETTER");
-			this.TYPE_IS_TRAVERSE = this.getRef("FlexDoor", "TYPE_IS_TRAVERSE");
+			TYPE_IS_ERROR		  = this.getRef("FlexDoorLib", "TYPE_IS_ERROR");
+			TYPE_IS_NULL		  = this.getRef("FlexDoorLib", "TYPE_IS_NULL");
+			TYPE_IS_ARRAY		  = this.getRef("FlexDoorLib", "TYPE_IS_ARRAY");
+			TYPE_IS_XML			  = this.getRef("FlexDoorLib", "TYPE_IS_XML");
+			TYPE_IS_ANONYMOUS	  = this.getRef("FlexDoorLib", "TYPE_IS_ANONYMOUS");
+			TYPE_IS_FUNCTION	  = this.getRef("FlexDoorLib", "TYPE_IS_FUNCTION");
+			TYPE_IS_ASINSTANCE	  = this.getRef("FlexDoorLib", "TYPE_IS_ASINSTANCE");
+			this.TYPE_IS_GETTER   = this.getRef("FlexDoorLib", "TYPE_IS_GETTER");
+			this.TYPE_IS_TRAVERSE = this.getRef("FlexDoorLib", "TYPE_IS_TRAVERSE");
 		}
 		for(var i = events.length - 1; i >= 0; i--){
 			var e = events[i];
@@ -226,6 +228,10 @@ var FlexDoor = new function(){
 
 	this.setFrameRate = function(sec){
 		getMovie().js_frameRate(sec);
+	};
+
+	this.sendProxy = function(key, value){
+		getMovie().js_Proxy(key, value);
 	};
 
 	this.openProperties = function(){
