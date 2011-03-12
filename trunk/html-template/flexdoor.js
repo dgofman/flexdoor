@@ -16,8 +16,6 @@ var FlexDoor = new function(){
 		{prefix:"flash", baseURL:"http://livedocs.adobe.com/flex/3/langref/"}
 	];
 
-	this.usingExternalTool = false;
-
 	this.replace = function(id, parent, swfPath, flashvars){
 		try{
 			var obj = getMovie(id, parent);
@@ -210,7 +208,6 @@ var FlexDoor = new function(){
 		}
 		var error = new Error("Stopped by user");
 		error.name = "InterruptedException";
-		Utils.error(error);
 		throw error;
 	};
 
@@ -232,6 +229,10 @@ var FlexDoor = new function(){
 
 	this.sendProxy = function(key, value){
 		getMovie().js_Proxy(key, value);
+	};
+
+	this.sleep = function(msec){
+		FlexDoor.sendProxy("sleep", msec);
 	};
 
 	this.openProperties = function(){
@@ -423,7 +424,6 @@ var FlexDoor = new function(){
 				case TYPE_IS_ERROR:
 					var error = new Error(result.value);
 					error.name = "FlashInternalError";
-					Utils.error(error);
 					return error;
 				case TYPE_IS_NULL:
 					return null;
