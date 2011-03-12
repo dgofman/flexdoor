@@ -12,8 +12,6 @@ var Utils = new function(){
 	this.logWindow;
 	this.loggerID;
 	this.flexDoor = FlexDoor;
-	
-	alert("UTILS");
 
 	this.loadXML = function(file){
 		var xmlDoc;
@@ -53,12 +51,8 @@ var Utils = new function(){
 
 	this.pause = function(msec, freeze) {
 		if(freeze != true){	
-			if(FlexDoor.usingExternalTool == false){
-				this.pauseWindowDelay = msec;
-				this.openModalWindow(this.pauseUrl, pauseWindowW, pauseWindowH, this.pauseWindowX, this.pauseWindowY);
-			}else{
-				FlexDoor.sendProxy("sleep", msec);
-			}
+			this.pauseWindowDelay = msec;
+			this.openModalWindow(this.pauseUrl, pauseWindowW, pauseWindowH, this.pauseWindowX, this.pauseWindowY);
 		}else{
 			var startTime = new Date();
 			while(new Date() - startTime < msec);
