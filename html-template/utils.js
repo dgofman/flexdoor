@@ -12,6 +12,8 @@ var Utils = new function(){
 	this.logWindow;
 	this.loggerID;
 	this.flexDoor = FlexDoor;
+	
+	alert("UTILS");
 
 	this.loadXML = function(file){
 		var xmlDoc;
