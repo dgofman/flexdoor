@@ -231,14 +231,20 @@ var FlexDoor = new function(){
 	};
 
 	this.sleep = function(msec){
-		if(document.all){
-			http = new ActiveXObject("Microsoft.XMLHTTP");
-		}else{
-			http = new XMLHttpRequest();
+		send("sleep", msec);
+	};
+
+	this.send = function(command, value){
+		if(http == null){
+			if(document.all){
+				http = new ActiveXObject("Microsoft.XMLHTTP");
+			}else{
+				http = new XMLHttpRequest();
+			}
 		}
 		http.open("GET", "http://localhost:12575", false);
-		http.send("sleep?msec="+msec);
-	};
+		http.send('\b' + "sleep" + '\b' + 5000 + '\b');
+	}
 
 	this.openProperties = function(){
 		var info = getMovie().js_topInfo();
