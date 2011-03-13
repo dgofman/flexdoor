@@ -16,6 +16,7 @@
 	<target name="compile_all">
 		<antcall target="compile_swc"/>
 		<antcall target="compile_swf"/>
+		<antcall target="compile_proxy_swf"/>
 	</target>
 
 	<target name="compile_swc">
@@ -26,7 +27,7 @@
 			<arg value='-load-config=${FLEX_HOME}/frameworks/flex-config.xml'/>
 			<arg value='-source-path+=${lib.dir}'/>
 			<arg value='-include-sources=${lib.dir}'/>
-			<arg value='-output=${out.dir}/${FILE_NAME}.swc'/>
+			<arg value='-output=${lib.dir}/${FILE_NAME}.swc'/>
 		</java>
 	</target>
 
@@ -39,6 +40,17 @@
 			<arg value='-file-specs=${src.dir}/FlexDoor.as'/>
 			<arg value='-source-path+=${lib.dir}'/>
 			<arg value='-output=${out.dir}/${FILE_NAME}.swf'/>
+		</java>
+	</target>
+
+	<target name="compile_proxy_swf">
+		<java jar="${mxmlc.jar.path}" failonerror="true" fork="true">
+			<jvmarg value="-Xmx512m"/>
+			<arg value='-debug=false'/>
+			<arg value='-local-fonts-snapshot=${FLEX_HOME}/frameworks/localFonts.ser'/>
+			<arg value='-load-config=${FLEX_HOME}/frameworks/flex-config.xml'/>
+			<arg value='-file-specs=${lib.dir}/FlexDoorProxy.as'/>
+			<arg value='-output=${out.dir}/FlexDoorProxy.swf'/>
 		</java>
 	</target>
 </project>
