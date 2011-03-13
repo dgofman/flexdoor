@@ -236,8 +236,8 @@ var FlexDoor = new function(){
 		}else{
 			http = new XMLHttpRequest();
 		}
-		http.open("GET", "http://localhost:12575/dyn/sleep?msec="+msec, false);
-		http.send(null);
+		http.open("GET", "http://localhost:12575", false);
+		http.send("sleep?msec="+msec);
 	};
 
 	this.openProperties = function(){
