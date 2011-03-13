@@ -231,7 +231,7 @@ var FlexDoor = new function(){
 	};
 
 	this.sleep = function(msec){
-		send("sleep", msec);
+		this.send("sleep", msec);
 	};
 
 	this.send = function(command, value){
