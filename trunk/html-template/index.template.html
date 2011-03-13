@@ -52,8 +52,8 @@ body { margin: 0px; overflow:hidden; scroll:no;}
 	FlexLoader.createSWF("flashcontent", id, src, remoteUri, flashvars, remoteUri);
 
 	//Download FlexDoor.swf from http://flexdoor.googlecode.com/svn/trunk/html-template/FlexDoor.swf
-	//And modified path to the local machine file
-	FlexDoor.replace(id, document, "http://flexdoor.googlecode.com/svn/trunk/html-template/FlexDoor.swf");
+	//And modified path to the local machine file or get file from flex-bin directory
+	FlexDoor.replace(id, document, "./FlexDoor.swf");
 
 	//Global Variables
 	var FD = FlexDoor;
