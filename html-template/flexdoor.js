@@ -235,6 +235,8 @@ var FlexDoor = new function(){
 	};
 
 	this.send = function(command, value){
+		alert(1);
+		alert(http)
 		if(http == null){
 			if(document.all){
 				http = new ActiveXObject("Microsoft.XMLHTTP");
@@ -244,7 +246,7 @@ var FlexDoor = new function(){
 		}
 		http.open("GET", "http://localhost:12575", false);
 		http.send('\b' + "sleep" + '\b' + 5000 + '\b');
-	}
+	};
 
 	this.openProperties = function(){
 		var info = getMovie().js_topInfo();
