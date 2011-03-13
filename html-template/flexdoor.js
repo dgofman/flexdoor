@@ -1,5 +1,8 @@
 var FlexDoor = new function(){
 
+	//private
+	var http;
+
 	//public
 	this.INITIALIZED = "initialized";
 	this.RESIZE		 = "resize";
@@ -227,12 +230,14 @@ var FlexDoor = new function(){
 		getMovie().js_frameRate(sec);
 	};
 
-	this.sendProxy = function(key, value){
-		getMovie().js_Proxy(key, value);
-	};
-
 	this.sleep = function(msec){
-		FlexDoor.sendProxy("sleep", msec);
+		if(document.all){
+			http = new ActiveXObject("Microsoft.XMLHTTP");
+		}else{
+			http = new XMLHttpRequest();
+		}
+		http.open("GET", "http://localhost:12575/dyn/sleep?msec="+msec, false);
+		http.send(null);
 	};
 
 	this.openProperties = function(){
