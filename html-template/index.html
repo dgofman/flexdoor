@@ -1,0 +1,44 @@
+<HTML>
+<BODY>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+	var SleepInterval = 10000;
+
+	function pause1(){
+		window.showModalDialog("PauseWin.html", this, 'dialogWidth:255px; dialogHeight:105px; status:0; scroll:0;');
+		alert("Resume");
+	}
+	function pause2(){
+		var control = document.getElementById("SleepSL");
+		control.Content.App.Sleep(SleepInterval);
+		alert("Resume");
+	}
+	function tick(){
+		var clock = document.getElementById("clock");
+		if(clock) clock.innerHTML = new Date();
+	}
+	setInterval(tick, 1000);
+//-->
+</SCRIPT>
+<INPUT TYPE="button" value="Pause Modal Dialog" onclick="pause1()">
+<INPUT TYPE="button" value="Pause Thread Sleep" onclick="pause2()">
+<BR><BR>
+
+<!--Youtube Video -->
+<iframe title="YouTube video player" width="640" height="390" src="http://www.youtube.com/embed/RWNcGBSP0Wg?autoplay=1" frameborder="0" allowfullscreen></iframe>
+
+<!-- Silverlight Sleep API -->
+<object id="SleepSL" data="data:application/x-silverlight-2," type="application/x-silverlight-2" width="1" height="1">
+	<param name="source" value="SleepSL.xap"/>
+	<param name="background" value="white" />
+	<param name="minRuntimeVersion" value="4.0.50826.0" />
+	<param name="autoUpgrade" value="true" />
+	<a href="http://go.microsoft.com/fwlink/?LinkID=149156&v=4.0.50826.0" style="text-decoration:none">
+		<img src="http://go.microsoft.com/fwlink/?LinkId=161376" alt="Get Microsoft Silverlight" style="border-style:none"/>
+	</a>
+</object>
+<BR><BR>
+
+<DIV ID="clock"/>
+</BODY>
+</HTML>
