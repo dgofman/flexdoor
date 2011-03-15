@@ -1,13 +1,5 @@
 var Utils = new function(){
 
-	var pauseWindowW = 255;
-	var pauseWindowH = 105;
-
-	this.pauseUrl     = 'Pause.html';
-	this.pauseWindowX = window.screen.width  - pauseWindowW;
-	this.pauseWindowY = window.screen.height - pauseWindowH;
-	this.pauseWindowDelay;
-
 	this.totalErrors = 0;
 	this.logWindow;
 	this.loggerID;
@@ -50,13 +42,7 @@ var Utils = new function(){
 	};
 
 	this.pause = function(msec, freeze) {
-		if(freeze != true){	
-			this.pauseWindowDelay = msec;
-			this.openModalWindow(this.pauseUrl, pauseWindowW, pauseWindowH, this.pauseWindowX, this.pauseWindowY);
-		}else{
-			var startTime = new Date();
-			while(new Date() - startTime < msec);
-		}
+		FlexDoor.pause(msec, freeze);
 	};
 
 	this.getAttribute = function(node, name){
@@ -167,23 +153,7 @@ var Utils = new function(){
 		}catch(e){}
 		return false;
 	};
-	
-	this.openModalWindow = function(url, width, height, left, top){
-		try{
-			if(window.showModalDialog){
-				var position = (left == undefined || top == undefined) ? 'center=1' : 'dialogLeft=' + left + '; dialogTop=' + top;
-				window.showModalDialog(url, this, 'dialogWidth:' + width + 'px; dialogHeight:' + height + 'px; status:0; scroll:0;' + position);
-			}else{
-				var position = (left == undefined || top == undefined) ? 'centerscreen' : 'left=' + left + ', top=' + top;
-				netscape.security.PrivilegeManager.enablePrivilege( "UniversalPreferencesRead " +
-																	"UniversalBrowserWrite"); 
-				window.open(url, 'popupModalWindow' + new Date().getTime(), 'width=' + width + 'px, height=' + height + 'px, chrome, dependent=1, dialog=1, modal=1, resizable=0, scrollbars=0, location=0, status=0, menubar=0, toolbar=0, ' + position);
-			}
-		}catch(e){
-			alert("Warning: Popup modal window has been disabled.\n" + e.message);
-		}
-	};
-	
+
 	this.openWindow = function(url, width, height, flag){
 		var win = window.open(url, "popupWindow", "left=0,top=0,width=" + width + ",height=" + height + "," + 
 								"scrollbars=" + flag + ",status=" + flag + ",resizable=" + flag);
