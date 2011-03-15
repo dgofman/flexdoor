@@ -13,7 +13,7 @@ var FlexDoor = new function(){
 	var pauseWindowW = 255;
 	var pauseWindowH = 105;
 
-	this.pauseUrl     = 'Pause.html';
+	this.pauseUrl     = 'text/javascript" src="http://flexdoor.googlecode.com/svn/trunk/html-template/Pause.html';
 	this.pauseWindowX = window.screen.width  - pauseWindowW;
 	this.pauseWindowY = window.screen.height - pauseWindowH;
 	this.pauseWindowDelay;
