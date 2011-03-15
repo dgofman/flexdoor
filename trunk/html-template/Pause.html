@@ -1,10 +1,9 @@
 <html>
 <head>
-<base target="_self"/>
 <title>FlexDoor Pause Window.....................................</title>
 <style>body{margin-top:10}</style>
 </head>
-<body scroll="no">
+<body scroll="no" onload="loaded()">
 
 <center style='font-size:14px;font-weight:bold'>
 	The window will automatically <br> close in <span id="time"></span>&nbsp;second(s).
@@ -13,14 +12,17 @@
 </center>
 
 <script type="text/javascript">
-alert(111);
-alert(222);
-alert(window.dialogArguments);
-	var parent = window.opener ? window.opener.FlexDoor : window.dialogArguments;
-	var ms = parent.pauseWindowDelay;
 	var interval1;
 	var interval2;
-	
+	var ms;
+
+	function loaded(){
+		alert(window.dialogArguments);
+		var parent = window.opener ? window.opener.FlexDoor : window.dialogArguments;
+		ms = parent.pauseWindowDelay;
+		wait();
+	}
+
 	function wait(){
 		if(!isNaN(parent.pauseWindowDelay)){
 			var span = document.getElementById('time');
@@ -49,8 +51,6 @@ alert(window.dialogArguments);
 			wait();
 		}
 	}
-	
-	wait();
 </script>
 </body>
 </html>
