@@ -306,11 +306,11 @@ var FlexDoor = new function(){
 		FlexDoor.resetRefHistory(tempHistory);
 	};
 
-	this.openModalWindow = function(url, width, height, left, top){
+	this.openModalWindow = function(url, width, height, left, top, args){
 		try{
 			if(window.showModalDialog){
 				var position = (left == undefined || top == undefined) ? 'center=1' : 'dialogLeft=' + left + '; dialogTop=' + top;
-				window.showModalDialog(url, window, 'dialogWidth:' + width + 'px; dialogHeight:' + height + 'px; status:0; scroll:0;' + position);
+				window.showModalDialog(url, args, 'dialogWidth:' + width + 'px; dialogHeight:' + height + 'px; status:0; scroll:0;' + position);
 			}else{
 				var position = (left == undefined || top == undefined) ? 'centerscreen' : 'left=' + left + ', top=' + top;
 				netscape.security.PrivilegeManager.enablePrivilege( "UniversalPreferencesRead " +
@@ -325,7 +325,7 @@ var FlexDoor = new function(){
 	this.pause = function(msec, freeze) {
 		if(freeze != true){	
 			this.pauseWindowDelay = msec;
-			this.openModalWindow(this.pauseUrl, pauseWindowW, pauseWindowH, this.pauseWindowX, this.pauseWindowY);
+			this.openModalWindow(this.pauseUrl, pauseWindowW, pauseWindowH, this.pauseWindowX, this.pauseWindowY, msec);
 		}else{
 			var startTime = new Date();
 			while(new Date() - startTime < msec);
