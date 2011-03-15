@@ -325,7 +325,7 @@ var FlexDoor = new function(){
 	this.pause = function(msec, freeze) {
 		if(freeze != true){	
 			this.pauseWindowDelay = msec;
-			this.openModalWindow(this.pauseUrl, pauseWindowW, pauseWindowH, this.pauseWindowX, this.pauseWindowY, this);
+			this.openModalWindow(this.pauseUrl, pauseWindowW, pauseWindowH, this.pauseWindowX, this.pauseWindowY, msec);
 		}else{
 			var startTime = new Date();
 			while(new Date() - startTime < msec);
