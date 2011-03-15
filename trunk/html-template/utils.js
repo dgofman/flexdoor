@@ -170,7 +170,7 @@ var Utils = new function(){
 	
 	this.openModalWindow = function(url, width, height, left, top){
 		try{
-			if(document.all){
+			if(window.showModalDialog){
 				var position = (left == undefined || top == undefined) ? 'center=1' : 'dialogLeft=' + left + '; dialogTop=' + top;
 				window.showModalDialog(url, this, 'dialogWidth:' + width + 'px; dialogHeight:' + height + 'px; status:0; scroll:0;' + position);
 			}else{
