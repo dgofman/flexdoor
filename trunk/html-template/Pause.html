@@ -1,10 +1,7 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
-<head>
 <title>FlexDoor Pause Window.....................................</title>
 <style>body{margin-top:10}</style>
-</head>
-<body scroll="no" onload="loaded()">
+<body scroll="no">
 
 <center style='font-size:14px;font-weight:bold'>
 	The window will automatically <br> close in <span id="time"></span>&nbsp;second(s).
@@ -13,21 +10,13 @@
 </center>
 
 <script type="text/javascript">
+alert(window.location.href)
+	var params = window.location.href.split("?");
+	var ms = params[1];
+	alert(ms)
 	var interval1;
 	var interval2;
-	var ms;
-
-	function loaded(){
-		alert(window.location.href)
-		var params = window.location.href.split("?");
-		alert(params.length);
-		if(params.length == 2){
-			ms = params[1];
-			alert(ms)
-			wait();
-		}
-	}
-
+	
 	function wait(){
 		if(!isNaN(parent.pauseWindowDelay)){
 			var span = document.getElementById('time');
@@ -56,6 +45,8 @@
 			wait();
 		}
 	}
+	
+	wait();
 </script>
 </body>
 </html>
