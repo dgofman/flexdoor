@@ -1,6 +1,9 @@
 <html>
+<head>
+<base target="_self"/>
 <title>FlexDoor Pause Window.....................................</title>
 <style>body{margin-top:10}</style>
+</head>
 <body scroll="no">
 
 <center style='font-size:14px;font-weight:bold'>
@@ -10,10 +13,8 @@
 </center>
 
 <script type="text/javascript">
-alert(window.dialogArguments);
-alert(FlexDoor);
-	var flexdoor = window.opener ? window.opener.FlexDoor : FlexDoor;
-	var ms = flexdoor.pauseWindowDelay;
+	var parent = window.opener ? window.opener.FlexDoor : window.dialogArguments;
+	var ms = parent.pauseWindowDelay;
 	var interval1;
 	var interval2;
 	
