@@ -10,6 +10,9 @@
 </center>
 
 <script type="text/javascript">
+alert(window.dialogArguments);
+for(var i in window.dialogArguments)
+alert(window.dialogArguments + "+"+ i);
 	var flexdoor = window.opener ? window.opener.FlexDoor : window.dialogArguments.FlexDoor;
 	alert(FlexDoor);
 	alert(flexdoor);
