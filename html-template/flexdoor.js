@@ -16,7 +16,6 @@ var FlexDoor = new function(){
 	this.pauseUrl     = "https://flexdoor.googlecode.com/svn/trunk/html-template/Pause.html";
 	this.pauseWindowX = window.screen.width  - pauseWindowW;
 	this.pauseWindowY = window.screen.height - pauseWindowH;
-	this.pauseWindowDelay;
 
 	this.showRefInfo = true;
 	this.asDocs = [
@@ -324,7 +323,6 @@ var FlexDoor = new function(){
 
 	this.pause = function(msec, freeze) {
 		if(freeze != true){	
-			this.pauseWindowDelay = msec;
 			this.openModalWindow(this.pauseUrl + "?" + msec, pauseWindowW, pauseWindowH, this.pauseWindowX, this.pauseWindowY, this);
 		}else{
 			var startTime = new Date();
