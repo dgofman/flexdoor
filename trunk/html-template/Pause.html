@@ -10,8 +10,10 @@
 </center>
 
 <script type="text/javascript">
-	var parent = window.opener ? window.opener.FlexDoor : window.dialogArguments;
-	var ms = parent.pauseWindowDelay;
+	var flexdoor = window.opener ? window.opener.FlexDoor : window.dialogArguments.FlexDoor;
+	alert(FlexDoor);
+	alert(flexdoor);
+	var ms = flexdoor.pauseWindowDelay;
 	var interval1;
 	var interval2;
 	
