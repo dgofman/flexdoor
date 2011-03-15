@@ -330,6 +330,24 @@ var FlexDoor = new function(){
 		}
 	};
 
+	this.getChildByType = function(parent, type, index, visibleOnly){
+		var numChildren = parent.numChildren();
+		var repeatIndex = 0;
+		if(index == null)
+			index = 0;
+		if(visibleOnly == null)
+			visibleOnly = true;
+		for(var i = 0; i < numChildren; i++){
+			var child = parent.getChildAt(i);
+			if(child && child.__TYPE__ == type && (visibleOnly == true && child.visible())){
+				if(repeatIndex++ == index)
+					return child;
+			}
+			FlexDoor.release(child);
+		}
+		return null;
+	};
+
 	//private
 
 	var movie = null;
