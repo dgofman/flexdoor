@@ -18,6 +18,7 @@
 	var ms;
 
 	function loaded(){
+		alert(window.opener);
 		alert(window.dialogArguments);
 		var parent = window.opener ? window.opener.FlexDoor : window.dialogArguments;
 		ms = parent.pauseWindowDelay;
