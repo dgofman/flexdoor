@@ -18,11 +18,11 @@
 	var ms;
 
 	function loaded(){
-		alert(window.location.href);
-		alert(window.dialogArguments);
-		var parent = window.opener ? window.opener.FlexDoor : window.dialogArguments;
-		ms = parent.pauseWindowDelay;
-		wait();
+		var params = window.location.href.split("?");
+		if(params.length == 2){
+			ms = params[0];
+			wait();
+		}
 	}
 
 	function wait(){
