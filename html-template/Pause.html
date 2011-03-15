@@ -11,11 +11,8 @@
 
 <script type="text/javascript">
 alert(window.dialogArguments);
-for(var i in window.dialogArguments)
-alert(window.dialogArguments + "+"+ i);
-	var flexdoor = window.opener ? window.opener.FlexDoor : window.dialogArguments.FlexDoor;
-	alert(FlexDoor);
-	alert(flexdoor);
+alert(FlexDoor);
+	var flexdoor = window.opener ? window.opener.FlexDoor : FlexDoor;
 	var ms = flexdoor.pauseWindowDelay;
 	var interval1;
 	var interval2;
