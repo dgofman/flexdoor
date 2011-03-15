@@ -18,9 +18,12 @@
 	var ms;
 
 	function loaded(){
+		alert(window.location.href)
 		var params = window.location.href.split("?");
+		alert(params.length);
 		if(params.length == 2){
-			ms = params[0];
+			ms = params[1];
+			alert(ms)
 			wait();
 		}
 	}
