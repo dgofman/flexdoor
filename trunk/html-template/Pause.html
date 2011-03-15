@@ -10,10 +10,8 @@
 </center>
 
 <script type="text/javascript">
-alert(window.location.href)
 	var params = window.location.href.split("?");
 	var ms = params[1];
-	alert(ms)
 	var interval1;
 	var interval2;
 	
@@ -29,9 +27,6 @@ alert(window.location.href)
 	}
 	
 	function closeWindow(){
-		var parent = window.opener ? window.opener.Utils : window.dialogArguments;
-		parent.pauseWindowX = window.screenLeft != undefined ? window.screenLeft - 3 : window.screenX;
-    	parent.pauseWindowY = window.screenTop != undefined ? window.screenTop - 29 : window.screenY;
 	 	window.close()
 	}
 	
