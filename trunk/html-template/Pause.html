@@ -10,12 +10,11 @@
 </center>
 
 <script type="text/javascript">
-alert(window.location.href + "+"+ window.opener + "+"+ window.dialogArguments);
 	var params = window.location.href.split("?");
 	var ms = params[1];
 	var interval1;
 	var interval2;
-	
+	alert(ms);
 	function wait(){
 		if(!isNaN(parent.pauseWindowDelay)){
 			var span = document.getElementById('time');
