@@ -12,13 +12,11 @@
 <script type="text/javascript">
 	var params = window.location.href.split("?");
 	var ms = parseInt(params[1]);
-	ms += 5000;
-	alert(ms + "+"+ params[1] + "+"+ parseInt(params[1]))
 	var interval1;
 	var interval2;
 
 	function wait(){
-		if(!isNaN(parent.pauseWindowDelay)){
+		if(!isNaN(ms)){
 			var span = document.getElementById('time');
 			span.innerHTML = (ms / 1000);
 			interval1 = setInterval(function(){ closeWindow(); }, ms);
