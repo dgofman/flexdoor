@@ -15,4 +15,16 @@
 		<nature>com.adobe.flexbuilder.project.flexnature</nature>
 		<nature>com.adobe.flexbuilder.project.actionscriptnature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>[source path] JSSample1</name>
+			<type>2</type>
+			<locationURI>DOCUMENTS/flexdoor_3.x/samples/JSSample1</locationURI>
+		</link>
+		<link>
+			<name>[source path] src</name>
+			<type>2</type>
+			<locationURI>DOCUMENTS/flexdoor_3.x/FlexDoorJS/jsframework/src</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>
