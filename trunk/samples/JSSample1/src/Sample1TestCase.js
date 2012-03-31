@@ -1,10 +1,10 @@
 function Sample1TestCase(){
-	this.init("MonkeyContacts", "Basic Functionality");
-	this.include("org.flexdoor.controls::Button",
-				 "org.flexdoor.controls::TextInput",
-				 "org.flexdoor.controls::ComboBox",
-				 "org.flexdoor.containers::Panel",
-				 "org.flexdoor.controls::DataGrid");
+	this.init("SampleApp", "FlexDoor Sample 1");
+	this.include("controls::Button",
+				 "controls::TextInput",
+				 "controls::ComboBox",
+				 "containers::Panel",
+				 "controls::DataGrid");
 }
 Sample1TestCase.prototype = new FlexDoor(Sample1TestCase/*, true*/);
 

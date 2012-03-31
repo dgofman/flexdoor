@@ -2,10 +2,10 @@
  * @author David Gofman
  */
 
-function FlexDoor(classType, autoStart)
+function FlexDoor(testCaseType, autoStart)
 {
-	classType.prototype.constructor = classType;
-	FlexDoor.CLASSES.push(classType);
+	testCaseType.prototype.constructor = testCaseType;
+	FlexDoor.TEST_CASES.push(testCaseType);
 	FlexDoor.autoStart = autoStart;
 };
 
@@ -36,9 +36,9 @@ FlexDoor.prototype.include = function() {
 	var index = 0;
 
 	var validateAllClasses = function(src){
-		for(var cls in FlexDoor.LOADING)
+		for(var cls in FlexDoor.LOAD_FILES)
 			return; //wait when all classes loaded
-		var testCase = FlexDoor.CLASSES[Static.testCaseIndex];
+		var testCase = FlexDoor.TEST_CASES[Static.testCaseIndex];
 		if(instance instanceof testCase.prototype.constructor){
 			var tests = [];
 			for(var name in testCase.prototype){
@@ -120,23 +120,37 @@ FlexDoor.prototype.include = function() {
 };
 
 //Static API's and Variables
-FlexDoor.CLASSES = [];
-FlexDoor.LOADING = {};
-FlexDoor.LOAD_DELAY;
+FlexDoor.TEST_CASES = [];
+FlexDoor.LOAD_FILES = {};
+FlexDoor.TIME_INTERVAL;
 FlexDoor.INIT_PHASE = 0;
+
+if(FlexDoor.LIB_PATH == undefined){
+	var scripts = document.getElementsByTagName("script");
+	for(var i = 0; i < scripts.length; i++){
+		var src = scripts[i].src;
+		if(src.indexOf("FlexDoor.js") != -1){
+			FlexDoor.LIB_PATH = src.split("core")[0];
+			break;
+		}
+	}
+}
 
 FlexDoor.include = function(cls, src, callback, css) {
 	if(cls != null && typeof(window[cls]) == "function"){
 		callback();
-	}else if(!(FlexDoor.LOADING[cls] instanceof Array)){
-		FlexDoor.LOADING[cls] = [callback];
+	}else if(!(FlexDoor.LOAD_FILES[cls] instanceof Array)){
+		FlexDoor.LOAD_FILES[cls] = [callback];
 
 		var obj, elm;
 		var isOpera = typeof(opera) != "undefined" && opera.toString() == "[object Opera]";
 		var isXULChrome = true;
 
-		if(src.indexOf('automation-js/') != 0)
-			src = "automation-js/" + src.replace(/\./g, '/') + ".js";
+		if(src.indexOf('.js') != -1 || src.indexOf('.css') != -1){
+			src = FlexDoor.LIB_PATH + src;
+		}else{
+			src = FlexDoor.LIB_PATH + src.replace(/\./g, '/') + ".js";
+		}
 
 		try {
 			// check if this is a standard HTML page or a different document (e.g. XUL)
@@ -185,13 +199,13 @@ FlexDoor.include = function(cls, src, callback, css) {
 		}
 		
 		if(css){
-			delete FlexDoor.LOADING[cls];
+			delete FlexDoor.LOAD_FILES[cls];
 			callback();
 		}else{
 			var onJsLoaded = function(){
 				var cls = arguments.callee.prototype.cls;
-				var callbacks = FlexDoor.LOADING[cls];
-				delete FlexDoor.LOADING[cls];
+				var callbacks = FlexDoor.LOAD_FILES[cls];
+				delete FlexDoor.LOAD_FILES[cls];
 				Static.trace("Loaded class: " + cls + ". Total callback functions: " + callbacks.length);
 	
 				for(var i = 0; i < callbacks.length; i++)
@@ -208,17 +222,17 @@ FlexDoor.include = function(cls, src, callback, css) {
 
 		elm.appendChild(obj);
 	}else{
-		FlexDoor.LOADING[cls].push(callback);
+		FlexDoor.LOAD_FILES[cls].push(callback);
 	}
 	
 	//Validate if all classes are loaded
-	clearInterval(FlexDoor.LOAD_DELAY);
-	FlexDoor.LOAD_DELAY = setInterval(function(){
-		for(var cls in FlexDoor.LOADING){
-			Static.trace("Class not loaded: " + cls, "warn");
+	clearInterval(FlexDoor.TIME_INTERVAL);
+	FlexDoor.TIME_INTERVAL = setInterval(function(files){
+		for(var className in files){
+			Static.trace("Class not loaded: " + className, "warn");
 		}
-		clearInterval(FlexDoor.LOAD_DELAY);
-	}, 5000);
+		clearInterval(FlexDoor.TIME_INTERVAL);
+	}, 5000, FlexDoor.LOAD_FILES);
 };
 
 FlexDoor.dispatchEvent = function(eventType){
@@ -241,13 +255,13 @@ FlexDoor.run = function(){
 
 $(document).ready(function(){
 	var initClassLibs = [
-		"org.flexdoor.core::Static",
-		"org.flexdoor.core::Assert",
-		"org.flexdoor.events::FunctionEvent",
-		"org.flexdoor.events::EventDispatcher",
-		"org.flexdoor.core::UIComponent",
-		"org.flexdoor.core::Container",
-		"org.flexdoor.core::Application"
+		"core::Static",
+		"core::Assert",
+		"events::FunctionEvent",
+		"events::EventDispatcher",
+		"core::UIComponent",
+		"core::Container",
+		"core::Application"
 	];
 	
 	var libIndex = 0;

@@ -72,8 +72,8 @@ Static.trace = function(message, level) {
 
 Static.startTestCase = function(index){
 	Static.testCaseIndex = index;
-	if(FlexDoor.CLASSES.length > index)
-		new FlexDoor.CLASSES[index]();
+	if(FlexDoor.TEST_CASES.length > index)
+		new FlexDoor.TEST_CASES[index]();
 };
 
 Static.loadQUnit = function(){
@@ -82,9 +82,9 @@ Static.loadQUnit = function(){
 		if(++index == 3)
 			Static.doTestLoader();
 	};
-	FlexDoor.include("jquery-ui", "automation-js/jquery-ui-1.8.16.custom.min.js", loadHandler);
-	FlexDoor.include("qunit-ui", "automation-js/qunit.js", loadHandler);
-	FlexDoor.include("qunit-css", "automation-js/qunit.css", loadHandler, true);
+	FlexDoor.include("jquery-ui", "jquery-ui-1.8.16.custom.min.js", loadHandler);
+	FlexDoor.include("qunit-ui", "qunit.js", loadHandler);
+	FlexDoor.include("qunit-css", "qunit.css", loadHandler, true);
 };
 
 Static.doTestLoader = function(){
