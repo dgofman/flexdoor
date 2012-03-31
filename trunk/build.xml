@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="flexdoor" basedir="." default="compile_all">
 
-	<property file="./flexdoor.properties"/>
-
 	<property environment="env"/>
 	<property name="flex_sdk_home" value="${env.FLEX_HOME}"/>
 	<property name="FLEX_HOME" value="${flex_sdk_home}"/>
 
+	<property name="out.swc" value="FlexDoor"/>
 	<property name="src.dir" value="./src"/>
-	<property name="lib.dir" value="./lib"/>
-	<property name="out.dir" value="./flex-bin"/>
+	<property name="out.dir" value="./bin"/>
 	<property name="compc.jar.path" value="${FLEX_HOME}/lib/compc.jar"/>
 	<property name="mxmlc.jar.path" value="${FLEX_HOME}/lib/mxmlc.jar"/>
 
 	<target name="compile_all">
 		<antcall target="compile_swc"/>
 		<antcall target="compile_swf"/>
-		<antcall target="compile_proxy_swf"/>
 	</target>
 
 	<target name="compile_swc">
@@ -25,9 +22,8 @@
 			<arg value='-debug=false'/>
 			<arg value='-local-fonts-snapshot=${FLEX_HOME}/frameworks/localFonts.ser'/>
 			<arg value='-load-config=${FLEX_HOME}/frameworks/flex-config.xml'/>
-			<arg value='-source-path+=${lib.dir}'/>
-			<arg value='-include-sources=${lib.dir}'/>
-			<arg value='-output=${lib.dir}/${FILE_NAME}.swc'/>
+			<arg value='-include-sources=${src.dir}'/>
+			<arg value='-output=${out.dir}/${out.swc}.swc'/>
 		</java>
 	</target>
 
@@ -38,19 +34,8 @@
 			<arg value='-local-fonts-snapshot=${FLEX_HOME}/frameworks/localFonts.ser'/>
 			<arg value='-load-config=${FLEX_HOME}/frameworks/flex-config.xml'/>
 			<arg value='-file-specs=${src.dir}/FlexDoor.as'/>
-			<arg value='-source-path+=${lib.dir}'/>
-			<arg value='-output=${out.dir}/${FILE_NAME}.swf'/>
-		</java>
-	</target>
-
-	<target name="compile_proxy_swf">
-		<java jar="${mxmlc.jar.path}" failonerror="true" fork="true">
-			<jvmarg value="-Xmx512m"/>
-			<arg value='-debug=false'/>
-			<arg value='-local-fonts-snapshot=${FLEX_HOME}/frameworks/localFonts.ser'/>
-			<arg value='-load-config=${FLEX_HOME}/frameworks/flex-config.xml'/>
-			<arg value='-file-specs=${lib.dir}/FlexDoorProxy.as'/>
-			<arg value='-output=${out.dir}/FlexDoorProxy.swf'/>
+			<arg value='-source-path+=${src.dir}'/>
+			<arg value='-output=${out.dir}/${out.swc}.swf'/>
 		</java>
 	</target>
 </project>
