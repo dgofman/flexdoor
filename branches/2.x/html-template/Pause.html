@@ -1,0 +1,47 @@
+<html>
+<title>FlexDoor Pause Window.....................................</title>
+<style>body{margin-top:10}</style>
+<body scroll="no">
+
+<center style='font-size:14px;font-weight:bold'>
+	The window will automatically <br> close in <span id="time"></span>&nbsp;second(s).
+	<br/><br/>
+	<input type="button" value="Pause" onclick="pause(this)"/>
+</center>
+
+<script type="text/javascript">
+	var params = window.location.href.split("?");
+	var ms = parseInt(params[1]);
+	var interval1;
+	var interval2;
+
+	function wait(){
+		if(!isNaN(ms)){
+			var span = document.getElementById('time');
+			span.innerHTML = (ms / 1000);
+			interval1 = setInterval(function(){ closeWindow(); }, ms);
+			interval2 = setInterval(function(){ ms -= 1000; if(ms > 0) span.innerHTML = (ms / 1000); }, 1000);
+		}else{
+			closeWindow();
+		}
+	}
+	
+	function closeWindow(){
+	 	window.close()
+	}
+	
+	function pause(button){
+		if(button.value == "Pause"){
+			button.value = "Resume";
+			clearInterval(interval1);
+			clearInterval(interval2);
+		}else{
+			button.value = "Pause";
+			wait();
+		}
+	}
+	
+	wait();
+</script>
+</body>
+</html>
