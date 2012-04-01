@@ -17,18 +17,26 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function List(classType, className, extendType) 
+function List(classType, extendType) 
 {
-	UIComponent.call(this, classType, className, extendType);
+	UIComponent.call(this, classType, extendType);
+
+	this.getSelectedIndex = function(){
+		return this.getter("selectedIndex");
+	};
+	this.setSelectedIndex = function(value){
+		this.setter("selectedIndex", value);
+	};
+
+	this.getSelectedItem = function(){
+		return this.getter("selectedItem");
+	};
+	this.setSelectedItem = function(value){
+		this.setter("selectedItem", value);
+	};
 }
 
-List.prototype = new UIComponent(List, "org.flexdoor.controls::List");
-List.prototype.Get = function(){ return this; };
-
-//Class Functions
-List.prototype.setSelectedIndex = function(value){
-	this.setter("selectedIndex", value);
+List.prototype.Extends = function(){
+	List.prototype = new UIComponent(List);
 };
-List.prototype.getSelectedIndex = function(){
-	return this.getter("selectedIndex");
-};
+List.Get = function(o){ return UIComponent.Get(o); };

@@ -17,11 +17,18 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function Application(flashPlayerId)
+function Application(classType, extendType, flash)
 {
-	this.flash =  Static.getFlash(flashPlayerId);
-	var object = this.flash.application();
-	UIComponent.prototype.initialize.call(this, object, this.flash);
+	UIComponent.call(this, classType, extendType);
+	Application.application = this;
+	this.flash = flash;
 }
-Application.application = null;
-Application.prototype = new Container(Application, "org.flexdoor.core::Application");
+
+Application.prototype.Import = function(){
+	return ["core::Container"];
+};
+Application.prototype.Extends = function(){
+	Container.prototype.Extends();
+	Application.prototype = new Container(Application);
+};
+Application.Get = function(o){ return UIComponent.Get(o); };

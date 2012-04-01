@@ -17,28 +17,39 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function ComboBox(classType, className, extendType) 
+function ComboBox(classType, extendType) 
 {
-	UIComponent.call(this, classType, className, extendType);
-	this.dropdown = new List(List, "org.flexdoor.controls::List");
+	UIComponent.call(this, classType, extendType);
+	this.dropdown = new List(List, "List");
+
+	this.open = function(){
+
+	};
+
+	this.getSelectedIndex = function(){
+		return this.dropdown.getSelectedIndex();
+	};
+	this.setSelectedIndex = function(value){
+		this.dropdown.setSelectedIndex(value);
+	};
+
+	this.getSelectedItem = function(){
+		return this.dropdown.getSelectedItem();
+	};
+	this.setSelectedItem = function(value){
+		this.dropdown.setSelectedItem(value);
+	};
 }
 
-ComboBox.prototype.initialize = function(object, parent){
-	UIComponent.prototype.initialize.call(this, object, parent);
-	UIComponent.prototype.initialize.call(this.dropdown, object, parent);
+ComboBox.prototype.Import = function(){
+	return ["controls::List"];
 };
-
-ComboBox.prototype = new UIComponent(ComboBox, "org.flexdoor.controls::ComboBox");
-ComboBox.prototype.Get = function(){ return this; };
-ComboBox.prototype.required = function(){
-	return ["org.flexdoor.controls::List"];
+ComboBox.prototype.Extends = function(){
+	List.prototype.Extends();
+	ComboBox.prototype = new List(ComboBox);
 };
-
-//Class Functions
-ComboBox.prototype.open = function(){
-	this.app.doFlexUiEvent('Open', this.monkeyId, 'automationName', [null], '', '', '10', '1000', false);
+ComboBox.prototype.Initialize = function(object, parent){
+	UIComponent.prototype.Initialize.call(this, object, parent);
+	UIComponent.prototype.Initialize.call(this.dropdown, object, this);
 };
-
-ComboBox.prototype.selectedItem = function(value){
-	this.dropdown.selectedItem(value);
-};
+ComboBox.Get = function(o){ return UIComponent.Get(o); };

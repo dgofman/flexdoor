@@ -66,18 +66,41 @@ Static.getter = function(comp, command){
 Static.objectToClass = function(object, parent){
 	for(var i = 0; object.extendTypes.length; i++){
 		var extendType = object.extendTypes[i];
-		var className = extendType.split("::")[1];
+		var params = extendType.split("::");
+		var className = params[0];
+		if(params.length == 2)
+			className = params[1];
+		if(className == "ReferenceError"){
+			Static.warn(object.stackTrace);
+			throw new ReferenceError(object.message);
+		}
 		if(typeof(window[className]) == "function"){
 			var classType = window[className];
-			var component = new classType(classType, classType.className, extendType);
+			if(classType.prototype.Extends != undefined &&
+			 !(classType.prototype instanceof UIComponent)){
+				classType.prototype.Extends();
+			}
+			var component = new classType(classType, extendType);
 			if(component instanceof UIComponent)
-				component.initialize(object, parent);
+				component.Initialize(object, parent);
 			return component;
 		}
 	}
 	return object;
 };
 
+Static.log = function(message) {
+	Static.trace(message, "log");
+};
+Static.warn = function(message) {
+	Static.trace(message, "warn");
+};
+Static.info = function(message) {
+	Static.trace(message, "info");
+};
+Static.error = function(message) {
+	Static.trace(message, "error");
+};
 Static.trace = function(message, level) {
 	if(level == undefined)
 		level = "log";

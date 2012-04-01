@@ -7,8 +7,9 @@ function EventDispatcher()
 	this.events = [];
 }
 
+EventDispatcher.prototype.Extends = function() {};
 EventDispatcher.prototype.toString = function() {
-	return "org.flexdoor.events::EventDispatcher";
+	return "events::EventDispatcher";
 };
 
 EventDispatcher.prototype.addEventListener = function(event, callback){

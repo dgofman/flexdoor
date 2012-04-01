@@ -17,15 +17,16 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function Container(classType, className, extendType) 
+function Container(classType, extendType) 
 {
-	UIComponent.call(this, classType, className, extendType);
+	UIComponent.call(this, classType, extendType);
+
+	this.numChildren = function() {
+		return this.getter("numChildren");
+	};
 }
 
-Container.prototype = new UIComponent(Container, "org.flexdoor.core::Container");
-Container.prototype.Get = function(){ return this; };
-
-//Class Functions
-Container.prototype.numChildren = function() {
-	return FDGlobal.find("numChildren");
+Container.prototype.Extends = function(){
+	Container.prototype = new UIComponent(Container);
 };
+Container.Get = function(o){ return UIComponent.Get(o); };

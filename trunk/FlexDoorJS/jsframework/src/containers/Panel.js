@@ -17,19 +17,23 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function Panel(classType, className, extendType) 
+function Panel(classType, extendType) 
 {
-	UIComponent.call(this, classType, className, extendType);
+	UIComponent.call(this, classType, extendType);
+
+	this.getTitle = function(){
+		return this.getter("title");
+	};
+	this.setTitle = function(value){
+		this.setter("title", value);
+	};
 }
 
-Panel.prototype = new Container(Panel, "org.flexdoor.containers::Panel");
-Panel.prototype.Get = function(){ return this; };
-
-//Class Functions
-Panel.prototype.setTitle = function(value) {
-	this.setter("title", value);
+Panel.prototype.Import = function(){
+	return ["core::Container"];
 };
-
-Panel.prototype.getTitle = function() {
-	return this.getter("title");
+Panel.prototype.Extends = function(){
+	Container.prototype.Extends();
+	Panel.prototype = new Container(Panel);
 };
+Panel.Get = function(o){ return UIComponent.Get(o); };

@@ -17,15 +17,16 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function TextInput(classType, className, extendType) 
+function TextInput(classType, extendType) 
 {
-	UIComponent.call(this, classType, className, extendType);
+	UIComponent.call(this, classType, extendType);
+
+	this.setText = function(value){
+		this.setter("text", value);
+	};
 }
 
-TextInput.prototype = new UIComponent(TextInput, "org.flexdoor.controls::TextInput");
-TextInput.prototype.Get = function(){ return this; };
-
-//Class Functions
-TextInput.prototype.setText = function(value){
-	this.setter("text", value);
+TextInput.prototype.Extends = function(){
+	TextInput.prototype = new UIComponent(TextInput);
 };
+TextInput.Get = function(o){ return UIComponent.Get(o); };

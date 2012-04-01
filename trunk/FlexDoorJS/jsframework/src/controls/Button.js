@@ -17,15 +17,16 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function Button(classType, className, extendType) 
+function Button(classType, extendType) 
 {
-	UIComponent.call(this, classType, className, extendType);
+	UIComponent.call(this, classType, extendType);
+
+	this.click = function(){
+		
+	};
 }
 
-Button.prototype = new UIComponent(Button, "org.flexdoor.controls::Button");
-Button.prototype.Get = function(){ return this; };
-
-//Class Functions
-Button.prototype.click = function(){
-	this.app.doFlexUiEvent('Click', this.monkeyId, 'automationName', [],'', '', '10', '1000', false);
+Button.prototype.Extends = function(){
+	Button.prototype = new UIComponent(Button);
 };
+Button.Get = function(o){ return UIComponent.Get(o); };

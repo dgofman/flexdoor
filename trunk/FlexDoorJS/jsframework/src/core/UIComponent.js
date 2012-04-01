@@ -17,38 +17,34 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function UIComponent(classType, className, extendType) 
+function UIComponent(classType, extendType) 
 {
 	if(classType == undefined)
-		debugger;
-	classType.className = className;
-	classType.prototype.constructor = classType;
+		throw new Error("Class Type is undefined");
+
 	classType.prototype.toString  = function(){
-		return className;
-	};
-	classType.prototype.type  = function(){
 		return extendType;
 	};
 	classType.Get = function(o){ 
 		if(o instanceof classType){
 			return o; 
 		}else{
-			throw new Error("TypeError: Error #101: Type Coercion failed: cannot convert " + o.toString() + " to " + className);
+			throw new Error("TypeError: Error #101: Type Coercion failed: cannot convert " + o.toString() + " to " + extendType);
 		}
 	};
+	classType.prototype.constructor = classType;
 }
 
 UIComponent.prototype = new EventDispatcher();
-UIComponent.prototype.Get = function(){ return this; };
-UIComponent.Get = function(o){ return o; };
-
-UIComponent.prototype.initialize = function(object, parent){
+UIComponent.prototype.Initialize = function(object, parent){
 	this.id = object.id;
 	this.name = object.name;
 	this.refId = object.refId;
-	this.classTypes = object.extendTypes;
+	this.extendTypes = object.extendTypes;
 	this.parent = parent;
 };
+UIComponent.Get = function(o){ return o; };
+
 
 //Class Functions
 UIComponent.prototype.find = function(id, index, visibleOnly) {
@@ -72,5 +68,5 @@ UIComponent.prototype.setter = function(command, value){
 };
 
 UIComponent.prototype.getter = function(command){
-	Static.getter(this, command);
+	return Static.getter(this, command);
 };

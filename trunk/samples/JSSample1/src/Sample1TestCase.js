@@ -19,23 +19,15 @@ Sample1TestCase.prototype.setUp = function(){
 	view = Panel.Get(this.app.getChildByName("monkeyViewName"));
 	Assert.assertEquals(view.type(), "mx.containers::Panel");
 */
-	alert(typeof(DataGrid.prototype));
-	alert(DataGrid.prototype instanceof UIComponent);
-	DataGrid.prototype.extends();
-	alert(typeof(DataGrid.prototype));
-	alert(DataGrid.prototype instanceof UIComponent);
-	var dg = new DataGrid(DataGrid, "mx.containers::DataGrid");
-	
-	debugger;
-	dg.setSelectedIndex(2);
-	dg.dataGridAPI(value);
-	
-	DataGrid.Get();
-	alert(dg);
-	view = Panel.Get(this.app.find("monkeyView", 1));
-	Assert.assertEquals(view.type(), "mx.containers::Panel");
 
-	this.view = view;
+	view = Panel.Get(this.app.find("sampleView"));
+	Assert.assertType(view, "mx.containers::Panel");
+
+	view.setTitle("Test 1");
+
+	var dataGrid = DataGrid.Get(view.find("dataGrid"));
+	Assert.assertType(dataGrid, "mx.controls::DataGrid");
+	dataGrid.setSelectedIndex(2);
 };
 
 Sample1TestCase.prototype.tearDown = function(){
@@ -44,7 +36,7 @@ Sample1TestCase.prototype.tearDown = function(){
 
 Sample1TestCase.prototype.test_1 = function(event) {
 	var view = this.setUp(); //Remove
-	
+	/*
 	dataGrid = UIComponent.Get(this.app.find("dataGrid"));
 	dataGrid.setter("selectedIndex", 1);
 
@@ -52,7 +44,7 @@ Sample1TestCase.prototype.test_1 = function(event) {
 	inNameTextField.setText("Mike Wells");
 
 	var inPhoneTextField = TextInput.Get(this.view.find("inPhone"));
-	inPhoneTextField.setText("2058213928");
+	inPhoneTextField.setText("2058213928");*/
 };
 
 Sample1TestCase.prototype.test_2 = function(event) {

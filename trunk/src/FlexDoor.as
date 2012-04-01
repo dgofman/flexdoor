@@ -242,6 +242,10 @@ package
 				out.id = ref.id;
 			if(ref.hasOwnProperty('name'))
 				out.name = ref.name;
+			if(ref is Error){
+				out.error = Error(ref).message;
+				out.stackTrace = Error(ref).getStackTrace();
+			}
 			var type:XML = describeType(ref);
 			var extendTypes:Array = [type.@name.toString()];
 			for(var i:uint = 0; i < type.extendsClass.length(); i++)

@@ -17,14 +17,16 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function DataGrid(classType, className, extendType) 
+function DataGrid(classType, extendType) 
 {
-	UIComponent.call(this, classType, className, extendType);
+	UIComponent.call(this, classType, extendType);
 }
-DataGrid.prototype.Get = function(){ return this; };
-DataGrid.prototype.required = function(){
-	return ["org.flexdoor.controls::List"];
+
+DataGrid.prototype.Import = function(){
+	return ["controls::List"];
 };
-DataGrid.prototype.extends = function(){ 
-	DataGrid.prototype = new List(DataGrid, "org.flexdoor.controls::DataGrid");
+DataGrid.prototype.Extends = function(){
+	List.prototype.Extends();
+	DataGrid.prototype = new List(DataGrid);
 };
+DataGrid.Get = function(o){ return UIComponent.Get(o); };

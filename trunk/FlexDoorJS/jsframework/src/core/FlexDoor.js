@@ -30,11 +30,17 @@ FlexDoor.prototype.toString = function() {
 
 FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
 {
-	if(flashPlayerId == undefined)
-		throw new Error("You must provide a Flash Player Object ID");
+	var flash =  Static.getFlash(flashPlayerId);
+	if(flash == undefined)
+		throw new Error("You must provide a valid Flash Player Object ID");
 
-	this.app = new Application(flashPlayerId);
-	Application.application = this.app;
+	var object = flash.application();
+	var extendType = object.extendTypes[1];
+
+	Application.prototype.Extends();
+	this.app = new Application(Application, extendType, flash);
+	this.app.Initialize(object, flash);
+	var i = this.app.numChildren();
 
 	if(testCaseTitle == undefined)
 		testCaseTitle = flashPlayerId;
@@ -113,11 +119,11 @@ FlexDoor.prototype.include = function() {
 			var cls = arguments.callee.prototype.cls;
 			var className = arguments.callee.prototype.name;
 			var classType = window[cls];
-			if(classType.prototype.required != undefined){
-				var depedFiles = classType.prototype.required();
-				Static.trace("Class: " + cls + ". Total dependencies: " + depedFiles.length);
+			if(classType && classType.prototype.Import != undefined){
+				var importFiles = classType.prototype.Import();
+				Static.log("Class: " + cls + ". Total dependencies: " + importFiles.length);
 
-				instance.include.apply(instance, depedFiles);
+				instance.include.apply(instance, importFiles);
 			}else{
 				index++;
 			}
@@ -217,7 +223,7 @@ FlexDoor.include = function(cls, src, callback, css) {
 				var cls = arguments.callee.prototype.cls;
 				var callbacks = FlexDoor.LOAD_FILES[cls];
 				delete FlexDoor.LOAD_FILES[cls];
-				Static.trace("Loaded class: " + cls + ". Total callback functions: " + callbacks.length);
+				Static.log("Loaded class: " + cls + ". Total callback functions: " + callbacks.length);
 	
 				for(var i = 0; i < callbacks.length; i++)
 					callbacks[i]();
@@ -240,7 +246,7 @@ FlexDoor.include = function(cls, src, callback, css) {
 	clearInterval(FlexDoor.TIME_INTERVAL);
 	FlexDoor.TIME_INTERVAL = setInterval(function(files){
 		for(var className in files){
-			Static.trace("Class not loaded: " + className, "warn");
+			Static.warn("Class not loaded: " + className);
 		}
 		clearInterval(FlexDoor.TIME_INTERVAL);
 	}, 5000, FlexDoor.LOAD_FILES);
