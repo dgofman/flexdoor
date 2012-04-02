@@ -30,13 +30,6 @@ function UIComponent(classType, extendType)
 }
 
 UIComponent.prototype = new EventDispatcher();
-UIComponent.prototype.Initialize = function(object, parent){
-	this.id = object.id;
-	this.name = object.name;
-	this.refId = object.refId;
-	this.extendTypes = object.extendTypes;
-	this.parent = parent;
-};
 UIComponent.Get = function(o, classType){
 	if(o instanceof classType){
 		return o; 
@@ -60,12 +53,4 @@ UIComponent.prototype.getChildByType = function(classType, index, visibleOnly) {
 	if(index == undefined) index = 0;
 	if(visibleOnly == undefined) visibleOnly = true;
 	return Static.getChildByType(this, classType, index, visibleOnly);
-};
-
-UIComponent.prototype.setter = function(command, value){
-	Static.setter(this, command, value);
-};
-
-UIComponent.prototype.getter = function(command){
-	return Static.getter(this, command);
 };

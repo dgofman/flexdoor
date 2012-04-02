@@ -16,19 +16,26 @@
  * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-function FunctionEvent(prop) 
+ 
+function ListCollectionView(source) 
 {
-	this.reset();
-	for(var name in prop)
-		this[name] = prop[name];
+	this.source = source;
 }
-FunctionEvent.TEST_DELAY = 500;
 
-FunctionEvent.prototype.toString = function() {
-	return "org.flexdoor.events::FunctionEvent";
+ListCollectionView.prototype = new EventDispatcher();
+ListCollectionView.prototype.toString = function() {
+	return (this.source ? this.source.toString() : "collections::ListCollectionView");
+};
+ListCollectionView.prototype.Initialize = function(object, parent){
+	EventDispatcher.prototype.Initialize.call(this, object, parent);
+	this.source = object.ref.source;
+};
+ListCollectionView.Get = function(o){
+	var ref = this;
+	ref = UIComponent.Get(o, ListCollectionView);
+	return ref;
 };
 
-FunctionEvent.prototype.reset = function(){
-	this.delay = FunctionEvent.TEST_DELAY;
+ListCollectionView.prototype.getItemAt = function(value){
+	return this.getter("getItemAt", value);
 };

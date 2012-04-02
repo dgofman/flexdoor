@@ -60,7 +60,7 @@ Static.setter = function(comp, command, value){
 
 Static.getter = function(comp, command){
 	var flash = Application.application.flash;
-	return flash.getter(comp.refId, command);
+	return Static.objectToClass(flash.getter(comp.refId, command));
 };
 
 Static.refIds = function(){
@@ -75,26 +75,28 @@ Static.releaseIds = function(ids, except){
 };
 
 Static.objectToClass = function(object, parent){
-	for(var i = 0; object.extendTypes.length; i++){
-		var extendType = object.extendTypes[i];
-		var params = extendType.split("::");
-		var className = params[0];
-		if(params.length == 2)
-			className = params[1];
-		if(className == "ReferenceError" || className == "Error"){
-			Static.warn(object.stackTrace);
-			throw new ReferenceError(object.message);
-		}
-		if(typeof(window[className]) == "function"){
-			var classType = window[className];
-			if(classType.prototype.Extends != undefined &&
-			 !(classType.prototype instanceof UIComponent)){
-				classType.prototype.Extends();
+	if(object != null && object.extendTypes != undefined){
+		for(var i = 0; object.extendTypes.length; i++){
+			var extendType = object.extendTypes[i];
+			var params = extendType.split("::");
+			var className = params[0];
+			if(params.length == 2)
+				className = params[1];
+			if(className == "ReferenceError" || className == "Error"){
+				Static.warn(object.stackTrace);
+				throw new ReferenceError(object.message);
 			}
-			var component = new classType(classType, extendType);
-			if(component instanceof UIComponent)
-				component.Initialize(object, parent);
-			return component;
+			if(typeof(window[className]) == "function"){
+				var classType = window[className];
+				if(classType.prototype.Extends != undefined &&
+				 !(classType.prototype instanceof UIComponent)){
+					classType.prototype.Extends();
+				}
+				var component = new classType(classType, extendType);
+				if(component instanceof EventDispatcher)
+					component.Initialize(object, parent);
+				return component;
+			}
 		}
 	}
 	return object;

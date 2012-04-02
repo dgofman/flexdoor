@@ -40,7 +40,6 @@ FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
 	Application.prototype.Extends();
 	this.app = new Application(Application, extendType, flash);
 	this.app.Initialize(object, flash);
-	var i = this.app.numChildren();
 
 	if(testCaseTitle == undefined)
 		testCaseTitle = flashPlayerId;

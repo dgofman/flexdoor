@@ -18,7 +18,7 @@ package
 	import flash.system.Security;
 	import flash.system.SecurityDomain;
 	import flash.utils.Timer;
-
+	
 	import mx.core.mx_internal;
 
 	use namespace mx_internal;
@@ -262,26 +262,31 @@ package
 		protected function js_getter(refId:uint, command:String):*{
 			var parent:Object = _refMap[refId];
 			if(parent.hasOwnProperty(command))
-				return parent[command];
+				return serialize(parent[command]);
 			return null;
 		}
 
 		protected function serialize(ref:Object):Object{
 			if(ref == null) return null;
 			var out:Object = {};
-			if(ref.hasOwnProperty('id'))
-				out.id = ref.id;
-			if(ref.hasOwnProperty('name'))
-				out.name = ref.name;
 			if(ref is Error){
 				out.error = Error(ref).message;
 				out.stackTrace = Error(ref).getStackTrace();
+			}else if(typeof(ref) != "object" || ref == Array){
+				return ref; //Number, uint, int, String, Boolean, Array
+			}else{
+				if(ref.hasOwnProperty('id'))
+					out.id = ref.id;
+				if(ref.hasOwnProperty('name'))
+					out.name = ref.name;
+				var type:XML = describeType(ref);
+				var extendTypes:Array = [type.@name.toString()];
+				for(var i:uint = 0; i < type.extendsClass.length(); i++)
+					extendTypes.push(type.extendsClass[i].@type.toString());
+				out.extendTypes = extendTypes;
+				if(!(ref is DisplayObject)) //if not low level of ui components
+					out.ref = ref;
 			}
-			var type:XML = describeType(ref);
-			var extendTypes:Array = [type.@name.toString()];
-			for(var i:uint = 0; i < type.extendsClass.length(); i++)
-				extendTypes.push(type.extendsClass[i].@type.toString());
-			out.extendTypes = extendTypes;
 
 			var id:*;
 			//validate if object already exists

@@ -1,7 +1,8 @@
 function Sample1TestCase(){
 	this.init("SampleApp", "FlexDoor Sample 1");
 	this.include("containers::Panel",
-				 "controls::DataGrid");
+				 "controls::DataGrid",
+				 "collections::ListCollectionView");
 }
 Sample1TestCase.prototype = new FlexDoor(Sample1TestCase/*, true*/);
 
@@ -68,16 +69,17 @@ Sample1TestCase.prototype.test_2 = function(event) {
 
 Sample1TestCase.prototype.test_3 = function(event) {
 	var dataGrid = DataGrid.Get(this.dataGrid);
-	dataGrid.setSelectedIndex(1);
+	dataGrid.setSelectedItem(2);
 
-	//Pass local dropDownList object to the next test function 
-	//Set delay before selecting an item
-	//return new FunctionEvent({delay:500, dropDownList:dropDownList});
+	var dataProvider = dataGrid.getDataProvider();
+	Assert.assertEquals(dataProvider.source.length, 5);
+
+	//Pass local dataGrid object to the next test function 
+	//Increase a delay before calling a new function
+	return new FunctionEvent({delay:500, dataProvider:dataProvider});
 };
-/*
-Sample1TestCase.prototype.test_4 = function(event) {
-	event.dropDownList.selectedItem("Work");
 
-	var addButton = Button.Get(view.find("Add"));
-	addButton.click();
-};*/
+Sample1TestCase.prototype.test_4 = function(event) {
+	var dataProvider = ListCollectionView.Get(event.dataProvider);
+	var item = dataProvider.getItemAt(0); //Fixed to keep Function Ref
+};

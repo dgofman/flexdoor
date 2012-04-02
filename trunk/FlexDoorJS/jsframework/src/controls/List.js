@@ -34,6 +34,13 @@ function List(classType, extendType)
 	this.setSelectedItem = function(value){
 		this.setter("selectedItem", value);
 	};
+
+	this.getDataProvider = function(){
+		return this.getter("dataProvider");
+	};
+	this.setDataProvider = function(value){
+		this.setter("dataProvider", value);
+	};
 }
 
 List.prototype.Extends = function(){
