@@ -29,4 +29,8 @@ function TextInput(classType, extendType)
 TextInput.prototype.Extends = function(){
 	TextInput.prototype = new UIComponent(TextInput);
 };
-TextInput.Get = function(o){ return UIComponent.Get(o); };
+TextInput.Get = function(o){
+	var ref = this;
+	ref = UIComponent.Get(o, TextInput);
+	return ref;
+};

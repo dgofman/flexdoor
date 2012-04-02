@@ -22,17 +22,11 @@ function UIComponent(classType, extendType)
 	if(classType == undefined)
 		throw new Error("Class Type is undefined");
 
+	classType.FLEX_TYPE = extendType;
+	classType.prototype.constructor = classType;
 	classType.prototype.toString  = function(){
 		return extendType;
 	};
-	classType.Get = function(o){ 
-		if(o instanceof classType){
-			return o; 
-		}else{
-			throw new Error("TypeError: Error #101: Type Coercion failed: cannot convert " + o.toString() + " to " + extendType);
-		}
-	};
-	classType.prototype.constructor = classType;
 }
 
 UIComponent.prototype = new EventDispatcher();
@@ -43,8 +37,13 @@ UIComponent.prototype.Initialize = function(object, parent){
 	this.extendTypes = object.extendTypes;
 	this.parent = parent;
 };
-UIComponent.Get = function(o){ return o; };
-
+UIComponent.Get = function(o, classType){
+	if(o instanceof classType){
+		return o; 
+	}else{
+		throw new Error("TypeError: Error #101: Type Coercion failed: cannot convert " + o.toString() + " to " + classType.FLEX_TYPE);
+	}
+};
 
 //Class Functions
 UIComponent.prototype.find = function(id, index, visibleOnly) {

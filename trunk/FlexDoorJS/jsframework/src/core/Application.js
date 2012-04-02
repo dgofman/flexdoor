@@ -31,4 +31,8 @@ Application.prototype.Extends = function(){
 	Container.prototype.Extends();
 	Application.prototype = new Container(Application);
 };
-Application.Get = function(o){ return UIComponent.Get(o); };
+Application.Get = function(o){
+	var ref = this;
+	ref = UIComponent.Get(o, Application);
+	return ref;
+};

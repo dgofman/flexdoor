@@ -1,63 +1,81 @@
 function Sample1TestCase(){
 	this.init("SampleApp", "FlexDoor Sample 1");
-	this.include("controls::Button",
-				 "controls::TextInput",
-				 "controls::ComboBox",
-				 "containers::Panel",
+	this.include("containers::Panel",
 				 "controls::DataGrid");
 }
 Sample1TestCase.prototype = new FlexDoor(Sample1TestCase/*, true*/);
 
-Sample1TestCase.prototype.setUp = function(){
-	var view = null;
-	/*view = Panel.Get(this.app.getChildByType("mx.containers::TitleWindow"));
-	Assert.assertEquals(view.type(), "mx.containers::Panel", "Test");
-
-	view = Panel.Get(this.app.getChildByType("MonkeyView"));
-	Assert.assertEquals(view.type(), "mx.containers::Panel");
-
-	view = Panel.Get(this.app.getChildByName("monkeyViewName"));
-	Assert.assertEquals(view.type(), "mx.containers::Panel");
-*/
-
-	view = Panel.Get(this.app.find("sampleView"));
-	Assert.assertType(view, "mx.containers::Panel");
-
-	view.setTitle("Test 1");
-
-	var dataGrid = DataGrid.Get(view.find("dataGrid"));
-	Assert.assertType(dataGrid, "mx.controls::DataGrid");
-	dataGrid.setSelectedIndex(2);
+Sample1TestCase.prototype.setUpBeforeClass = function(){
+	this.view = Panel.Get(this.app.find("sampleView"));
 };
 
-Sample1TestCase.prototype.tearDown = function(){
+Sample1TestCase.prototype.tearDownAfterClass = function(){
 	this.view = null;
 };
 
+/**
+ * Any setup before executing "every" test in this
+ * class should be done in this method.
+ */
+Sample1TestCase.prototype.setUp = function(){
+	this.dataGrid = this.view.find("dataGrid");
+};
+
+/**
+ * Any cleanup after executing "every" test in this
+ * class should be done in this method.
+ */
+Sample1TestCase.prototype.tearDown = function(){
+	this.dataGrid = null;
+};
+
 Sample1TestCase.prototype.test_1 = function(event) {
-	var view = this.setUp(); //Remove
-	/*
-	dataGrid = UIComponent.Get(this.app.find("dataGrid"));
-	dataGrid.setter("selectedIndex", 1);
+	var view = null;
+	var extectedType = "mx.containers::Panel";
 
-	var inNameTextField = TextInput.Get(this.view.find("inName"));
-	inNameTextField.setText("Mike Wells");
+	//Get instance by extend class type
+	view = Panel.Get(this.app.getChildByType("mx.containers::TitleWindow"));
 
-	var inPhoneTextField = TextInput.Get(this.view.find("inPhone"));
-	inPhoneTextField.setText("2058213928");*/
+	Assert.assertTrue(view instanceof Container);
+	Assert.assertTrue(view instanceof Panel);
+	Assert.assertType(view, extectedType);
+
+	//Get instance by class name type
+	view = Panel.Get(this.app.getChildByType("SampleView"));
+	Assert.assertType(view, extectedType);
+
+	//Get first view by name
+	view = Panel.Get(this.app.getChildByName("sampleView0"));
+	Assert.assertType(view, extectedType);
+
+	//Get second view by name
+	view = Panel.Get(this.app.getChildByName("sampleView1"));
+	Assert.assertType(view, extectedType);
+
+	//Get first view by id (default index is ZERO)
+	view = Panel.Get(this.app.find("sampleView"));
+	Assert.assertType(view, extectedType);
+
+	//Get second view by id
+	view = Panel.Get(this.app.find("sampleView", 1));
+	Assert.assertType(view, extectedType);
 };
 
 Sample1TestCase.prototype.test_2 = function(event) {
-	/*var view = this.setUp(); //Remove
-	var dropDownList = ComboBox.Get(this.view.find("inType"));
-	dropDownList.open();
+	var dataGrid = DataGrid.Get(this.dataGrid);
+	dataGrid.setSelectedIndex(0);
+};
+
+Sample1TestCase.prototype.test_3 = function(event) {
+	var dataGrid = DataGrid.Get(this.dataGrid);
+	dataGrid.setSelectedIndex(1);
 
 	//Pass local dropDownList object to the next test function 
 	//Set delay before selecting an item
-	return new FunctionEvent({delay:500, dropDownList:dropDownList});*/
+	//return new FunctionEvent({delay:500, dropDownList:dropDownList});
 };
 /*
-Sample1TestCase.prototype.test_3 = function(event) {
+Sample1TestCase.prototype.test_4 = function(event) {
 	event.dropDownList.selectedItem("Work");
 
 	var addButton = Button.Get(view.find("Add"));

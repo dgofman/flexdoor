@@ -39,4 +39,8 @@ function List(classType, extendType)
 List.prototype.Extends = function(){
 	List.prototype = new UIComponent(List);
 };
-List.Get = function(o){ return UIComponent.Get(o); };
+List.Get = function(o){
+	var ref = this;
+	ref = UIComponent.Get(o, List);
+	return ref;
+};

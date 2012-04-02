@@ -59,6 +59,7 @@ FlexDoor.prototype.include = function() {
 	var validateAllClasses = function(src){
 		for(var cls in FlexDoor.LOAD_FILES)
 			return; //wait when all classes loaded
+		var refIds = null;
 		var testCase = FlexDoor.TEST_CASES[Static.testCaseIndex];
 		if(instance instanceof testCase.prototype.constructor){
 			var tests = [];
@@ -82,6 +83,10 @@ FlexDoor.prototype.include = function() {
 						}, funcEvent.delay);
 					}
 				}else{
+					if(testCase.prototype.tearDownAfterClass != undefined){
+						instance["tearDownAfterClass"].call(instance, "tearDownAfterClass");
+						Static.releaseIds();
+					}
 					//Run Next TestCase
 					Static.startTestCase(Static.testCaseIndex + 1);
 				}
@@ -92,12 +97,16 @@ FlexDoor.prototype.include = function() {
 
 				//Execute Test
 				try{
+					if(testCase.prototype.setUp != undefined)
+						instance["setUp"].call(instance, "setUp");
 					var fe = instance[funcEvent.name].call(instance, funcEvent);
 					if(fe instanceof FunctionEvent){
 						funcEvent = fe;
 					}else{
 						funcEvent.reset();
 					}
+					if(testCase.prototype.tearDown != undefined)
+						instance["tearDown"].call(instance, "tearDown");
 					Assert.assertTrue(funcEvent instanceof FunctionEvent, "ok succeeds");
 				}catch(e){
 					Assert.fail(e.message);
@@ -107,9 +116,17 @@ FlexDoor.prototype.include = function() {
 					funcEvent.order = order + 1;
 
 				//Run Next Test
+				Static.releaseIds(refIds, true);
 				runTest();
 			};
-			runTest();
+
+			if(tests.length > 0){
+				if(testCase.prototype.setUpBeforeClass != undefined){
+					instance["setUpBeforeClass"].call(instance, "setUpBeforeClass");
+					refIds = Static.refIds();
+				}
+				runTest();
+			}
 		}
 	};
 

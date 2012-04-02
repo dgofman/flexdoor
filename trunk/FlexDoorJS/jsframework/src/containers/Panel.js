@@ -36,4 +36,8 @@ Panel.prototype.Extends = function(){
 	Container.prototype.Extends();
 	Panel.prototype = new Container(Panel);
 };
-Panel.Get = function(o){ return UIComponent.Get(o); };
+Panel.Get = function(o){
+	var ref = this;
+	ref = UIComponent.Get(o, Panel);
+	return ref;
+};

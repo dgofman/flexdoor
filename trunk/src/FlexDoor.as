@@ -18,38 +18,38 @@ package
 	import flash.system.Security;
 	import flash.system.SecurityDomain;
 	import flash.utils.Timer;
-	
+
 	import mx.core.mx_internal;
-	
+
 	use namespace mx_internal;
-	
+
 	import mx.events.FlexEvent;
 	import flash.utils.setTimeout;
 	import flash.xml.XMLDocument;
 	import flash.utils.getDefinitionByName;
 	import flash.utils.describeType;
-	
+
 	import flash.xml.XMLNode;
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.Dictionary;
 	import flash.display.DisplayObjectContainer;
 	import mx.core.UIComponent;
 	import flash.display.DisplayObject;
-	
+
 	[Mixin]
 	[SWF(backgroundColor="#FFFFFF")]
 	public class FlexDoor extends Sprite
 	{
 		private var _application:*;
 		private var _loader:Loader;
-		
+
 		private var _refMap:Dictionary;
 		private var _src:String;
 		private var _timer:Timer;
-		
+
 		public static const VERSION:String     = "3.0";
 		public static const INITIALIZED:String = "initialized";
-		
+
 		public function FlexDoor(application:*){
 			Security.allowDomain("*");
 			Security.allowInsecureDomain("*");
@@ -61,16 +61,16 @@ package
 				runtimeFlexDoorLoader();
 			}
 		}
-		
+
 		public static function init(systemManager:Object):void {
 			systemManager.addEventListener(FlexEvent.APPLICATION_COMPLETE, onApplicationComplete);
 		}
-		
+
 		private static function onApplicationComplete(event:FlexEvent):void{
 			event.currentTarget.removeEventListener(FlexEvent.APPLICATION_COMPLETE, onApplicationComplete);
 			new FlexDoor(event.currentTarget.application);
 		}
-		
+
 		private function runtimeFlexDoorLoader():void {
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
@@ -87,9 +87,11 @@ package
 				loadContent(new LoaderContext(false, new ApplicationDomain()));
 			}
 		}
-		
+
 		public function ready():void{
 			if(ExternalInterface.available){
+				ExternalInterface.addCallback("refIds", js_refIds);
+				ExternalInterface.addCallback("releaseIds", js_releaseIds);
 				ExternalInterface.addCallback("application", js_application);
 				ExternalInterface.addCallback("find", js_find);
 				ExternalInterface.addCallback("getChildByName", js_childByName);
@@ -112,21 +114,23 @@ package
 			}
 			dispatchEvent(new DataEvent(INITIALIZED, false, false, _application.name));
 		}
-		
+
 		private function dispatchJsEvent(eventType:String):void{
 			var doLater:Function = function():void{
 				ExternalInterface.call("parent.FlexDoor.dispatchEvent", eventType);
 			};
 			setTimeout(doLater, 500);
 		}
-		
+
 		protected function onResize(event:Event=null):void {
 			if(_application){
 				_application.width = stage.stageWidth;
 				_application.height = stage.stageHeight;
 			}
+			if(event != null)
+				dispatchJsEvent(event.type);
 		}
-		
+
 		protected function loadContent(context:LoaderContext):void{
 			try{
 				_src = loaderInfo.parameters["__src__"];
@@ -149,12 +153,12 @@ package
 				securityErrorHandler(e);
 			}
 		}
-		
+
 		protected function securityErrorHandler(event:Object):void{
 			_loader.contentLoaderInfo.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
 			loadContent(new LoaderContext(false, new ApplicationDomain()));
 		}
-		
+
 		protected function onCompleteHandler(event:Event):void {
 			event.target.removeEventListener(Event.COMPLETE, onCompleteHandler);
 			addChild(_loader);
@@ -162,7 +166,7 @@ package
 			_timer.addEventListener(TimerEvent.TIMER, handleTimer)
 			_timer.start();
 		}
-		
+
 		protected function handleTimer(event:TimerEvent):void {
 			var content:MovieClip = _loader.content as MovieClip;
 			if(content && content.currentFrame == 2 && content.numChildren > 0) {
@@ -174,11 +178,38 @@ package
 				ready();
 			}
 		}
-		
+
+		protected function js_refIds():Array{
+			var ids:Array = [];
+			for(var id:* in _refMap)
+				ids.push(id);
+			return ids;
+		}
+
+		protected function js_releaseIds(ids:Array=null, except:Boolean = false):void{
+			var id:*;
+			var newMap:Dictionary = new Dictionary();
+			if(ids == null || ids.length == 0){
+				_refMap = newMap;
+			}else{
+				if(except == false){
+					for(id in ids)
+						delete _refMap[id];
+				}else{
+					for(id in _refMap){
+						if(ids.indexOf(id) != -1){
+							newMap[id] = _refMap[id];
+						}
+					}
+					_refMap = newMap;
+				}
+			}
+		}
+
 		protected function js_application():Object{
 			return serialize(_application);
 		}
-		
+
 		protected function js_find(refId:uint, id:String, index:uint, visibleOnly:Boolean):*{
 			try{
 				var o:* = _refMap[refId][id];
@@ -198,12 +229,12 @@ package
 				return serialize(e);
 			}
 		}
-		
+
 		protected function js_childByName(refId:uint, name:String):Object{
 			var parent:DisplayObjectContainer = _refMap[refId];
 			return serialize(parent.getChildByName(name));
 		}
-		
+
 		protected function js_childByType(refId:uint, classType:String, index:uint, visibleOnly:Boolean):Object{
 			var parent:DisplayObjectContainer = _refMap[refId];
 			var visibleCount:uint = 0;
@@ -221,20 +252,20 @@ package
 			}
 			return null;
 		}
-		
+
 		protected function js_setter(refId:uint, command:String, value:*):void{
 			var parent:Object = _refMap[refId];
 			if(parent.hasOwnProperty(command))
 				parent[command] = value;
 		}
-		
+
 		protected function js_getter(refId:uint, command:String):*{
 			var parent:Object = _refMap[refId];
 			if(parent.hasOwnProperty(command))
 				return parent[command];
 			return null;
 		}
-		
+
 		protected function serialize(ref:Object):Object{
 			if(ref == null) return null;
 			var out:Object = {};
@@ -251,7 +282,7 @@ package
 			for(var i:uint = 0; i < type.extendsClass.length(); i++)
 				extendTypes.push(type.extendsClass[i].@type.toString());
 			out.extendTypes = extendTypes;
-			
+
 			var id:*;
 			//validate if object already exists
 			for(id  in _refMap){
@@ -260,7 +291,7 @@ package
 					return out;
 				}
 			}
-			
+
 			//get next available id
 			for(id = 0; id < uint.MAX_VALUE; id++){
 				if(_refMap[id] == null)

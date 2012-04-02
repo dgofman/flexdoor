@@ -52,4 +52,8 @@ ComboBox.prototype.Initialize = function(object, parent){
 	UIComponent.prototype.Initialize.call(this, object, parent);
 	UIComponent.prototype.Initialize.call(this.dropdown, object, this);
 };
-ComboBox.Get = function(o){ return UIComponent.Get(o); };
+ComboBox.Get = function(o){
+	var ref = this;
+	ref = UIComponent.Get(o, ComboBox);
+	return ref;
+};

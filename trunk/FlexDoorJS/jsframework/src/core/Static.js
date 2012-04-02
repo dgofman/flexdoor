@@ -63,6 +63,17 @@ Static.getter = function(comp, command){
 	return flash.getter(comp.refId, command);
 };
 
+Static.refIds = function(){
+	var flash = Application.application.flash;
+	return flash.refIds();
+};
+
+Static.releaseIds = function(ids, except){
+	if(except == undefined) except = false;
+	var flash = Application.application.flash;
+	return flash.releaseIds(ids, except);
+};
+
 Static.objectToClass = function(object, parent){
 	for(var i = 0; object.extendTypes.length; i++){
 		var extendType = object.extendTypes[i];
@@ -70,7 +81,7 @@ Static.objectToClass = function(object, parent){
 		var className = params[0];
 		if(params.length == 2)
 			className = params[1];
-		if(className == "ReferenceError"){
+		if(className == "ReferenceError" || className == "Error"){
 			Static.warn(object.stackTrace);
 			throw new ReferenceError(object.message);
 		}

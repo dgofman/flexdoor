@@ -29,4 +29,8 @@ function Button(classType, extendType)
 Button.prototype.Extends = function(){
 	Button.prototype = new UIComponent(Button);
 };
-Button.Get = function(o){ return UIComponent.Get(o); };
+Button.Get = function(o){
+	var ref = this;
+	ref = UIComponent.Get(o, Button);
+	return ref;
+};

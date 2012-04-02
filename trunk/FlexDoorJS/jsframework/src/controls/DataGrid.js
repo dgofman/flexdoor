@@ -29,4 +29,8 @@ DataGrid.prototype.Extends = function(){
 	List.prototype.Extends();
 	DataGrid.prototype = new List(DataGrid);
 };
-DataGrid.Get = function(o){ return UIComponent.Get(o); };
+DataGrid.Get = function(o){
+	var ref = this;
+	ref = UIComponent.Get(o, DataGrid);
+	return ref;
+};

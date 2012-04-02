@@ -29,4 +29,8 @@ function Container(classType, extendType)
 Container.prototype.Extends = function(){
 	Container.prototype = new UIComponent(Container);
 };
-Container.Get = function(o){ return UIComponent.Get(o); };
+Container.Get = function(o){
+	var ref = this;
+	ref = UIComponent.Get(o, Container);
+	return ref;
+};
