@@ -81,7 +81,7 @@ Sample1TestCase.prototype.test_3 = function(event) {
 
 Sample1TestCase.prototype.test_4 = function(event) {
 	var dataProvider = ListCollectionView.Get(event.getItem('dataProvider'));
-	var item = dataProvider.getItemAt(0); //Fixed to keep Function Ref
+	var item = dataProvider.getItemAt(0);
 	Assert.assertEquals(item, 1);
 
 	dataProvider.addItemAt("NEW ROW", 2);
