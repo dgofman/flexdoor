@@ -63,6 +63,11 @@ Static.getter = function(comp, command){
 	return Static.objectToClass(flash.getter(comp.refId, command));
 };
 
+Static.execute = function(comp, command, values){
+	var flash = Application.application.flash;
+	return Static.objectToClass(flash.execute(comp.refId, command, values));
+};
+
 Static.refIds = function(){
 	var flash = Application.application.flash;
 	return flash.refIds();

@@ -17,18 +17,26 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function FunctionEvent(prop) 
+function FunctionEvent(refObjects, delay, order) 
 {
-	this.reset();
-	for(var name in prop)
-		this[name] = prop[name];
+	this.refObjects = refObjects;
+	this.order = order;
+	if(delay == undefined){
+		this.resetDelay();
+	}else{
+		this.delay = delay;
+	}
 }
-FunctionEvent.TEST_DELAY = 500;
+FunctionEvent.TEST_DELAY = 100;
 
 FunctionEvent.prototype.toString = function() {
-	return "org.flexdoor.events::FunctionEvent";
+	return "events::FunctionEvent";
 };
 
-FunctionEvent.prototype.reset = function(){
+FunctionEvent.prototype.getItem = function(name){
+	return this.refObjects ? this.refObjects[name] : null;
+};
+
+FunctionEvent.prototype.resetDelay = function(){
 	this.delay = FunctionEvent.TEST_DELAY;
 };

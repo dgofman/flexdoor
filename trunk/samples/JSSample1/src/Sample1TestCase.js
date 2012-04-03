@@ -76,10 +76,15 @@ Sample1TestCase.prototype.test_3 = function(event) {
 
 	//Pass local dataGrid object to the next test function 
 	//Increase a delay before calling a new function
-	return new FunctionEvent({delay:500, dataProvider:dataProvider});
+	return new FunctionEvent({dataProvider:dataProvider}, 500);
 };
 
 Sample1TestCase.prototype.test_4 = function(event) {
-	var dataProvider = ListCollectionView.Get(event.dataProvider);
+	var dataProvider = ListCollectionView.Get(event.getItem('dataProvider'));
 	var item = dataProvider.getItemAt(0); //Fixed to keep Function Ref
+	Assert.assertEquals(item, 1);
+
+	dataProvider.addItemAt("NEW ROW", 2);
+	var rowIndex = dataProvider.getItemIndex("NEW ROW");
+	Assert.assertEquals(rowIndex, 2);
 };

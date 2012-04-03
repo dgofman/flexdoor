@@ -68,7 +68,7 @@ FlexDoor.prototype.include = function() {
 			}
 
 			//Initialize for first function the event argument
-			var funcEvent = new FunctionEvent({order:0, delay:0});
+			var funcEvent = new FunctionEvent(null, 0, 0);
 
 			var runTest = function(){
 				if(funcEvent.order < tests.length){
@@ -92,7 +92,10 @@ FlexDoor.prototype.include = function() {
 			};
 
 			var testListener = function(){
+				funcEvent.resetDelay();
+
 				var order = funcEvent.order;
+				var releaseRefId = [].concat(refIds); //clone exisitng ids
 
 				//Execute Test
 				try{
@@ -100,9 +103,12 @@ FlexDoor.prototype.include = function() {
 						instance["setUp"].call(instance, "setUp");
 					var fe = instance[funcEvent.name].call(instance, funcEvent);
 					if(fe instanceof FunctionEvent){
+						for(var name in fe.refObjects){
+							var object = fe.refObjects[name];
+							if(object instanceof EventDispatcher)
+								releaseRefId.push(object.refId);
+						}
 						funcEvent = fe;
-					}else{
-						funcEvent.reset();
 					}
 					if(testCase.prototype.tearDown != undefined)
 						instance["tearDown"].call(instance, "tearDown");
@@ -115,7 +121,7 @@ FlexDoor.prototype.include = function() {
 					funcEvent.order = order + 1;
 
 				//Run Next Test
-				Static.releaseIds(refIds, true);
+				Static.releaseIds(releaseRefId, true);
 				runTest();
 			};
 
@@ -138,7 +144,6 @@ FlexDoor.prototype.include = function() {
 			if(classType && classType.prototype.Import != undefined){
 				var importFiles = classType.prototype.Import();
 				Static.log("Class: " + cls + ". Total dependencies: " + importFiles.length);
-
 				instance.include.apply(instance, importFiles);
 			}else{
 				index++;

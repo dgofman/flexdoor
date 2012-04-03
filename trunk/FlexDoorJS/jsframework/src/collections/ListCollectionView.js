@@ -36,6 +36,30 @@ ListCollectionView.Get = function(o){
 	return ref;
 };
 
+ListCollectionView.prototype.contains = function(item){
+	return this.execute("contains", item);
+};
+
+ListCollectionView.prototype.refresh = function(){
+	return this.execute("refresh");
+};
+
 ListCollectionView.prototype.getItemAt = function(value){
-	return this.getter("getItemAt", value);
+	return this.execute("getItemAt", value);
+};
+
+ListCollectionView.prototype.setItemAt = function(item, index){
+	return this.execute("setItemAt", item, index);
+};
+
+ListCollectionView.prototype.addItem = function(item){
+	this.execute("addItem", item);
+};
+
+ListCollectionView.prototype.addItemAt = function(item, index){
+	this.execute("addItemAt", item, index);
+};
+
+ListCollectionView.prototype.getItemIndex = function(item){
+	return this.execute("getItemIndex", item);
 };

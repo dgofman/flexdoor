@@ -42,6 +42,13 @@ EventDispatcher.prototype.getter = function(command){
 	return Static.getter(this, command);
 };
 
+EventDispatcher.prototype.execute = function(command){
+	var params = [];
+	for(var i = 1; i < arguments.length; i++)
+		params.push(arguments[i]);
+	return Static.execute(this, command, params);
+};
+
 EventDispatcher.prototype.addEventListener = function(event, callback){
 	this.events[event] = this.events[event] || [];
 	if(this.events[event]) {

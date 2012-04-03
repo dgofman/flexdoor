@@ -98,11 +98,11 @@ package
 				ExternalInterface.addCallback("getChildByType", js_childByType);
 				ExternalInterface.addCallback("setter", js_setter);
 				ExternalInterface.addCallback("getter", js_getter);
-				
-				
+				ExternalInterface.addCallback("execute", js_execute);
+
 				
 				/*ExternalInterface.addCallback("js_app",     js_application);
-				ExternalInterface.addCallback("js_call",    js_call);	
+				ExternalInterface.addCallback("js_execute",    js_execute);	
 				ExternalInterface.addCallback("js_release", js_release);
 				ExternalInterface.addCallback("js_node",    js_node);
 				ExternalInterface.addCallback("js_root",    js_root);
@@ -255,14 +255,32 @@ package
 
 		protected function js_setter(refId:uint, command:String, value:*):void{
 			var parent:Object = _refMap[refId];
-			if(parent.hasOwnProperty(command))
+			if(validateCommand(parent, command))
 				parent[command] = value;
 		}
 
 		protected function js_getter(refId:uint, command:String):*{
 			var parent:Object = _refMap[refId];
-			if(parent.hasOwnProperty(command))
+			if(validateCommand(parent, command))
 				return serialize(parent[command]);
+			return null;
+		}
+
+		protected function js_execute(refId:uint, command:String, values:Array):Object{
+			var parent:Object = _refMap[refId];
+			if(validateCommand(parent, command)){
+				try{
+					var ret:*;
+					if(values != null && values.length > 0){
+						ret = parent[command].apply(parent, values);
+					}else{
+						ret = parent[command]();
+					}
+					return serialize(ret);
+				}catch(e:Error){
+					return serialize(e);
+				}
+			}
 			return null;
 		}
 
@@ -305,6 +323,17 @@ package
 			out.refId = id;
 			_refMap[id] = ref;
 			return out;
+		}
+
+		protected function validateCommand(object:*, command:String):Boolean{
+			if(object == null){
+				serialize(new Error("The reference id is invalid or object was destroyed."));
+			}else if(!object.hasOwnProperty(command)){
+				serialize(new Error("Property " + command + " not found and there is no default value."));
+			}else{
+				return true;
+			}
+			return false;
 		}
 	}
 }
