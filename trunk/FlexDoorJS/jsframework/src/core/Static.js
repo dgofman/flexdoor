@@ -68,6 +68,11 @@ Static.execute = function(comp, command, values){
 	return Static.objectToClass(flash.execute(comp.refId, command, values));
 };
 
+Static.create = function(className, args){
+	var flash = Application.application.flash;
+	return Static.objectToClass(flash.create(className, args));
+};
+
 Static.refIds = function(){
 	var flash = Application.application.flash;
 	return flash.refIds();

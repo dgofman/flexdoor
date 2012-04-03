@@ -99,6 +99,7 @@ package
 				ExternalInterface.addCallback("setter", js_setter);
 				ExternalInterface.addCallback("getter", js_getter);
 				ExternalInterface.addCallback("execute", js_execute);
+				ExternalInterface.addCallback("create",  js_create);
 
 				
 				/*ExternalInterface.addCallback("js_app",     js_application);
@@ -284,6 +285,27 @@ package
 			return null;
 		}
 
+		protected function js_create(className:String, args:Array):Object{
+			var classRef:Class;
+			var obj:*;
+			try{
+				classRef = getDefinitionByName(className) as Class;
+			}catch(e:Error){
+				try{
+					classRef = _application.loaderInfo.applicationDomain.getDefinition(className);
+				}catch(refError:ReferenceError){}
+				try{
+					var moduleManager:* = _application.loaderInfo.applicationDomain.getDefinition("mx.modules::ModuleManager");
+					obj = moduleManager.getAssociatedFactory(className); //FlexModuleFactory
+					if(obj != null) 
+						classRef = obj.getDefinitionByName(className);
+				}catch(refError:ReferenceError){}
+			}
+			if(classRef != null)
+				obj = create(classRef, args);
+			return serialize(obj);
+		}
+
 		protected function serialize(ref:Object):Object{
 			if(ref == null) return null;
 			var out:Object = {};
@@ -293,10 +315,14 @@ package
 			}else if(typeof(ref) != "object" || ref == Array){
 				return ref; //Number, uint, int, String, Boolean, Array
 			}else{
-				if(ref.hasOwnProperty('id'))
-					out.id = ref.id;
-				if(ref.hasOwnProperty('name'))
-					out.name = ref.name;
+				if(ref is Error){
+					out.type = ref.type;
+				}else{
+					if(ref.hasOwnProperty('id'))
+						out.id = ref.id;
+					if(ref.hasOwnProperty('name'))
+						out.name = ref.name;
+				}
 				var type:XML = describeType(ref);
 				var extendTypes:Array = [type.@name.toString()];
 				for(var i:uint = 0; i < type.extendsClass.length(); i++)
@@ -334,6 +360,34 @@ package
 				return true;
 			}
 			return false;
+		}
+
+		protected function create(classRef:Class, args:Array):*{
+			switch(args.length)
+			{
+				case 0:
+					return new classRef();
+				case 1:
+					return new classRef(args[0]);
+				case 2:
+					return new classRef(args[0], args[1]);
+				case 3:
+					return new classRef(args[0], args[1], args[2]);
+				case 4:
+					return new classRef(args[0], args[1], args[2], args[3]);
+				case 5:
+					return new classRef(args[0], args[1], args[2], args[3], args[4]);
+				case 6:
+					return new classRef(args[0], args[1], args[2], args[3], args[4], args[5]);
+				case 7:
+					return new classRef(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+				case 8:
+					return new classRef(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+				case 9:
+					return new classRef(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
+				case 10:
+					return new classRef(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9]);
+			}
 		}
 	}
 }

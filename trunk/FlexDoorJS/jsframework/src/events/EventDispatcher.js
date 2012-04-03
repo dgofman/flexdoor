@@ -31,7 +31,7 @@ EventDispatcher.prototype.Initialize = function(object, parent){
 	this.parent = parent;
 };
 EventDispatcher.prototype.toString = function() {
-	return "events::EventDispatcher";
+	return "flash.events::EventDispatcher";
 };
 
 EventDispatcher.prototype.setter = function(command, value){

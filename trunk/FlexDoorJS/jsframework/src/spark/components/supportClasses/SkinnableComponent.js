@@ -17,23 +17,20 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function Button(classType, extendType) 
+function SkinnableComponent(classType, extendType) 
 {
 	UIComponent.call(this, classType, extendType);
 
-	this.click = function(){
-		
+	this.numChildren = function() {
+		return this.getter("numChildren");
 	};
 }
 
-Button.prototype.Import = function(){
-	return ["events::MouseEvent"];
+SkinnableComponent.prototype.Extends = function(){
+	SkinnableComponent.prototype = new UIComponent(SkinnableComponent);
 };
-Button.prototype.Extends = function(){
-	Button.prototype = new UIComponent(Button);
-};
-Button.Get = function(o){
+SkinnableComponent.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, Button);
+	ref = UIComponent.Get(o, SkinnableComponent);
 	return ref;
 };

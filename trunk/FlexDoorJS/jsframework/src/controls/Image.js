@@ -17,23 +17,16 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function Button(classType, extendType) 
+function Image(classType, extendType) 
 {
 	UIComponent.call(this, classType, extendType);
-
-	this.click = function(){
-		
-	};
 }
 
-Button.prototype.Import = function(){
-	return ["events::MouseEvent"];
+Image.prototype.Extends = function(){
+	Image.prototype = new UIComponent(Image);
 };
-Button.prototype.Extends = function(){
-	Button.prototype = new UIComponent(Button);
-};
-Button.Get = function(o){
+Image.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, Button);
+	ref = UIComponent.Get(o, Image);
 	return ref;
 };

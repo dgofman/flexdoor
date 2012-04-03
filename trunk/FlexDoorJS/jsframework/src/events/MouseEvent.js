@@ -17,23 +17,22 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function Button(classType, extendType) 
+function MouseEvent(classType, extendType) 
 {
 	UIComponent.call(this, classType, extendType);
-
-	this.click = function(){
-		
-	};
 }
 
-Button.prototype.Import = function(){
-	return ["events::MouseEvent"];
+MouseEvent.prototype.toString = function(){
+	return "flash.events::MouseEvent";
 };
-Button.prototype.Extends = function(){
-	Button.prototype = new UIComponent(Button);
+MouseEvent.prototype.Import = function(){
+	return ["events::Event"];
 };
-Button.Get = function(o){
+MouseEvent.prototype.Extends = function(){
+	MouseEvent.prototype = new Event(MouseEvent);
+};
+MouseEvent.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, Button);
+	ref = UIComponent.Get(o, MouseEvent);
 	return ref;
 };
