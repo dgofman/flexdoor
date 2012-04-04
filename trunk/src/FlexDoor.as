@@ -35,6 +35,7 @@ package
 	import flash.display.DisplayObjectContainer;
 	import mx.core.UIComponent;
 	import flash.display.DisplayObject;
+	import flash.events.EventDispatcher;
 
 	[Mixin]
 	[SWF(backgroundColor="#FFFFFF")]
@@ -100,6 +101,8 @@ package
 				ExternalInterface.addCallback("getter", js_getter);
 				ExternalInterface.addCallback("execute", js_execute);
 				ExternalInterface.addCallback("create",  js_create);
+				ExternalInterface.addCallback("dispatch",  js_dispatch);
+				
 
 				
 				/*ExternalInterface.addCallback("js_app",     js_application);
@@ -304,6 +307,14 @@ package
 			if(classRef != null)
 				obj = create(classRef, args);
 			return serialize(obj);
+		}
+
+		protected function js_dispatch(refId:uint, eventRefId:uint):Boolean{
+			var parent:Object = _refMap[refId];
+			var event:Event = _refMap[eventRefId];
+			if(parent is EventDispatcher && event != null)
+				return EventDispatcher(parent).dispatchEvent(event);
+			return false;
 		}
 
 		protected function serialize(ref:Object):Object{

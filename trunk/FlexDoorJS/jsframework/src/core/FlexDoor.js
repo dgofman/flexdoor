@@ -52,14 +52,10 @@ FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
 
 FlexDoor.prototype.include = function() {
 	var instance = this;
-	var files = arguments; //Function arguments: list of include classes
-	var index = 0;
+	var refIds = null;
+	var testCase = FlexDoor.TEST_CASES[Static.testCaseIndex];
 
-	var validateAllClasses = function(src){
-		for(var cls in FlexDoor.LOAD_FILES)
-			return; //wait when all classes loaded
-		var refIds = null;
-		var testCase = FlexDoor.TEST_CASES[Static.testCaseIndex];
+	var runTestCase = function(){
 		if(instance instanceof testCase.prototype.constructor){
 			var tests = [];
 			for(var name in testCase.prototype){
@@ -73,7 +69,7 @@ FlexDoor.prototype.include = function() {
 			var runTest = function(){
 				if(funcEvent.order < tests.length){
 					funcEvent.name = tests[funcEvent.order]; //Set test-function name
-
+	
 					if(FlexDoor.autoStart == true){
 						setTimeout(testListener, funcEvent.delay);
 					}else{
@@ -132,7 +128,19 @@ FlexDoor.prototype.include = function() {
 				}
 				runTest();
 			}
-		}
+		};
+	};
+
+	FlexDoor.includeAll(instance, arguments, runTestCase);
+};
+
+FlexDoor.includeAll = function(instance, files, callback) {
+	var index = 0;
+
+	var validateAllClasses = function(){
+		for(var cls in FlexDoor.LOAD_FILES)
+			return; //wait when all classes loaded
+		callback.apply(instance);
 	};
 
 	for(var i = 0; i < files.length; i++){
@@ -143,8 +151,9 @@ FlexDoor.prototype.include = function() {
 			var classType = window[cls];
 			if(classType && classType.prototype.Import != undefined){
 				var importFiles = classType.prototype.Import();
-				Static.log("Class: " + cls + ". Total dependencies: " + importFiles.length);
-				instance.include.apply(instance, importFiles);
+				if(window["Static"])
+					Static.log("Class: " + cls + ". Total dependencies: " + importFiles.length);
+				FlexDoor.includeAll(instance, importFiles, validateAllClasses);
 			}else{
 				index++;
 			}
@@ -244,7 +253,8 @@ FlexDoor.include = function(cls, src, callback, css) {
 				var cls = arguments.callee.prototype.cls;
 				var callbacks = FlexDoor.LOAD_FILES[cls];
 				delete FlexDoor.LOAD_FILES[cls];
-				Static.log("Loaded class: " + cls + ". Total callback functions: " + callbacks.length);
+				if(window["Static"])
+					Static.log("Loaded class: " + cls + ". Total callback functions: " + callbacks.length);
 	
 				for(var i = 0; i < callbacks.length; i++)
 					callbacks[i]();
@@ -292,24 +302,20 @@ FlexDoor.run = function(){
 //Loading depended libraries
 
 $(document).ready(function(){
-	var initClassLibs = [
+	FlexDoor.includeAll(this, [
 		"core::Static",
 		"core::Assert",
 		"events::FunctionEvent",
-		"events::EventDispatcher",
-		"core::UIComponent",
-		"core::Container",
-		"core::Application"
-	];
-	
-	var libIndex = 0;
-	var onLoadLibs = function(){
-		if(++libIndex == initClassLibs.length){
-			FlexDoor.run();
+		"events::EventDispatcher"], 
+		function(){
+			FlexDoor.includeAll(this, [
+				"core::UIComponent",
+				"core::Container",
+				"core::Application"],
+				function(){
+					FlexDoor.run();
+				}
+			);
 		}
-	};
-	for(var i = 0; i < initClassLibs.length; i++){
-		var params = initClassLibs[i].split("::");
-		FlexDoor.include(params[1], params[0] + "." + params[1], onLoadLibs);
-	}
+	);
 });

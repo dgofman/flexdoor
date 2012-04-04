@@ -54,3 +54,29 @@ UIComponent.prototype.getChildByType = function(classType, index, visibleOnly) {
 	if(visibleOnly == undefined) visibleOnly = true;
 	return Static.getChildByType(this, classType, index, visibleOnly);
 };
+
+UIComponent.prototype.setter = function(command, value){
+	Static.setter(this, command, value);
+};
+
+UIComponent.prototype.getter = function(command){
+	return Static.getter(this, command);
+};
+
+UIComponent.prototype.execute = function(command){
+	var params = [];
+	for(var i = 1; i < arguments.length; i++)
+		params.push(arguments[i]);
+	return Static.execute(this, command, params);
+};
+
+UIComponent.prototype.create = function(className){
+	var params = [];
+	for(var i = 1; i < arguments.length; i++)
+		params.push(arguments[i]);
+	return Static.create(className, params);
+};
+
+UIComponent.prototype.dispatch = function(event){
+	return Static.dispatch(this, event);
+};

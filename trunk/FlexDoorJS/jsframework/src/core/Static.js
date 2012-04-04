@@ -73,6 +73,11 @@ Static.create = function(className, args){
 	return Static.objectToClass(flash.create(className, args));
 };
 
+Static.dispatch = function(comp, event){
+	var flash = Application.application.flash;
+	return flash.dispatch(comp.refId, event.refId);
+};
+
 Static.refIds = function(){
 	var flash = Application.application.flash;
 	return flash.refIds();
@@ -103,7 +108,8 @@ Static.objectToClass = function(object, parent){
 					classType.prototype.Extends();
 				}
 				var component = new classType(classType, extendType);
-				if(component instanceof EventDispatcher)
+				if(component instanceof EventDispatcher ||
+					component.Initialize instanceof Function)
 					component.Initialize(object, parent);
 				return component;
 			}
@@ -153,9 +159,9 @@ Static.doTestLoader = function(){
 							"<h1 id='qunit-header'>Test Runner</h1>" + 
 							"<h2 id='qunit-banner'></h2>" +
 							"<div id='qunit-testrunner-toolbar'></div>" + 
+							"<div align='center' style='background-color:#eee'><input id='runTest' type='button' value='Run Tests'/></div>" + 
 							"<h2 id='qunit-userAgent'></h2>" +
-							"<ol id='qunit-tests'></ol>" +
-							"<input type='submit' name='runTest' id='runTest' value='Run Tests'/></div>"));
+							"<ol id='qunit-tests'></ol></div>"));
 
 	$("#draggable").draggable();
 	$("#draggable").show();
@@ -168,3 +174,7 @@ Static.doTestLoader = function(){
 		QUnit.load();
 	}
 };
+
+//Release references to JavaScript classes
+window["MouseEvent"] = null;
+window["Event"] = null;

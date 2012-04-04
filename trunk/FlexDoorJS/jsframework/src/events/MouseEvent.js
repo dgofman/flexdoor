@@ -22,9 +22,6 @@ function MouseEvent(classType, extendType)
 	UIComponent.call(this, classType, extendType);
 }
 
-MouseEvent.prototype.toString = function(){
-	return "flash.events::MouseEvent";
-};
 MouseEvent.prototype.Import = function(){
 	return ["events::Event"];
 };
@@ -36,3 +33,14 @@ MouseEvent.Get = function(o){
 	ref = UIComponent.Get(o, MouseEvent);
 	return ref;
 };
+
+MouseEvent.TYPE = "flash.events::MouseEvent";
+MouseEvent.CLICK = "click";
+MouseEvent.DOUBLE_CLICK = "doubleClick";
+MouseEvent.MOUSE_DOWN = "mouseDown";
+MouseEvent.MOUSE_MOVE = "mouseMove";
+MouseEvent.MOUSE_OUT = "mouseOut";
+MouseEvent.MOUSE_OVER = "mouseOver";
+MouseEvent.MOUSE_UP = "mouseUp";
+MouseEvent.ROLL_OUT = "rollOut";
+MouseEvent.ROLL_OVER = "rollOver";

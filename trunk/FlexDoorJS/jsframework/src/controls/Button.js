@@ -21,8 +21,10 @@ function Button(classType, extendType)
 {
 	UIComponent.call(this, classType, extendType);
 
-	this.click = function(){
-		
+	this.click = function(type){
+		if(type == undefined) type = MouseEvent.CLICK;
+		var event = MouseEvent.Get(this.create(MouseEvent.TYPE, type));
+		this.dispatch(event);
 	};
 }
 

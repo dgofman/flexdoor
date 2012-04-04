@@ -24,7 +24,8 @@ function Event(classType, extendType)
 
 Event.prototype.Initialize = function(object){
 	this.refId = object.refId;
-	this.type = object.type;
+	this.type = object.ref.type;
+	this.ref = object.ref;
 	this.extendTypes = object.extendTypes;
 };
 Event.prototype.toString = function(){
