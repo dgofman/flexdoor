@@ -50,6 +50,7 @@ package
 
 		public static const VERSION:String     = "3.0";
 		public static const INITIALIZED:String = "initialized";
+		public static const ERROR:String       = "error";
 
 		public function FlexDoor(application:*){
 			Security.allowDomain("*");
@@ -94,6 +95,7 @@ package
 				ExternalInterface.addCallback("refIds", js_refIds);
 				ExternalInterface.addCallback("releaseIds", js_releaseIds);
 				ExternalInterface.addCallback("application", js_application);
+				ExternalInterface.addCallback("systemManager", js_systemManager);
 				ExternalInterface.addCallback("find", js_find);
 				ExternalInterface.addCallback("getChildByName", js_childByName);
 				ExternalInterface.addCallback("getChildByType", js_childByType);
@@ -102,18 +104,6 @@ package
 				ExternalInterface.addCallback("execute", js_execute);
 				ExternalInterface.addCallback("create",  js_create);
 				ExternalInterface.addCallback("dispatch",  js_dispatch);
-				
-
-				
-				/*ExternalInterface.addCallback("js_app",     js_application);
-				ExternalInterface.addCallback("js_execute",    js_execute);	
-				ExternalInterface.addCallback("js_release", js_release);
-				ExternalInterface.addCallback("js_node",    js_node);
-				ExternalInterface.addCallback("js_root",    js_root);
-				ExternalInterface.addCallback("js_event",   js_event);
-				ExternalInterface.addCallback("js_base64",  js_base64);
-				ExternalInterface.addCallback("js_memory",  js_memory);
-				ExternalInterface.addCallback("js_create",  js_create);*/
 				dispatchJsEvent(INITIALIZED);
 			}
 			dispatchEvent(new DataEvent(INITIALIZED, false, false, _application.name));
@@ -212,6 +202,10 @@ package
 
 		protected function js_application():Object{
 			return serialize(_application);
+		}
+
+		protected function js_systemManager():Object{
+			return serialize(_application.systemManager);
 		}
 
 		protected function js_find(refId:uint, id:String, index:uint, visibleOnly:Boolean):*{

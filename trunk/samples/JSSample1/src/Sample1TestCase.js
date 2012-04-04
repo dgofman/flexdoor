@@ -1,8 +1,8 @@
 function Sample1TestCase(){
 	this.init("SampleApp", "FlexDoor Sample 1");
-	this.include("containers::Panel",
-				 "controls::DataGrid",
-				 "collections::ListCollectionView");
+	this.include("mx.containers::Panel",
+				 "mx.controls::DataGrid",
+				 "mx.collections::ListCollectionView");
 }
 Sample1TestCase.prototype = new FlexDoor(Sample1TestCase/*, true*/);
 
@@ -38,7 +38,7 @@ Sample1TestCase.prototype.test_1 = function(event) {
 	view = Panel.Get(this.app.getChildByType("mx.containers::TitleWindow"));
 
 	Assert.assertTrue(view instanceof Container);
-	Assert.assertTrue(view instanceof Panel);
+	Assert.assertTrue(view instanceof mx_containers_Panel);
 	Assert.assertType(view, extectedType);
 
 	//Get instance by class name type
