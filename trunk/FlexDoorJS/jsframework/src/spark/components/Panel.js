@@ -17,22 +17,29 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_supportClasses_SkinnableComponent(classType, extendType) 
+function spark_components_Panel(classType, extendType) 
 {
 	UIComponent.call(this, classType, extendType);
 
-	this.numChildren = function() {
-		return this.getter("numChildren");
+	this.getTitle = function(){
+		return this.getter("title");
+	};
+	this.setTitle = function(value){
+		this.setter("title", value);
 	};
 }
 
-spark_components_supportClasses_SkinnableComponent.prototype = new UIComponent(spark_components_supportClasses_SkinnableComponent);
-spark_components_supportClasses_SkinnableComponent.Get = function(o){
+spark_components_Panel.prototype.Import = function(){
+	return ["spark.components.supportClasses::SkinnableComponent"];
+};
+spark_components_Panel.prototype.Extends = function(){
+	spark_components_Panel.prototype = new SkinnableComponent(spark_components_Panel);
+};
+spark_components_Panel.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, spark_components_supportClasses_SkinnableComponent);
+	ref = UIComponent.Get(o, spark_components_Panel);
 	return ref;
 };
 
-function SkinnableComponent() {}
-SkinnableComponent.Get = spark_components_supportClasses_SkinnableComponent.Get;
-SkinnableComponent.prototype = new UIComponent(SkinnableComponent);
+function Panel() {}
+Panel.Get = spark_components_Panel.Get;

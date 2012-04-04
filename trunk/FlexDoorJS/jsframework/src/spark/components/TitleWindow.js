@@ -17,22 +17,22 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_supportClasses_SkinnableComponent(classType, extendType) 
+function spark_components_TitleWindow(classType, extendType) 
 {
 	UIComponent.call(this, classType, extendType);
-
-	this.numChildren = function() {
-		return this.getter("numChildren");
-	};
 }
 
-spark_components_supportClasses_SkinnableComponent.prototype = new UIComponent(spark_components_supportClasses_SkinnableComponent);
-spark_components_supportClasses_SkinnableComponent.Get = function(o){
+spark_components_TitleWindow.prototype.Import = function(){
+	return ["spark.components::Panel"];
+};
+spark_components_TitleWindow.prototype.Extends = function(){
+	spark_components_TitleWindow.prototype = new Panel(spark_components_TitleWindow);
+};
+spark_components_TitleWindow.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, spark_components_supportClasses_SkinnableComponent);
+	ref = UIComponent.Get(o, spark_components_TitleWindow);
 	return ref;
 };
 
-function SkinnableComponent() {}
-SkinnableComponent.Get = spark_components_supportClasses_SkinnableComponent.Get;
-SkinnableComponent.prototype = new UIComponent(SkinnableComponent);
+function TitleWindow() {}
+TitleWindow.Get = spark_components_TitleWindow.Get;
