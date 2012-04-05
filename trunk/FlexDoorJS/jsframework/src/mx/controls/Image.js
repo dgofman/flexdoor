@@ -31,5 +31,5 @@ mx_controls_Image.Get = function(o){
 	return ref;
 };
 
-function Image() {}
-Image.Get = mx_controls_Image.Get;
+function $Image() {}
+$Image.Get = mx_controls_Image.Get;

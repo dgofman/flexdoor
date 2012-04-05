@@ -42,5 +42,5 @@ spark_components_Panel.Get = function(o){
 	return ref;
 };
 
-function Panel() {}
-Panel.Get = spark_components_Panel.Get;
+function $$Panel() {}
+$$Panel.Get = spark_components_Panel.Get;

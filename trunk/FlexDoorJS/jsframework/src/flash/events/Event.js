@@ -20,6 +20,10 @@
 function flash_events_Event(classType, extendType) 
 {
 	UIComponent.call(this, classType, extendType);
+	
+	this.destory = function(){
+		Static.releaseIds([this.refId]);
+	};
 }
 
 flash_events_Event.prototype.Initialize = function(object){
@@ -37,5 +41,5 @@ flash_events_Event.Get = function(o){
 	return ref;
 };
 
-function Event() {}
-Event.Get = flash_events_Event.Get;
+function $Event() {}
+$Event.Get = flash_events_Event.Get;

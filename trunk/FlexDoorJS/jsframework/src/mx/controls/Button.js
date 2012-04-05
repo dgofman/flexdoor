@@ -22,9 +22,11 @@ function mx_controls_Button(classType, extendType)
 	UIComponent.call(this, classType, extendType);
 
 	this.click = function(type){
-		if(type == undefined) type = MouseEvent.CLICK;
-		var event = MouseEvent.Get(this.create(MouseEvent.TYPE, type));
+		if(type == undefined) type = $MouseEvent.CLICK;
+		var object = this.create($MouseEvent.TYPE, type);
+		var event = $MouseEvent.Get(object);
 		this.dispatch(event);
+		event.destory();
 	};
 }
 
@@ -40,5 +42,5 @@ mx_controls_Button.Get = function(o){
 	return ref;
 };
 
-function Button() {}
-Button.Get = mx_controls_Button.Get;
+function $Button() {}
+$Button.Get = mx_controls_Button.Get;

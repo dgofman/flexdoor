@@ -17,40 +17,30 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_List(classType, extendType) 
+function mx_controls_CheckBox(classType, extendType) 
 {
 	UIComponent.call(this, classType, extendType);
 
-	this.getSelectedIndex = function(){
-		return this.getter("selectedIndex");
+	this.getSelected = function(){
+		return this.getter("selected");
 	};
-	this.setSelectedIndex = function(value){
-		this.setter("selectedIndex", value);
-	};
-
-	this.getSelectedItem = function(){
-		return this.getter("selectedItem");
-	};
-	this.setSelectedItem = function(value){
-		this.setter("selectedItem", value);
-	};
-
-	this.getDataProvider = function(){
-		return this.getter("dataProvider");
-	};
-	this.setDataProvider = function(value){
-		this.setter("dataProvider", value);
+	this.setSelected= function(value){
+		return this.setter("selected", value);
 	};
 }
 
-mx_controls_List.prototype.Extends = function(){
-	mx_controls_List.prototype = new UIComponent(mx_controls_List);
+mx_controls_CheckBox.prototype.Import = function(){
+	return ["mx.controls::Button"];
 };
-mx_controls_List.Get = function(o){
+mx_controls_CheckBox.prototype.Extends = function(){
+	mx_controls_Button.prototype.Extends();
+	mx_controls_CheckBox.prototype = new mx_controls_Button(mx_controls_CheckBox);
+};
+mx_controls_CheckBox.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, mx_controls_List);
+	ref = UIComponent.Get(o, mx_controls_CheckBox);
 	return ref;
 };
 
-function $List() {}
-$List.Get = mx_controls_List.Get;
+function $CheckBox() {}
+$CheckBox.Get = mx_controls_CheckBox.Get;

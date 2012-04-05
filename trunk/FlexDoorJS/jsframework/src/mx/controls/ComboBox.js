@@ -74,5 +74,5 @@ mx_controls_ComboBox.Get = function(o){
 	return ref;
 };
 
-function ComboBox() {}
-ComboBox.Get = mx_controls_ComboBox.Get;
+function $ComboBox() {}
+$ComboBox.Get = mx_controls_ComboBox.Get;

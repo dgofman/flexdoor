@@ -35,5 +35,5 @@ mx_controls_DataGrid.Get = function(o){
 	return ref;
 };
 
-function DataGrid() {}
-DataGrid.Get = mx_controls_DataGrid.Get;
+function $DataGrid() {}
+$DataGrid.Get = mx_controls_DataGrid.Get;

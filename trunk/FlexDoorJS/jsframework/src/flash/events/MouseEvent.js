@@ -34,16 +34,16 @@ flash_events_MouseEvent.Get = function(o){
 	return ref;
 };
 
-function MouseEvent() {}
-MouseEvent.Get = flash_events_MouseEvent.Get;
+function $MouseEvent() {}
+$MouseEvent.Get = flash_events_MouseEvent.Get;
 
-MouseEvent.TYPE = "flash.events::MouseEvent";
-MouseEvent.CLICK = "click";
-MouseEvent.DOUBLE_CLICK = "doubleClick";
-MouseEvent.MOUSE_DOWN = "mouseDown";
-MouseEvent.MOUSE_MOVE = "mouseMove";
-MouseEvent.MOUSE_OUT = "mouseOut";
-MouseEvent.MOUSE_OVER = "mouseOver";
-MouseEvent.MOUSE_UP = "mouseUp";
-MouseEvent.ROLL_OUT = "rollOut";
-MouseEvent.ROLL_OVER = "rollOver";
+$MouseEvent.TYPE = "flash.events::MouseEvent";
+$MouseEvent.CLICK = "click";
+$MouseEvent.DOUBLE_CLICK = "doubleClick";
+$MouseEvent.MOUSE_DOWN = "mouseDown";
+$MouseEvent.MOUSE_MOVE = "mouseMove";
+$MouseEvent.MOUSE_OUT = "mouseOut";
+$MouseEvent.MOUSE_OVER = "mouseOver";
+$MouseEvent.MOUSE_UP = "mouseUp";
+$MouseEvent.ROLL_OUT = "rollOut";
+$MouseEvent.ROLL_OVER = "rollOver";

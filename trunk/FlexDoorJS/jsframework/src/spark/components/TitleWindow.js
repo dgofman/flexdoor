@@ -35,5 +35,5 @@ spark_components_TitleWindow.Get = function(o){
 	return ref;
 };
 
-function TitleWindow() {}
-TitleWindow.Get = spark_components_TitleWindow.Get;
+function $$TitleWindow() {}
+$$TitleWindow.Get = spark_components_TitleWindow.Get;

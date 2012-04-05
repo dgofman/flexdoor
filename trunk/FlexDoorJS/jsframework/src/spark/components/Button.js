@@ -22,9 +22,11 @@ function spark_components_Button(classType, extendType)
 	UIComponent.call(this, classType, extendType);
 
 	this.click = function(type){
-		if(type == undefined) type = MouseEvent.CLICK;
-		var event = MouseEvent.Get(this.create(MouseEvent.TYPE, type));
+		if(type == undefined) type = $MouseEvent.CLICK;
+		var object = this.create($MouseEvent.TYPE, type);
+		var event = $MouseEvent.Get(object);
 		this.dispatch(event);
+		event.destory();
 	};
 }
 
@@ -33,7 +35,8 @@ spark_components_Button.prototype.Import = function(){
 	        "flash.events::MouseEvent"];
 };
 spark_components_Button.prototype.Extends = function(){
-	spark_components_Button.prototype = new SkinnableComponent(spark_components_Button);
+	spark_components_supportClasses_SkinnableComponent.prototype.Extends();
+	spark_components_Button.prototype = new spark_components_supportClasses_SkinnableComponent(spark_components_Button);
 };
 spark_components_Button.Get = function(o){
 	var ref = this;
@@ -41,5 +44,5 @@ spark_components_Button.Get = function(o){
 	return ref;
 };
 
-function Button() {}
-Button.Get = spark_components_Button.Get;
+function $$Button() {}
+$$Button.Get = spark_components_Button.Get;

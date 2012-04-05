@@ -42,5 +42,5 @@ mx_containers_Panel.Get = function(o){
 	return ref;
 };
 
-function Panel() {}
-Panel.Get = mx_containers_Panel.Get;
+function $Panel() {}
+$Panel.Get = mx_containers_Panel.Get;

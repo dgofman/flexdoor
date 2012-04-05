@@ -64,5 +64,5 @@ mx_collections_ListCollectionView.prototype.getItemIndex = function(item){
 	return this.execute("getItemIndex", item);
 };
 
-function ListCollectionView() {}
-ListCollectionView.Get = mx_collections_ListCollectionView.Get;
+function $ListCollectionView() {}
+$ListCollectionView.Get = mx_collections_ListCollectionView.Get;

@@ -35,5 +35,5 @@ mx_controls_TextInput.Get = function(o){
 	return ref;
 };
 
-function TextInput() {}
-TextInput.Get = mx_controls_TextInput.Get;
+function $TextInput() {}
+$TextInput.Get = mx_controls_TextInput.Get;

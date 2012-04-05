@@ -29,6 +29,6 @@ spark_components_supportClasses_SkinnableComponent.Get = function(o){
 	return ref;
 };
 
-function SkinnableComponent() {}
-SkinnableComponent.Get = spark_components_supportClasses_SkinnableComponent.Get;
-SkinnableComponent.prototype = new UIComponent(SkinnableComponent);
+function $$SkinnableComponent() {}
+$$SkinnableComponent.Get = spark_components_supportClasses_SkinnableComponent.Get;
+$$SkinnableComponent.prototype = new UIComponent($$SkinnableComponent);

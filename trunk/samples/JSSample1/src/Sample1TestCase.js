@@ -1,13 +1,16 @@
 function Sample1TestCase(){
 	this.init("SampleApp", "FlexDoor Sample 1");
 	this.include("mx.containers::Panel",
+				 "mx.containers::TitleWindow",
 				 "mx.controls::DataGrid",
+				 "mx.controls::Button",
+				 "spark.components::Button",
 				 "mx.collections::ListCollectionView");
 }
 Sample1TestCase.prototype = new FlexDoor(Sample1TestCase/*, true*/);
 
 Sample1TestCase.prototype.setUpBeforeClass = function(){
-	this.view = Panel.Get(this.app.find("sampleView"));
+	this.view = $TitleWindow.Get(this.app.find("sampleView"));
 };
 
 Sample1TestCase.prototype.tearDownAfterClass = function(){
@@ -32,43 +35,50 @@ Sample1TestCase.prototype.tearDown = function(){
 
 Sample1TestCase.prototype.test_1 = function(event) {
 	var view = null;
-	var extectedType = "mx.containers::Panel";
+	var extectedType = "mx.containers::TitleWindow";
 
 	//Get instance by extend class type
-	view = Panel.Get(this.app.getChildByType("mx.containers::TitleWindow"));
+	view = $TitleWindow.Get(this.app.getChildByType(extectedType));
 
 	Assert.assertTrue(view instanceof Container);
 	Assert.assertTrue(view instanceof mx_containers_Panel);
+	Assert.assertTrue(view instanceof mx_containers_TitleWindow);
 	Assert.assertType(view, extectedType);
 
 	//Get instance by class name type
-	view = Panel.Get(this.app.getChildByType("SampleView"));
+	view = $TitleWindow.Get(this.app.getChildByType("SampleView"));
 	Assert.assertType(view, extectedType);
 
 	//Get first view by name
-	view = Panel.Get(this.app.getChildByName("sampleView0"));
+	view = $TitleWindow.Get(this.app.getChildByName("sampleView0"));
 	Assert.assertType(view, extectedType);
 
 	//Get second view by name
-	view = Panel.Get(this.app.getChildByName("sampleView1"));
+	view = $TitleWindow.Get(this.app.getChildByName("sampleView1"));
 	Assert.assertType(view, extectedType);
 
 	//Get first view by id (default index is ZERO)
-	view = Panel.Get(this.app.find("sampleView"));
+	view = $TitleWindow.Get(this.app.find("sampleView"));
 	Assert.assertType(view, extectedType);
 
 	//Get second view by id
-	view = Panel.Get(this.app.find("sampleView", 1));
+	view = $TitleWindow.Get(this.app.find("sampleView", 1));
 	Assert.assertType(view, extectedType);
+	
+	//Casting using parent type
+	view = $Panel.Get(this.app.find("sampleView"));
+	Assert.assertType(view, extectedType);
+	Assert.assertTrue(view.toString() == extectedType);
+	Assert.assertTrue(view.toString() != "mx.containers::Panel");
 };
 
 Sample1TestCase.prototype.test_2 = function(event) {
-	var dataGrid = DataGrid.Get(this.dataGrid);
+	var dataGrid = $DataGrid.Get(this.dataGrid);
 	dataGrid.setSelectedIndex(0);
 };
 
 Sample1TestCase.prototype.test_3 = function(event) {
-	var dataGrid = DataGrid.Get(this.dataGrid);
+	var dataGrid = $DataGrid.Get(this.dataGrid);
 	dataGrid.setSelectedItem(2);
 
 	var dataProvider = dataGrid.getDataProvider();
@@ -80,11 +90,35 @@ Sample1TestCase.prototype.test_3 = function(event) {
 };
 
 Sample1TestCase.prototype.test_4 = function(event) {
-	var dataProvider = ListCollectionView.Get(event.getItem('dataProvider'));
+	var dataProvider = $ListCollectionView.Get(event.getItem('dataProvider'));
 	var item = dataProvider.getItemAt(0);
 	Assert.assertEquals(item, 1);
 
 	dataProvider.addItemAt("NEW ROW", 2);
 	var rowIndex = dataProvider.getItemIndex("NEW ROW");
 	Assert.assertEquals(rowIndex, 2);
+};
+
+
+Sample1TestCase.prototype.test_5 = function(event) {
+	var view = $TitleWindow.Get(this.view);
+	var add_btn = $Button.Get(view.find("add_btn"));
+	add_btn.click();
+	return new FunctionEvent(null, 1000);
+};
+
+Sample1TestCase.prototype.test_6 = function(event) {
+	var view = $TitleWindow.Get(this.view);
+	var buttonBox =  Container.Get(view.find("buttonBox"));
+	//Get Halo Button by type and cast using MX alias '$'
+	var halo_btn = $Button.Get(buttonBox.getChildByType("mx.controls::Button", 1));
+	halo_btn.click();
+	return new FunctionEvent({"box":buttonBox}, 1000);
+};
+
+Sample1TestCase.prototype.test_7 = function(event) {
+	var buttonBox =  Container.Get(event.getItem("box"));
+	//Get Spark Button by type and cast using Spark alias '$$'
+	var spark_btn = $$Button.Get(buttonBox.getChildByType("spark.components::Button", 0));
+	spark_btn.click();
 };
