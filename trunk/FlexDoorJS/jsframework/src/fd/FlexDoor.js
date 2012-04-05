@@ -159,8 +159,21 @@ FlexDoor.includeAll = function(instance, files, callback) {
 			}else{
 				index++;
 			}
-			if(index == files.length)
-				validateAllClasses();
+			if(index == files.length){
+				clearInterval(FlexDoor.TIME_INTERVAL);
+				FlexDoor.TIME_INTERVAL = setInterval(function(){
+					clearInterval(FlexDoor.TIME_INTERVAL);
+					validateAllClasses();
+					
+					//Validate if all classes are loaded
+					FlexDoor.TIME_INTERVAL = setInterval(function(files){
+						for(var className in files){
+							Static.warn("Class not loaded: " + className);
+						}
+						clearInterval(FlexDoor.TIME_INTERVAL);
+					}, 5000, FlexDoor.LOAD_FILES);
+				}, 500);
+			}
 		};
 		onClassLoaded.prototype.name = files[i];
 		FlexDoor.include(FlexDoor.toClassName(pair), pair[0] + "." + pair[1], onClassLoaded);
@@ -287,15 +300,6 @@ FlexDoor.include = function(cls, src, callback, css) {
 	}else{
 		FlexDoor.LOAD_FILES[cls].push(callback);
 	}
-	
-	//Validate if all classes are loaded
-	clearInterval(FlexDoor.TIME_INTERVAL);
-	FlexDoor.TIME_INTERVAL = setInterval(function(files){
-		for(var className in files){
-			Static.warn("Class not loaded: " + className);
-		}
-		clearInterval(FlexDoor.TIME_INTERVAL);
-	}, 5000, FlexDoor.LOAD_FILES);
 };
 
 FlexDoor.dispatchEvent = function(eventType){
@@ -321,7 +325,7 @@ $(document).ready(function(){
 		"fd::Static",
 		"fd::Assert",
 		"fd::FunctionEvent",
-		"flash.events::EventDispatcher"], 
+		"fd::EventDispatcher"], 
 		function(){
 			FlexDoor.includeAll(this, [
 				"mx.core::UIComponent",

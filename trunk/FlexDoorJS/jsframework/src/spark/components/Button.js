@@ -17,7 +17,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_Button(classType, extendType) 
+function spark_components_Button(classType, extendType) 
 {
 	UIComponent.call(this, classType, extendType);
 
@@ -28,17 +28,18 @@ function mx_controls_Button(classType, extendType)
 	};
 }
 
-mx_controls_Button.prototype.Import = function(){
-	return ["flash.events::MouseEvent"];
+spark_components_Button.prototype.Import = function(){
+	return ["spark.components.supportClasses::SkinnableComponent",
+	        "flash.events::MouseEvent"];
 };
-mx_controls_Button.prototype.Extends = function(){
-	mx_controls_Button.prototype = new UIComponent(mx_controls_Button);
+spark_components_Button.prototype.Extends = function(){
+	spark_components_Button.prototype = new SkinnableComponent(spark_components_Button);
 };
-mx_controls_Button.Get = function(o){
+spark_components_Button.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, mx_controls_Button);
+	ref = UIComponent.Get(o, spark_components_Button);
 	return ref;
 };
 
 function Button() {}
-Button.Get = mx_controls_Button.Get;
+Button.Get = spark_components_Button.Get;

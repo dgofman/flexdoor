@@ -20,10 +20,6 @@
 function spark_components_supportClasses_SkinnableComponent(classType, extendType) 
 {
 	UIComponent.call(this, classType, extendType);
-
-	this.numChildren = function() {
-		return this.getter("numChildren");
-	};
 }
 
 spark_components_supportClasses_SkinnableComponent.prototype = new UIComponent(spark_components_supportClasses_SkinnableComponent);

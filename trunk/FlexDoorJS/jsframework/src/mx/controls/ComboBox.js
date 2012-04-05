@@ -20,37 +20,53 @@
 function mx_controls_ComboBox(classType, extendType) 
 {
 	UIComponent.call(this, classType, extendType);
-	this.dropdown = new List(List, "List");
 
 	this.open = function(){
+		this.execute("open");
+	};
 
+	this.close = function(){
+		this.execute("close");
+	};
+
+	this.isOpen = function(){
+		return this.getter("isShowingDropdown");
+	};
+
+	this.dropdown = function(){
+		return this.getter("dropdown");
 	};
 
 	this.getSelectedIndex = function(){
-		return this.dropdown.getSelectedIndex();
+		return this.getter("selectedIndex");
 	};
-	this.setSelectedIndex = function(value){
-		this.dropdown.setSelectedIndex(value);
+	this.setSelectedIndex = function(value, autoClose){
+		this.open();
+		while(this.isOpen() == false){}
+		this.dropdown().setSelectedIndex(value);
+		if(autoClose != false) this.close();
 	};
 
 	this.getSelectedItem = function(){
-		return this.dropdown.getSelectedItem();
+		return this.getter("selectedItem");
 	};
 	this.setSelectedItem = function(value){
-		this.dropdown.setSelectedItem(value);
+		this.open();
+		while(this.isOpen() == false){}
+		this.dropdown().setSelectedItem(value);
+		if(autoClose != false) this.close();
+	};
+
+	this.getDataProvider = function(){
+		return this.getter("dataProvider");
+	};
+	this.setDataProvider = function(value){
+		this.setter("dataProvider", value);
 	};
 }
 
-mx_controls_ComboBox.prototype.Import = function(){
-	return ["mx.controls::List"];
-};
 mx_controls_ComboBox.prototype.Extends = function(){
-	mx_controls_List.prototype.Extends();
-	mx_controls_ComboBox.prototype = new mx_controls_List(mx_controls_ComboBox);
-};
-mx_controls_ComboBox.prototype.Initialize = function(object, parent){
-	UIComponent.prototype.Initialize.call(this, object, parent);
-	UIComponent.prototype.Initialize.call(this.dropdown, object, this);
+	mx_controls_ComboBox.prototype = new UIComponent(mx_controls_ComboBox);
 };
 mx_controls_ComboBox.Get = function(o){
 	var ref = this;

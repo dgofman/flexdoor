@@ -26,7 +26,8 @@ spark_components_TitleWindow.prototype.Import = function(){
 	return ["spark.components::Panel"];
 };
 spark_components_TitleWindow.prototype.Extends = function(){
-	spark_components_TitleWindow.prototype = new Panel(spark_components_TitleWindow);
+	spark_components_Panel.prototype.Extends();
+	spark_components_TitleWindow.prototype = new spark_components_Panel(spark_components_TitleWindow);
 };
 spark_components_TitleWindow.Get = function(o){
 	var ref = this;

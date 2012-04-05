@@ -17,22 +17,25 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function Event(classType, extendType) 
+function flash_events_Event(classType, extendType) 
 {
 	UIComponent.call(this, classType, extendType);
 }
 
-Event.prototype.Initialize = function(object){
+flash_events_Event.prototype.Initialize = function(object){
 	this.refId = object.refId;
 	this.type = object.ref.type;
 	this.ref = object.ref;
 	this.extendTypes = object.extendTypes;
 };
-Event.prototype.toString = function(){
+flash_events_Event.prototype.toString = function(){
 	return "flash.events::Event";
 };
-Event.Get = function(o){
+flash_events_Event.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, Event);
+	ref = UIComponent.Get(o, flash_events_Event);
 	return ref;
 };
+
+function Event() {}
+Event.Get = flash_events_Event.Get;
