@@ -400,9 +400,7 @@ package
 		protected function validateCommand(object:*, command:String):Boolean{
 			if(object == null){
 				serialize(new Error("The reference id is invalid or object was destroyed."));
-			}else if(!object.hasOwnProperty(command)){
-				serialize(new Error("Property " + command + " not found and there is no default value."));
-			}else{
+			}else if(object.hasOwnProperty(command) || object[command]){
 				return true;
 			}
 			return false;

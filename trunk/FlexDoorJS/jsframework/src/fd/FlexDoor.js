@@ -211,14 +211,17 @@ if(FlexDoor.LIB_PATH == undefined){
 	}
 }
 
-FlexDoor.include = function(cls, src, callback, css) {
+FlexDoor.include = function(cls, src, callback) {
 	if(cls != null && typeof(window[cls]) == "function"){
-		callback();
+		if(callback != undefined)
+			callback();
 	}else if(!(FlexDoor.LOAD_FILES[cls] instanceof Array)){
-		FlexDoor.LOAD_FILES[cls] = [callback];
+		if(callback != undefined)
+			FlexDoor.LOAD_FILES[cls] = [callback];
 
 		var obj, elm;
 		var isOpera = typeof(opera) != "undefined" && opera.toString() == "[object Opera]";
+		var isCss = (src.substring(src.length - 4) == '.css');
 		var isXULChrome = true;
 
 		if(src.indexOf('.js') != -1 || src.indexOf('.css') != -1){
@@ -252,9 +255,9 @@ FlexDoor.include = function(cls, src, callback, css) {
 			throw new Error("Cannot get instance of HTML element");
 
 		if(!isXULChrome) {
-			obj = document.createElement(css ? 'link' : 'script');
-			obj.type = css ? 'text/css' : 'text/javascript';
-			if(css){
+			obj = document.createElement(isCss ? 'link' : 'script');
+			obj.type = isCss ? 'text/css' : 'text/javascript';
+			if(isCss){
 				obj.href = src;
 				obj.rel = 'stylesheet';
 			}else{
@@ -262,9 +265,9 @@ FlexDoor.include = function(cls, src, callback, css) {
 				obj.defer = true;
 			}
 		} else {
-			obj = document.createElementNS('http://www.w3.org/1999/xhtml', css ? 'html:link' : 'html:script');
-			obj.setAttribute('type', css ? 'text/css' : 'text/javascript');
-			if(css){
+			obj = document.createElementNS('http://www.w3.org/1999/xhtml', isCss ? 'html:link' : 'html:script');
+			obj.setAttribute('type', isCss ? 'text/css' : 'text/javascript');
+			if(isCss){
 				obj.setAttribute('href', src);
 				obj.setAttribute('rel', 'stylesheet');
 			}else{
@@ -273,9 +276,10 @@ FlexDoor.include = function(cls, src, callback, css) {
 			}
 		}
 		
-		if(css){
+		if(isCss){
 			delete FlexDoor.LOAD_FILES[cls];
-			callback();
+			if(callback != undefined)
+				callback();
 		}else{
 			var onJsLoaded = function(){
 				var cls = arguments.callee.prototype.cls;
@@ -298,7 +302,8 @@ FlexDoor.include = function(cls, src, callback, css) {
 
 		elm.appendChild(obj);
 	}else{
-		FlexDoor.LOAD_FILES[cls].push(callback);
+		if(callback != undefined)
+			FlexDoor.LOAD_FILES[cls].push(callback);
 	}
 };
 

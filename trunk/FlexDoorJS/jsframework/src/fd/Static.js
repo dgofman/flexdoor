@@ -111,8 +111,9 @@ Static.objectToClass = function(object, parent){
 				}
 				var component = new classType(classType, extendType);
 				if(component instanceof EventDispatcher ||
-					component.Initialize instanceof Function)
+					component.Initialize instanceof Function){
 					component.Initialize(object, parent);
+				}
 				return component;
 			}
 		}
@@ -151,9 +152,9 @@ Static.loadQUnit = function(){
 		if(++index == 3)
 			Static.doTestLoader();
 	};
-	FlexDoor.include("jquery-ui", "jquery-ui-1.8.16.custom.min.js", loadHandler);
-	FlexDoor.include("qunit-ui", "qunit.js", loadHandler);
-	FlexDoor.include("qunit-css", "qunit.css", loadHandler, true);
+	FlexDoor.include("jquery-ui", "jquery/jquery.ui.js", loadHandler);
+	FlexDoor.include("qunit-js", "qunit.js", loadHandler);
+	FlexDoor.include("qunit-css", "qunit.css", loadHandler);
 };
 
 Static.doTestLoader = function(){

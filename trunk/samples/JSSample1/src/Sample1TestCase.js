@@ -3,8 +3,6 @@ function Sample1TestCase(){
 	this.include("mx.containers::Panel",
 				 "mx.containers::TitleWindow",
 				 "mx.controls::DataGrid",
-				 "mx.controls::Button",
-				 "spark.components::Button",
 				 "mx.collections::ListCollectionView");
 }
 Sample1TestCase.prototype = new FlexDoor(Sample1TestCase/*, true*/);
@@ -97,28 +95,4 @@ Sample1TestCase.prototype.test_4 = function(event) {
 	dataProvider.addItemAt("NEW ROW", 2);
 	var rowIndex = dataProvider.getItemIndex("NEW ROW");
 	Assert.assertEquals(rowIndex, 2);
-};
-
-
-Sample1TestCase.prototype.test_5 = function(event) {
-	var view = $TitleWindow.Get(this.view);
-	var add_btn = $Button.Get(view.find("add_btn"));
-	add_btn.click();
-	return new FunctionEvent(null, 1000);
-};
-
-Sample1TestCase.prototype.test_6 = function(event) {
-	var view = $TitleWindow.Get(this.view);
-	var buttonBox =  Container.Get(view.find("buttonBox"));
-	//Get Halo Button by type and cast using MX alias '$'
-	var halo_btn = $Button.Get(buttonBox.getChildByType("mx.controls::Button", 1));
-	halo_btn.click();
-	return new FunctionEvent({"box":buttonBox}, 1000);
-};
-
-Sample1TestCase.prototype.test_7 = function(event) {
-	var buttonBox =  Container.Get(event.getItem("box"));
-	//Get Spark Button by type and cast using Spark alias '$$'
-	var spark_btn = $$Button.Get(buttonBox.getChildByType("spark.components::Button", 0));
-	spark_btn.click();
 };

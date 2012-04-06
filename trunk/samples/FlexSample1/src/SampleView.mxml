@@ -6,8 +6,10 @@
 	
 	<fx:Script>
 		<![CDATA[
+			import mx.controls.Alert;
+
 			private function clickHandler(event:MouseEvent):void{
-				action.text = event.type + " :: " + event.currentTarget.name;
+				Alert.show(event.type + " :: " + event.currentTarget.name);
 			}
 		]]>
 	</fx:Script>
@@ -17,7 +19,6 @@
 				<mx:DataGridColumn headerText="Column 1"/>
 			</mx:columns>
 		</mx:DataGrid>
-		<mx:Label id="action"/>
 	</mx:VBox>
 	<mx:VBox id="buttonBox" width="60%">
 		<mx:Button toolTip="Add" label="Add" id="add_btn" click="clickHandler(event)"/>
