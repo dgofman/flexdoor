@@ -37,6 +37,7 @@ function mx_collections_HierarchicalCollectionView()
 			if(func(item) == false){//exit searching
 				EventDispatcher.FunctionHandler = null;
 				_this.setFilterFunction(filterFunc);
+				_this.refresh();
 			}
 			return true;
 		});
