@@ -24,6 +24,10 @@ function mx_controls_DataGrid(classType, extendType)
 	this.indexToItemRenderer = function(index){
 		return this.execute("indexToItemRenderer", index);
 	};
+
+	this.itemToItemRenderer = function(item){
+		return this.execute("itemToItemRenderer", item);
+	};
 }
 
 mx_controls_DataGrid.prototype.Import = function(){

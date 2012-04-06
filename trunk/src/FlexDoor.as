@@ -66,6 +66,7 @@ package
 		private var _refMap:Dictionary;
 		private var _src:String;
 		private var _timer:Timer;
+		private var _jsFunction:*;
 
 		public static const VERSION:String     = "3.0";
 		public static const INITIALIZED:String = "initialized";
@@ -339,9 +340,14 @@ package
 		public function deserialize(ref:*):*{
 			if(ref is Object && Object(ref).hasOwnProperty("type")
 							 && Object(ref).hasOwnProperty("refId")){
-				if(ref.type == "CLASS_TYPE")
+				if(ref.type == "CLASS_TYPE"){
 					return _refMap[ref.refId];
-				
+				}else if(ref.type == "FUNCTION_TYPE"){
+					_jsFunction = function(...args):*{
+						return ExternalInterface.call("parent.EventDispatcher.FunctionHandler", args);
+					};
+					return _jsFunction;
+				}
 			}
 			return ref;
 		}

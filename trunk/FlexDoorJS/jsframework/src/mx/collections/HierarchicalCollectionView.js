@@ -19,8 +19,28 @@
  
 function mx_collections_HierarchicalCollectionView() 
 {
-	this.getTreeData = function(){
-		return this.getter("treeData");
+	this.getFilterFunction = function(){
+		return this.getter("filterFunction");
+	};
+	this.setFilterFunction = function(value){
+		this.setter("filterFunction", value);
+	};
+
+	this.refresh = function(){
+		return this.execute("refresh");
+	};
+
+	this.setSearchFunction = function(func){
+		var _this = this;
+		var filterFunc = _this.getFilterFunction();
+		_this.setFilterFunction(function(item){
+			if(func(item) == false){//exit searching
+				EventDispatcher.FunctionHandler = null;
+				_this.setFilterFunction(filterFunc);
+			}
+			return true;
+		});
+		_this.refresh();
 	};
 }
 

@@ -114,10 +114,15 @@ EventDispatcher.prototype.dispatch = function(eventId){
 };
 
 EventDispatcher.prototype.serialize = function(object){
-	if( object instanceof EventDispatcher ||
+	if( object instanceof Function ){
+		EventDispatcher.FunctionHandler = object;
+		return {type:"FUNCTION_TYPE", refId:object.refId};
+	}else if( object instanceof EventDispatcher ||
 		object instanceof flash_events_Event){
 		return {type:"CLASS_TYPE", refId:object.refId};
 	}else{
 		return object;
 	}
 };
+
+EventDispatcher.FunctionHandler = null;
