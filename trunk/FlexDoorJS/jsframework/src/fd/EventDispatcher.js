@@ -88,7 +88,7 @@ EventDispatcher.prototype.getChildByType = function(classType, index, visibleOnl
 };
 
 EventDispatcher.prototype.setter = function(command, value){
-	Static.setter(this, command, value);
+	Static.setter(this, command, this.serialize(value));
 };
 
 EventDispatcher.prototype.getter = function(command){
@@ -98,17 +98,26 @@ EventDispatcher.prototype.getter = function(command){
 EventDispatcher.prototype.execute = function(command){
 	var params = [];
 	for(var i = 1; i < arguments.length; i++)
-		params.push(arguments[i]);
+		params.push(this.serialize(arguments[i]));
 	return Static.execute(this, command, params);
 };
 
 EventDispatcher.prototype.create = function(className){
 	var params = [];
 	for(var i = 1; i < arguments.length; i++)
-		params.push(arguments[i]);
+		params.push(this.serialize(arguments[i]));
 	return Static.create(className, params);
 };
 
-EventDispatcher.prototype.dispatch = function(event){
-	return Static.dispatch(this, event);
+EventDispatcher.prototype.dispatch = function(eventId){
+	return Static.dispatch(this, eventId);
+};
+
+EventDispatcher.prototype.serialize = function(object){
+	if( object instanceof EventDispatcher ||
+		object instanceof flash_events_Event){
+		return {type:"CLASS_TYPE", refId:object.refId};
+	}else{
+		return object;
+	}
 };

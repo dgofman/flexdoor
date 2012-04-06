@@ -93,6 +93,8 @@ Static.objectToClass = function(object, parent){
 	if(object != null && object.extendTypes != undefined){
 		for(var i = 0; object.extendTypes.length; i++){
 			var extendType = object.extendTypes[i];
+			if(extendType == "Object")
+				return object.ref;
 			var pair = extendType.split("::");
 			var className = pair[0];
 			if(pair.length == 2)

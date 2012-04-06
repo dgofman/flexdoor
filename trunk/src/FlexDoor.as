@@ -200,16 +200,15 @@ package
 		}
 
 		protected function js_releaseIds(ids:Array=null, except:Boolean = false):void{
-			var id:*;
 			var newMap:Dictionary = new Dictionary();
 			if(ids == null || ids.length == 0){
 				_refMap = newMap;
 			}else{
 				if(except == false){
-					for(id in ids)
-						delete _refMap[id];
+					for(var i:uint = 0; i < ids.length; i++)
+						delete _refMap[ids[i]];
 				}else{
-					for(id in _refMap){
+					for(var id:* in _refMap){
 						if(ids.indexOf(id) != -1){
 							newMap[id] = _refMap[id];
 						}
@@ -227,9 +226,10 @@ package
 			return serialize(_application.systemManager);
 		}
 
-		protected function js_find(refId:uint, id:String, index:uint, visibleOnly:Boolean):*{
+		protected function js_find(refId:Number, id:String, index:uint, visibleOnly:Boolean):*{
 			try{
-				var o:* = _refMap[refId][id];
+				var parent:* = _refMap[refId];
+				var o:* = parent[id];
 				var visibleCount:uint = 0;
 				if(o is Array){
 					for(var i:uint = 0; i < o.length; i++){
@@ -247,12 +247,12 @@ package
 			}
 		}
 
-		protected function js_childByName(refId:uint, name:String):Object{
+		protected function js_childByName(refId:Number, name:String):Object{
 			var parent:DisplayObjectContainer = _refMap[refId];
 			return serialize(parent.getChildByName(name));
 		}
 
-		protected function js_childByType(refId:uint, classType:String, index:uint, visibleOnly:Boolean):Object{
+		protected function js_childByType(refId:Number, classType:String, index:uint, visibleOnly:Boolean):Object{
 			var parent:DisplayObjectContainer = _refMap[refId];
 			var visibleCount:uint = 0;
 			for(var i:uint = 0; i < parent.numChildren; i++){
@@ -270,26 +270,26 @@ package
 			return null;
 		}
 
-		protected function js_setter(refId:uint, command:String, value:*):void{
+		protected function js_setter(refId:Number, command:String, value:*):void{
 			var parent:Object = _refMap[refId];
 			if(validateCommand(parent, command))
-				parent[command] = value;
+				parent[command] = deserialize(value);
 		}
 
-		protected function js_getter(refId:uint, command:String):*{
+		protected function js_getter(refId:Number, command:String):*{
 			var parent:Object = _refMap[refId];
 			if(validateCommand(parent, command))
 				return serialize(parent[command]);
 			return null;
 		}
 
-		protected function js_execute(refId:uint, command:String, values:Array):Object{
+		protected function js_execute(refId:Number, command:String, values:Array):Object{
 			var parent:Object = _refMap[refId];
 			if(validateCommand(parent, command)){
 				try{
 					var ret:*;
 					if(values != null && values.length > 0){
-						ret = parent[command].apply(parent, values);
+						ret = parent[command].apply(parent, deserializeAll(values));
 					}else{
 						ret = parent[command]();
 					}
@@ -318,16 +318,32 @@ package
 				}catch(refError:ReferenceError){}
 			}
 			if(classRef != null)
-				obj = create(classRef, args);
+				obj = create(classRef, deserializeAll(args));
 			return serialize(obj);
 		}
 
-		protected function js_dispatch(refId:uint, eventRefId:uint):Boolean{
+		protected function js_dispatch(refId:Number, eventRefId:uint):Boolean{
 			var parent:Object = _refMap[refId];
 			var event:Event = _refMap[eventRefId];
 			if(parent is EventDispatcher && event != null)
 				return EventDispatcher(parent).dispatchEvent(event);
 			return false;
+		}
+
+		public function deserializeAll(params:Array):Array{
+			for(var i:uint = 0; i < params.length; i++)
+				params[i] = deserialize(params[i]);
+			return params;
+		}
+
+		public function deserialize(ref:*):*{
+			if(ref is Object && Object(ref).hasOwnProperty("type")
+							 && Object(ref).hasOwnProperty("refId")){
+				if(ref.type == "CLASS_TYPE")
+					return _refMap[ref.refId];
+				
+			}
+			return ref;
 		}
 
 		protected function serialize(ref:Object):Object{

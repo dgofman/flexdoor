@@ -1,7 +1,7 @@
 /**
  * FlexDoor Automation Library
  *
- * Copyright © 2012 David Gofman.
+ * Copyright ï¿½ 2012 David Gofman.
  *   Permission is granted to copy, and distribute verbatim copies
  *   of this license document, but changing it is not allowed.
  *
@@ -17,50 +17,30 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-function mx_collections_ListCollectionView() 
+function mx_collections_HierarchicalCollectionView() 
 {
-	this.contains = function(item){
-		return this.execute("contains", item);
-	};
-
-	this.refresh = function(){
-		return this.execute("refresh");
-	};
-
-	this.getItemAt = function(value){
-		return this.execute("getItemAt", value);
-	};
-
-	this.setItemAt = function(item, index){
-		return this.execute("setItemAt", item, index);
-	};
-
-	this.addItem = function(item){
-		this.execute("addItem", item);
-	};
-
-	this.addItemAt = function(item, index){
-		this.execute("addItemAt", item, index);
-	};
-
-	this.getItemIndex = function(item){
-		return this.execute("getItemIndex", item);
+	this.getTreeData = function(){
+		return this.getter("treeData");
 	};
 }
 
-mx_collections_ListCollectionView.prototype = new EventDispatcher();
-mx_collections_ListCollectionView.prototype.toString = function() {
+mx_collections_HierarchicalCollectionView.prototype = new EventDispatcher();
+mx_collections_HierarchicalCollectionView.prototype.toString = function() {
 	return (this.source ? this.source.toString() : []);
 };
-mx_collections_ListCollectionView.prototype.Initialize = function(object, parent){
+mx_collections_HierarchicalCollectionView.prototype.Initialize = function(object, parent){
 	EventDispatcher.prototype.Initialize.call(this, object, parent);
 	this.source = object.ref.source;
+	if(this.source != null)
+		this.hierarchicalData = this.source.source;
+	if(this.hierarchicalData != null)
+		this.collection = this.hierarchicalData.source;
 };
-mx_collections_ListCollectionView.Get = function(o){
+mx_collections_HierarchicalCollectionView.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, mx_collections_ListCollectionView);
+	ref = UIComponent.Get(o, mx_collections_HierarchicalCollectionView);
 	return ref;
 };
 
-function $ListCollectionView() {}
-$ListCollectionView.Get = mx_collections_ListCollectionView.Get;
+function $HierarchicalCollectionView() {}
+$HierarchicalCollectionView.Get = mx_collections_HierarchicalCollectionView.Get;

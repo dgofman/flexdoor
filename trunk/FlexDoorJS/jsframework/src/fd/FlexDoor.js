@@ -325,7 +325,8 @@ $(document).ready(function(){
 		"fd::Static",
 		"fd::Assert",
 		"fd::FunctionEvent",
-		"fd::EventDispatcher"], 
+		"fd::EventDispatcher",
+		"flash.events::Event",], 
 		function(){
 			FlexDoor.includeAll(this, [
 				"mx.core::UIComponent",
