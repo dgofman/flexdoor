@@ -223,8 +223,15 @@ FlexDoor.includeAll = function(instance, files, callback) {
 		callback.apply(instance);
 	};
 
-	for(var i = 0; i < files.length; i++){
-		var pair = files[i].split("::");
+	var length = files.length;
+	for(var i = 0; i < length; i++){
+		var file = files[i];
+		if(file == undefined){
+			length--;
+			continue;
+		}
+
+		var pair = file.split("::");
 		var onClassLoaded = function(){
 			var className = arguments.callee.prototype.name;
 			var classType = FlexDoor.classType(className);
@@ -236,7 +243,7 @@ FlexDoor.includeAll = function(instance, files, callback) {
 			}else{
 				index++;
 			}
-			if(index == files.length){
+			if(index == length){
 				clearInterval(FlexDoor.TIME_INTERVAL);
 				FlexDoor.TIME_INTERVAL = setInterval(function(){
 					clearInterval(FlexDoor.TIME_INTERVAL);
