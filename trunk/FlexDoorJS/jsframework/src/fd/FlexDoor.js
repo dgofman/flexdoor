@@ -277,7 +277,10 @@ FlexDoor.LOAD_FILES = {};
 FlexDoor.TIME_INTERVAL;
 FlexDoor.INIT_PHASE = 0;
 FlexDoor.TEST_DELAY_INTERVAL = 100;
-FlexDoor.AUTO_START = true;
+FlexDoor.AUTO_START = false;
+
+if(window.location.search.indexOf("autoStart=true") != -1)
+	FlexDoor.AUTO_START = true;
 
 if(FlexDoor.LIB_PATH == undefined){
 	var scripts = document.getElementsByTagName("script");
