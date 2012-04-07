@@ -17,30 +17,40 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function Application(classType, extendType, flash)
+function TestEvent(order) 
 {
-	UIComponent.call(this, classType, extendType);
-	Application.application = this;
-	this.flash = flash;
-
-	this.getSystemManager = function(){
-		return this.systemManager;
-	};
-
-	this.getPopupWindow = function(extendType){
-		return this.systemManager.getChildByType(extendType);
-	};
+	this.order = order;
+	this.nextOrder = order + 1;
+	this.delay = FlexDoor.TEST_DELAY_INTERVAL;
+	this.items = null;
+	this.functionName = null;
+	this.timeout = TestEvent.TIMEOUT;
+	this.type = TestEvent.NEXT_TYPE;
 }
+TestEvent.NEXT_TYPE = "NextTypeEvent";
+TestEvent.TIMEOUT = 120000; //Two minutes
 
-Application.prototype.Import = function(){
-	return ["mx.core::Container"];
+TestEvent.prototype.toString = function() {
+	return "fd::TestEvent";
 };
-Application.prototype.Extends = function(){
-	Container.prototype.Extends();
-	Application.prototype = new Container(Application);
-};
-Application.Get = function(o){
+
+TestEvent.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, Application);
+	ref = UIComponent.Get(o, TestEvent);
 	return ref;
+};
+
+TestEvent.prototype.addItems = function(items) {
+	this.items = items;
+};
+
+TestEvent.prototype.getItem = function(name) {
+	if(this.items instanceof Object)
+		return this.items[name];
+	return null;
+};
+
+TestEvent.prototype.set = function(params) {
+	for(var name in params)
+		this[name] = params[name];
 };

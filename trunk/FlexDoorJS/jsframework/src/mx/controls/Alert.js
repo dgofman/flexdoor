@@ -30,7 +30,7 @@ function mx_controls_Alert(classType, extendType)
 	this.buttonYES = function(){
 		return this.alertForm.getChildByName("YES");
 	};
-	this.buttonNO = function(){
+	this.button = function(id){
 		return this.alertForm.getChildByName("NO");
 	};
 

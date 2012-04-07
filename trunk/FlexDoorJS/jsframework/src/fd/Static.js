@@ -35,6 +35,19 @@ Static.getFlash = function(flashPlayerId){
 	}
 };
 
+Static.delegate = function(target, func, params){
+	var f = function() { 
+		return func.apply(target, params);
+	};
+	f.func = func;
+	return f;
+};
+
+Static.callLater = function(target, func, delay, params){
+	if(delay == undefined) delay = FlexDoor.TEST_DELAY_INTERVAL;
+	setTimeout(function(){ func.apply(target, params); }, delay);
+};
+
 Static.find = function(parent, id, index, visibleOnly){
 	var flash = Application.application.flash;
 	var object = flash.find(parent.refId, id, index, visibleOnly);

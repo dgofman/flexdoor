@@ -25,7 +25,7 @@ Assert.prototype.assertEquals = function(actual, expected, message) {
 	Assert.assertEquals(actual, expected, message);
 };
 Assert.prototype.assertType = function(uiComponent, expectedType, message) {
-	Assert.assertType(uiComponent.toString(), expectedType, message);
+	Assert.assertType(uiComponent, expectedType, message);
 };
 Assert.prototype.assertTrue = function(expected, message) {
 	Assert.assertTrue(expected, message);
@@ -49,15 +49,14 @@ Assert.assertEquals = function(actual, expected, message) {
 };
 
 Assert.assertTrue = function(actual, message) {
-	if(FlexDoor.autoStart != true){
-		ok(actual, message);
-	}else{
-		Assert.assertEquals(actual, true, message);
-	}
+	Assert.assertEquals(actual, true, message);
 };
 
 Assert.assertType = function(uiComponent, expectedType, message) {
-	Assert.assertEquals(uiComponent.toString(), expectedType, message);
+	if(typeof(expectedType) == "string")
+		Assert.assertEquals(uiComponent.toString(), expectedType, message);
+	else 
+		Assert.assertEquals(uiComponent instanceof expectedType, message);
 };
 
 Assert.fail = function(message) {

@@ -4,6 +4,8 @@ function Sample2TestCase(){
 				 "mx.controls::Alert",
 				 "mx.controls::Button",
 				 "spark.components::Button");
+
+	this.CLOSE_TYPE = "AlertCloseType";
 }
 Sample2TestCase.prototype = new FlexDoor(Sample2TestCase/*, true*/);
 
@@ -19,8 +21,9 @@ Sample2TestCase.prototype.test_1 = function(event) {
 	var view = $TitleWindow.Get(this.view);
 	var add_btn = $Button.Get(view.find("add_btn"));
 	add_btn.click();
-	this.closePopupWindow();
-	return new FunctionEvent(null, 1000);
+	//Run next test asynchronously and set timeout to 5 seconds
+	TestEvent.Get(event).set({type:this.CLOSE_TYPE, timeout:5000});
+	this.callLater(this.closePopupWindow, 1000);
 };
 
 Sample2TestCase.prototype.test_2 = function(event) {
@@ -29,8 +32,8 @@ Sample2TestCase.prototype.test_2 = function(event) {
 	//Get Halo Button by type and cast using MX alias '$'
 	var halo_btn = $Button.Get(buttonBox.getChildByType("mx.controls::Button", 1));
 	halo_btn.click();
-	this.closePopupWindow();
-	return new FunctionEvent({"box":buttonBox}, 1000);
+	TestEvent.Get(event).set({type:this.CLOSE_TYPE, timeout:5000, items:{"box":buttonBox}});
+	this.callLater(this.closePopupWindow, 1000);
 };
 
 Sample2TestCase.prototype.test_3 = function(event) {
@@ -38,12 +41,13 @@ Sample2TestCase.prototype.test_3 = function(event) {
 	//Get Spark Button by type and cast using Spark alias '$$'
 	var spark_btn = $$Button.Get(buttonBox.getChildByType("spark.components::Button", 0));
 	spark_btn.click();
+	TestEvent.Get(event).set({type:this.CLOSE_TYPE, timeout:5000});
+	this.callLater(this.closePopupWindow, 1000);
 };
 
-Sample2TestCase.prototype.closePopupWindow = function(){
-	var systemManager = EventDispatcher.Get(this.app.getSystemManager());
-	var alertWindow = $Alert.Get(systemManager.getChildByType("mx.controls::Alert"));
+Sample2TestCase.prototype.closePopupWindow = function(event){
+	var alertWindow = $Alert.Get(this.app.getPopupWindow("mx.controls::Alert"));
 	var ok = $Button.Get(alertWindow.buttonOK());
 	ok.click();
-	this.closePopupWindow();
+	this.dispatchEvent(this.CLOSE_TYPE);
 };

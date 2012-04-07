@@ -200,7 +200,8 @@ package
 			return ids;
 		}
 
-		protected function js_releaseIds(ids:Array=null, except:Boolean = false):void{
+		protected function js_releaseIds(ids:*=null, except:Boolean = false):void{
+			ids = ids as Array;
 			var newMap:Dictionary = new Dictionary();
 			if(ids == null || ids.length == 0){
 				_refMap = newMap;
@@ -284,7 +285,8 @@ package
 			return null;
 		}
 
-		protected function js_execute(refId:Number, command:String, values:Array):Object{
+		protected function js_execute(refId:Number, command:String, values:*):Object{
+			values = values as Array;
 			var parent:Object = _refMap[refId];
 			if(validateCommand(parent, command)){
 				try{
@@ -302,7 +304,8 @@ package
 			return null;
 		}
 
-		protected function js_create(className:String, args:Array):Object{
+		protected function js_create(className:String, args:*):Object{
+			args = args as Array;
 			var classRef:Class;
 			var obj:*;
 			try{

@@ -19,6 +19,8 @@
 
 function FlexDoor(testCaseType, autoStart)
 {
+	this.events = [];
+
 	testCaseType.prototype.constructor = testCaseType;
 	FlexDoor.TEST_CASES.push(testCaseType);
 	FlexDoor.autoStart = autoStart;
@@ -26,6 +28,59 @@ function FlexDoor(testCaseType, autoStart)
 
 FlexDoor.prototype.toString = function() {
 	return this.moduleName;
+};
+
+FlexDoor.prototype.addEventListener = function(type, callback){
+	this.events[type] = this.events[type] || [];
+	if(this.events[type]) {
+		var params = [callback];
+		if(arguments.length > 2){
+			for(var i = 2; i < arguments.length; i++)
+				params.push(arguments[i]);
+		}
+		this.events[type].push(this.delegate.apply(this, params));
+	}
+};
+
+FlexDoor.prototype.removeEventListener = function(type, callback){
+	if (this.events[type]) {
+		var listeners = this.events[type];
+		for (var i = listeners.length - 1; i >= 0; --i){
+			if (listeners[i] == callback || listeners[i].func == callback) {
+				listeners.splice(i, 1);
+				return true;
+			}
+		}
+	}
+	return false;
+};
+
+FlexDoor.prototype.dispatchEvent = function(type){
+	if (this.events[type]) {
+		var listeners = this.events[type];
+		var len = listeners.length;
+		while(len--) {
+			listeners[len](this);
+		}
+	}
+};
+
+FlexDoor.prototype.delegate = function(func){
+	var params = [];
+	if(arguments.length > 1){
+		for(var i = 1; i < arguments.length; i++)
+			params.push(arguments[i]);
+	}
+	return Static.delegate(this, func, params);
+};
+
+FlexDoor.prototype.callLater = function(func, delay){
+	var params = [];
+	if(arguments.length > 2){
+		for(var i = 2; i < arguments.length; i++)
+			params.push(arguments[i]);
+	}
+	Static.callLater(this, func, delay, params);
 };
 
 FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
@@ -54,35 +109,35 @@ FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
 };
 
 FlexDoor.prototype.include = function() {
-	var instance = this;
+	var testCase = this;
 	var refIds = null;
-	var testCase = FlexDoor.TEST_CASES[Static.testCaseIndex];
+	var testCaseType = FlexDoor.TEST_CASES[Static.testCaseIndex];
 
 	var runTestCase = function(){
-		if(instance instanceof testCase.prototype.constructor){
+		if(testCase instanceof testCaseType.prototype.constructor){
 			var tests = [];
-			for(var name in testCase.prototype){
-				if(name.indexOf("test_") == 0 && typeof(instance[name]) == "function")
+			for(var name in testCaseType.prototype){
+				if(name.indexOf("test_") == 0 && typeof(testCase[name]) == "function")
 					tests.push(name);
 			}
 
 			//Initialize for first function the event argument
-			var funcEvent = new FunctionEvent(null, 0, 0);
+			var testEvent = new TestEvent(0);
 
 			var runTest = function(){
-				if(funcEvent.order < tests.length){
-					funcEvent.name = tests[funcEvent.order]; //Set test-function name
-	
+				if(testEvent.order < tests.length){
+					testEvent.functionName = tests[testEvent.order];
+
 					if(FlexDoor.autoStart == true){
-						setTimeout(testListener, funcEvent.delay);
+						setTimeout(startTestCaseListener, testEvent.delay);
 					}else{
 						setTimeout(function(){
-								test(funcEvent.name, testListener);
-						}, funcEvent.delay);
+								test(testEvent.functionName, startTestCaseListener);
+						}, testEvent.delay);
 					}
 				}else{
-					if(testCase.prototype.tearDownAfterClass != undefined){
-						instance["tearDownAfterClass"].call(instance, "tearDownAfterClass");
+					if(testCaseType.prototype.tearDownAfterClass != undefined){
+						testCase["tearDownAfterClass"].call(testCase, "tearDownAfterClass");
 						Static.releaseIds();
 					}
 					//Run Next TestCase
@@ -90,43 +145,66 @@ FlexDoor.prototype.include = function() {
 				}
 			};
 
-			var testListener = function(){
-				funcEvent.resetDelay();
-
-				var order = funcEvent.order;
+			var startTestCaseListener = function(){
 				var releaseRefId = [].concat(refIds); //clone exisitng ids
 
 				//Execute Test
 				try{
-					if(testCase.prototype.setUp != undefined)
-						instance["setUp"].call(instance, "setUp");
-					var fe = instance[funcEvent.name].call(instance, funcEvent);
-					if(fe instanceof FunctionEvent){
-						for(var name in fe.refObjects){
-							var object = fe.refObjects[name];
-							if(object instanceof EventDispatcher)
-								releaseRefId.push(object.refId);
-						}
-						funcEvent = fe;
+					if(testCaseType.prototype.setUp != undefined)
+						testCase["setUp"].call(testCase, "setUp");
+					testCase[testEvent.functionName].call(testCase, testEvent);
+
+					//Set timeout interval
+					if(testEvent.timeout <= testEvent.delay + 100)
+						testEvent.timeout = testEvent.delay + 100;
+					testCase.interval = setInterval(Static.delegate(testCase, finalizeFunction), testEvent.timeout);
+
+					if(testEvent.type == TestEvent.NEXT_TYPE){
+						finalizeFunction(releaseRefId);
+					}else{
+						testCase.addEventListener(testEvent.type, finalizeFunction, releaseRefId);
 					}
-					if(testCase.prototype.tearDown != undefined)
-						instance["tearDown"].call(instance, "tearDown");
-					Assert.assertTrue(funcEvent instanceof FunctionEvent, "ok succeeds");
 				}catch(e){
 					Assert.fail(e.message);
+					finalizeFunction(releaseRefId);
+				}
+			};
+
+			var finalizeFunction = function(releaseRefId){
+				testCase.removeEventListener(testEvent.type, finalizeFunction);
+
+				var nextTestEvent = new TestEvent(testEvent.nextOrder);
+				nextTestEvent.items = testEvent.items;
+
+				if(testCase.interval != undefined){
+					clearInterval(testCase.interval);
+					testCase.interval = undefined;
 				}
 
-				if(funcEvent.order == undefined || funcEvent.order <= order)
-					funcEvent.order = order + 1;
+				if(releaseRefId != undefined){
+					for(var name in testEvent.items){
+						var item = testEvent.items[name];
+						if(item instanceof EventDispatcher)
+							releaseRefId.push(item.refId);
+					}
+					Static.releaseIds(releaseRefId, true);
+
+					Assert.assertTrue(true, "ok succeeds");
+				}else{
+					Static.warn("Test timed out: " + testEvent.functionName);
+				}
+
+				if(testCaseType.prototype.tearDown != undefined)
+					testCase["tearDown"].call(testCase, "tearDown");
 
 				//Run Next Test
-				Static.releaseIds(releaseRefId, true);
+				testEvent = nextTestEvent;
 				runTest();
 			};
 
 			if(tests.length > 0){
-				if(testCase.prototype.setUpBeforeClass != undefined){
-					instance["setUpBeforeClass"].call(instance, "setUpBeforeClass");
+				if(testCaseType.prototype.setUpBeforeClass != undefined){
+					testCase["setUpBeforeClass"].call(testCase, "setUpBeforeClass");
 					refIds = Static.refIds();
 				}
 				runTest();
@@ -134,7 +212,7 @@ FlexDoor.prototype.include = function() {
 		};
 	};
 
-	FlexDoor.includeAll(instance, arguments, runTestCase);
+	FlexDoor.includeAll(testCase, arguments, runTestCase);
 };
 
 FlexDoor.includeAll = function(instance, files, callback) {
@@ -199,6 +277,7 @@ FlexDoor.TEST_CASES = [];
 FlexDoor.LOAD_FILES = {};
 FlexDoor.TIME_INTERVAL;
 FlexDoor.INIT_PHASE = 0;
+FlexDoor.TEST_DELAY_INTERVAL = 100;
 
 if(FlexDoor.LIB_PATH == undefined){
 	var scripts = document.getElementsByTagName("script");
@@ -329,7 +408,7 @@ $(document).ready(function(){
 	FlexDoor.includeAll(this, [
 		"fd::Static",
 		"fd::Assert",
-		"fd::FunctionEvent",
+		"fd::TestEvent",
 		"fd::EventDispatcher",
 		"flash.events::Event",], 
 		function(){

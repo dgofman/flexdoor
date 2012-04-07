@@ -83,11 +83,13 @@ Sample1TestCase.prototype.test_3 = function(event) {
 	Assert.assertEquals(dataProvider.source.length, 5);
 
 	//Pass local dataGrid object to the next test function 
-	//Increase a delay before calling a new function
-	return new FunctionEvent({dataProvider:dataProvider}, 500);
+	TestEvent.Get(event).addItems({dataProvider:dataProvider});
+	//Set delay before calling a new function
+	TestEvent.Get(event).delay = 500;
 };
 
 Sample1TestCase.prototype.test_4 = function(event) {
+	var event = TestEvent.Get(event);
 	var dataProvider = $ListCollectionView.Get(event.getItem('dataProvider'));
 	var item = dataProvider.getItemAt(0);
 	Assert.assertEquals(item, 1);
