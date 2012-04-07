@@ -7,7 +7,7 @@ function Sample2TestCase(){
 
 	this.CLOSE_TYPE = "AlertCloseType";
 }
-Sample2TestCase.prototype = new FlexDoor(Sample2TestCase/*, true*/);
+Sample2TestCase.prototype = new FlexDoor(Sample2TestCase);
 
 Sample2TestCase.prototype.setUpBeforeClass = function(){
 	this.view = $TitleWindow.Get(this.app.find("sampleView"));

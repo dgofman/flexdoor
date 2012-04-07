@@ -17,13 +17,12 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function FlexDoor(testCaseType, autoStart)
+function FlexDoor(testCaseType)
 {
 	this.events = [];
 
 	testCaseType.prototype.constructor = testCaseType;
 	FlexDoor.TEST_CASES.push(testCaseType);
-	FlexDoor.autoStart = autoStart;
 };
 
 FlexDoor.prototype.toString = function() {
@@ -103,7 +102,7 @@ FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
 		testCaseTitle = flashPlayerId;
 
 	if(testCaseTitle != undefined &&
-		FlexDoor.autoStart != true){
+		FlexDoor.AUTO_START != true){
 		module(testCaseTitle);
 	}
 };
@@ -128,7 +127,7 @@ FlexDoor.prototype.include = function() {
 				if(testEvent.order < tests.length){
 					testEvent.functionName = tests[testEvent.order];
 
-					if(FlexDoor.autoStart == true){
+					if(FlexDoor.AUTO_START == true){
 						setTimeout(startTestCaseListener, testEvent.delay);
 					}else{
 						setTimeout(function(){
@@ -278,6 +277,7 @@ FlexDoor.LOAD_FILES = {};
 FlexDoor.TIME_INTERVAL;
 FlexDoor.INIT_PHASE = 0;
 FlexDoor.TEST_DELAY_INTERVAL = 100;
+FlexDoor.AUTO_START = true;
 
 if(FlexDoor.LIB_PATH == undefined){
 	var scripts = document.getElementsByTagName("script");
@@ -394,7 +394,7 @@ FlexDoor.dispatchEvent = function(eventType){
 
 FlexDoor.run = function(){
 	if(++FlexDoor.INIT_PHASE == 2){
-		if(FlexDoor.autoStart == true){
+		if(FlexDoor.AUTO_START == true){
 			Static.startTestCase(0);
 		}else{
 			Static.loadQUnit();

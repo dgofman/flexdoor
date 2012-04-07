@@ -36,11 +36,11 @@ Assert.prototype.fail = function(message) {
 
 //Static Functions
 Assert.assertEquals = function(actual, expected, message) {
-	if(FlexDoor.autoStart != true){
+	if(FlexDoor.AUTO_START != true){
 		equal(actual, expected, message);
 	}else{
 		var error = (actual != expected);
-		FDGlobal.trace(
+		Static.trace(
 				(message != undefined ? message : (error ? "failed" : "okay")) +
 				" - Expected: " + expected +
 				(error ? ", Result: " + actual : ""), 
@@ -60,9 +60,9 @@ Assert.assertType = function(uiComponent, expectedType, message) {
 };
 
 Assert.fail = function(message) {
-	if(FlexDoor.autoStart != true){
+	if(FlexDoor.AUTO_START != true){
 		ok(false, message);
 	}else{
-		FDGlobal.trace(message, "error");
+		Static.error(message);
 	}
 };

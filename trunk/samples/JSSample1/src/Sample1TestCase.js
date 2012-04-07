@@ -5,7 +5,7 @@ function Sample1TestCase(){
 				 "mx.controls::DataGrid",
 				 "mx.collections::ListCollectionView");
 }
-Sample1TestCase.prototype = new FlexDoor(Sample1TestCase/*, true*/);
+Sample1TestCase.prototype = new FlexDoor(Sample1TestCase);
 
 Sample1TestCase.prototype.setUpBeforeClass = function(){
 	this.view = $TitleWindow.Get(this.app.find("sampleView"));
