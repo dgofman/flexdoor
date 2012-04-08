@@ -79,7 +79,7 @@ Sample1TestCase.prototype.test_3 = function(event) {
 	var dataGrid = $DataGrid.Get(this.dataGrid);
 	dataGrid.setSelectedItem(2);
 
-	var dataProvider = dataGrid.getDataProvider();
+	var dataProvider = $ListCollectionView.Get(dataGrid.getDataProvider());
 	Assert.assertEquals(dataProvider.source.length, 5);
 
 	//Pass local dataGrid object to the next test function 

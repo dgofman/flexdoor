@@ -31,17 +31,7 @@ function mx_collections_HierarchicalCollectionView()
 	};
 
 	this.setSearchFunction = function(func){
-		var _this = this;
-		var filterFunc = _this.getFilterFunction();
-		_this.setFilterFunction(function(item){
-			if(func(item) == false){//exit searching
-				EventDispatcher.FunctionHandler = null;
-				_this.setFilterFunction(filterFunc);
-				_this.refresh();
-			}
-			return true;
-		});
-		_this.refresh();
+		Static.filterFunction(this, func);
 	};
 }
 
