@@ -51,44 +51,56 @@ Static.callLater = function(target, func, delay, params){
 Static.find = function(parent, id, index, visibleOnly){
 	var flash = Application.application.flash;
 	var object = flash.find(parent.refId, id, index, visibleOnly);
-	return Static.objectToClass(object, parent);
+	return Static.deserialize(object, parent);
 };
 
 Static.getChildByName = function(parent, name){
 	var flash = Application.application.flash;
 	var object = flash.getChildByName(parent.refId, name);
-	return Static.objectToClass(object, parent);
+	return Static.deserialize(object, parent);
 };
 
 Static.getChildByType = function(parent, classType, index, visibleOnly){
 	var flash = Application.application.flash;
 	var object = flash.getChildByType(parent.refId, classType, index, visibleOnly);
-	return Static.objectToClass(object, parent);
+	return Static.deserialize(object, parent);
 };
 
-Static.setter = function(comp, command, value){
+Static.setter = function(target, command, value){
 	var flash = Application.application.flash;
-	flash.setter(comp.refId, command, value);
+	flash.setter(target.refId, command, value);
 };
 
-Static.getter = function(comp, command){
+Static.getter = function(target, command){
 	var flash = Application.application.flash;
-	return Static.objectToClass(flash.getter(comp.refId, command));
+	return Static.deserialize(flash.getter(target.refId, command));
 };
 
-Static.execute = function(comp, command, values){
+Static.execute = function(target, command, values){
+	if(values != null && !(values instanceof Array)) values = [values];
 	var flash = Application.application.flash;
-	return Static.objectToClass(flash.execute(comp.refId, command, values));
+	return Static.deserialize(flash.execute(target.refId, command, values));
 };
 
-Static.create = function(className, args){
+Static.create = function(extendType, args){
+	if(args != null && !(args instanceof Array)) args = [args];
 	var flash = Application.application.flash;
-	return Static.objectToClass(flash.create(className, args));
+	return Static.deserialize(flash.create(extendType, args));
 };
 
-Static.dispatch = function(comp, event){
+Static.addEventListener = function(target, type, listenerId, useWeakReference, useCapture, priority){
 	var flash = Application.application.flash;
-	return flash.dispatch(comp.refId, event.refId);
+	flash.addEventListener(target.refId, type, listenerId, useWeakReference, useCapture, priority);
+};
+
+Static.removeEventListener = function(target, type, listenerId, useCapture){
+	var flash = Application.application.flash;
+	flash.removeEventListener(target.refId, type, listenerId, useCapture);
+};
+
+Static.dispatchEvent = function(target, event){
+	var flash = Application.application.flash;
+	return flash.dispatchEvent(target.refId, event.refId);
 };
 
 Static.refIds = function(){
@@ -102,10 +114,45 @@ Static.releaseIds = function(ids, except){
 	return flash.releaseIds(ids, except);
 };
 
-Static.objectToClass = function(object, parent){
-	if(object != null && object.extendTypes != undefined){
+Static.filterFunction = function(collection, func){
+	var filterFunc = collection.getFilterFunction();
+	if(filterFunc != null)
+		filterFunc = $Function.Get(filterFunc);
+	var asFunction = $Function.Get(collection.createFunction(func));
+	collection.setFilterFunction(asFunction);
+	collection.refresh();
+
+	//return original filter function
+	collection.setFilterFunction(filterFunc);
+	collection.refresh();
+
+	asFunction.destroy();
+	if( filterFunc != null)
+		filterFunc.destroy();
+};
+
+Static.createFunction = function(classType, functionName){
+	var flash = Application.application.flash;
+	return Static.deserialize(flash.createFunction(classType, functionName));
+};
+
+Static.serialize = function(object){
+	if( object instanceof fd_Function ){
+		return {type:"FUNCTION_TYPE", refId:object.refId};
+	}else if( object instanceof EventDispatcher ||
+		object instanceof flash_events_Event){
+		return {type:"CLASS_TYPE", refId:object.refId};
+	}else{
+		return object;
+	}
+};
+
+Static.deserialize = function(object, parent){
+	if(object != null && object["extendTypes"] != undefined){
 		for(var i = 0; object.extendTypes.length; i++){
 			var extendType = object.extendTypes[i];
+			if(extendType == "Function")
+				return new fd_Function(object);
 			if(extendType == "Object")
 				return object.ref;
 			var pair = extendType.split("::");
@@ -175,7 +222,8 @@ Static.doTestLoader = function(){
 							"<h1 id='qunit-header'>Test Runner</h1>" + 
 							"<h2 id='qunit-banner'></h2>" +
 							"<div id='qunit-testrunner-toolbar'></div>" + 
-							"<div align='center' style='background-color:#eee'><input id='runTest' type='button' value='Run Tests'/></div>" + 
+							"<div align='center' style='background-color:#eee'>" + 
+							"<input id='runTest' type='button' value='Run Tests'/></div>" + 
 							"<h2 id='qunit-userAgent'></h2>" +
 							"<ol id='qunit-tests'></ol></div>"));
 

@@ -17,32 +17,30 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function flash_events_Event(classType, extendType) 
+function fd_Function(object) 
 {
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, fd_Function, "Function");
+	this.refId = object.refId;
 
-	this.destory = function(){
+	this.Initialize = function(classType, funtionName){
+		this.classType = classType;
+		this.funtionName = funtionName;
+	};
+
+	this.destroy = function(){
 		Static.releaseIds([this.refId]);
+		if( this.classType instanceof Function && 
+			this.classType[this.funtionName] instanceof Function){
+			this.classType[this.funtionName] = null;
+		}
 	};
 }
-flash_events_Event.prototype = new Object();
-
-flash_events_Event.prototype.Initialize = function(object){
-	this.refId = object.refId;
-	this.type = object.ref.type;
-	this.target = object.target;
-	this.currentTarget = object.currentTarget;
-	this.ref = object.ref;
-	this.extendTypes = object.extendTypes;
-};
-flash_events_Event.Get = function(o){
+fd_Function.prototype = new Object();
+fd_Function.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, flash_events_Event);
+	ref = UIComponent.Get(o, fd_Function);
 	return ref;
 };
 
-function $Event() {}
-$Event.Get = flash_events_Event.Get;
-$Event.Create = function(type){
-	return Static.create("flash.events::Event", type);
-};
+function $Function() {}
+$Function.Get = fd_Function.Get;

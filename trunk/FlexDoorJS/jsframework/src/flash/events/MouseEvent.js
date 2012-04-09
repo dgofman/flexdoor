@@ -36,8 +36,10 @@ flash_events_MouseEvent.Get = function(o){
 
 function $MouseEvent() {}
 $MouseEvent.Get = flash_events_MouseEvent.Get;
+$MouseEvent.Create = function(type){
+	return Static.create("flash.events::MouseEvent", type);
+};
 
-$MouseEvent.TYPE = "flash.events::MouseEvent";
 $MouseEvent.CLICK = "click";
 $MouseEvent.DOUBLE_CLICK = "doubleClick";
 $MouseEvent.MOUSE_DOWN = "mouseDown";

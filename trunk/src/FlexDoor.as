@@ -123,7 +123,10 @@ package
 				ExternalInterface.addCallback("getter", js_getter);
 				ExternalInterface.addCallback("execute", js_execute);
 				ExternalInterface.addCallback("create",  js_create);
-				ExternalInterface.addCallback("dispatch",  js_dispatch);
+				ExternalInterface.addCallback("createFunction",  js_createFunction);
+				ExternalInterface.addCallback("addEventListener", js_addEventListener);
+				ExternalInterface.addCallback("removeEventListener", js_removeEventListener);
+				ExternalInterface.addCallback("dispatchEvent", js_dispatchEvent);
 				dispatchJsEvent(INITIALIZED);
 			}
 			dispatchEvent(new DataEvent(INITIALIZED, false, false, _application.name));
@@ -200,8 +203,7 @@ package
 			return ids;
 		}
 
-		protected function js_releaseIds(ids:*=null, except:Boolean = false):void{
-			ids = ids as Array;
+		protected function js_releaseIds(ids:Array=null, except:Boolean = false):void{
 			var newMap:Dictionary = new Dictionary();
 			if(ids == null || ids.length == 0){
 				_refMap = newMap;
@@ -230,8 +232,8 @@ package
 
 		protected function js_find(refId:Number, id:String, index:uint, visibleOnly:Boolean):*{
 			try{
-				var parent:* = _refMap[refId];
-				var o:* = parent[id];
+				var target:* = _refMap[refId];
+				var o:* = target[id];
 				var visibleCount:uint = 0;
 				if(o is Array){
 					for(var i:uint = 0; i < o.length; i++){
@@ -250,15 +252,15 @@ package
 		}
 
 		protected function js_childByName(refId:Number, name:String):Object{
-			var parent:DisplayObjectContainer = _refMap[refId];
-			return serialize(parent.getChildByName(name));
+			var target:DisplayObjectContainer = _refMap[refId];
+			return serialize(target.getChildByName(name));
 		}
 
 		protected function js_childByType(refId:Number, classType:String, index:uint, visibleOnly:Boolean):Object{
-			var parent:DisplayObjectContainer = _refMap[refId];
+			var target:DisplayObjectContainer = _refMap[refId];
 			var visibleCount:uint = 0;
-			for(var i:uint = 0; i < parent.numChildren; i++){
-				var child:DisplayObject = parent.getChildAt(i);
+			for(var i:uint = 0; i < target.numChildren; i++){
+				var child:DisplayObject = target.getChildAt(i);
 				if(visibleOnly == true && child.visible != true)
 					continue;
 				var type:XML = describeType(child);
@@ -273,28 +275,29 @@ package
 		}
 
 		protected function js_setter(refId:Number, command:String, value:*):void{
-			var parent:Object = _refMap[refId];
-			if(validateCommand(parent, command))
-				parent[command] = deserialize(value);
+			var target:Object = _refMap[refId];
+			if(validateCommand(target, command)){
+				var actualValue:* = deserialize(value);
+				target[command] = actualValue;
+			}
 		}
 
 		protected function js_getter(refId:Number, command:String):*{
-			var parent:Object = _refMap[refId];
-			if(validateCommand(parent, command))
-				return serialize(parent[command]);
+			var target:Object = _refMap[refId];
+			if(validateCommand(target, command))
+				return serialize(target[command]);
 			return null;
 		}
 
-		protected function js_execute(refId:Number, command:String, values:*):Object{
-			values = values as Array;
-			var parent:Object = _refMap[refId];
-			if(validateCommand(parent, command)){
+		protected function js_execute(refId:Number, command:String, values:Array):Object{
+			var target:Object = _refMap[refId];
+			if(validateCommand(target, command)){
 				try{
 					var ret:*;
 					if(values != null && values.length > 0){
-						ret = parent[command].apply(parent, deserializeAll(values));
+						ret = target[command].apply(target, deserializeAll(values));
 					}else{
-						ret = parent[command]();
+						ret = target[command]();
 					}
 					return serialize(ret);
 				}catch(e:Error){
@@ -304,8 +307,7 @@ package
 			return null;
 		}
 
-		protected function js_create(className:String, args:*):Object{
-			args = args as Array;
+		protected function js_create(className:String, args:Array):Object{
 			var classRef:Class;
 			var obj:*;
 			try{
@@ -326,17 +328,50 @@ package
 			return serialize(obj);
 		}
 
-		protected function js_dispatch(refId:Number, eventRefId:uint):Boolean{
-			var parent:Object = _refMap[refId];
+		protected function js_createFunction(className:String, functionName:String):Object{
+			var handler:Function;
+			handler = function():*{
+				var listenerId:Number = arguments.callee.prototype.listenerId;
+				var jsName:String = arguments.callee.prototype.jsName;
+				for(var i:uint = 0; i < arguments.length; i++)
+					arguments[i] = serialize(arguments[i]);
+				var args:* = (arguments.length == 1 ? arguments[0] : arguments);
+				var result:* = ExternalInterface.call("parent." + jsName, args);
+				return result;
+			};
+			var obj:Object = serialize(handler);
+			handler.prototype.jsName = className + '.' + functionName;
+			handler.prototype.listenerId = obj.refId;
+			return obj;
+		}
+
+		protected function js_addEventListener(refId:Number, type:String, listenerRef:Object, 
+											   useWeakReference:Boolean, useCapture:Boolean, priority:int):void{
+			var target:Object = _refMap[refId];
+			var listener:Function = deserialize(listenerRef);
+			target.addEventListener(type, listener, useCapture, priority, true);
+		}
+
+		protected function js_removeEventListener(refId:Number, type:String, listenerId:uint, useCapture:Boolean):void{
+			var target:Object = _refMap[refId];
+			var listener:Function = _refMap[listenerId];
+			if(target && listener is Function)
+				target.removeEventListener(type, listener, useCapture);
+		}
+
+		protected function js_dispatchEvent(refId:Number, eventRefId:uint):Boolean{
+			var target:Object = _refMap[refId];
 			var event:Event = _refMap[eventRefId];
-			if(parent is EventDispatcher && event != null)
-				return EventDispatcher(parent).dispatchEvent(event);
+			if(target && event != null)
+				return EventDispatcher(target).dispatchEvent(event);
 			return false;
 		}
 
 		public function deserializeAll(params:Array):Array{
-			for(var i:uint = 0; i < params.length; i++)
-				params[i] = deserialize(params[i]);
+			if(params is Array){
+				for(var i:uint = 0; i < params.length; i++)
+					params[i] = deserialize(params[i]);
+			}
 			return params;
 		}
 
@@ -346,10 +381,7 @@ package
 				if(ref.type == "CLASS_TYPE"){
 					return _refMap[ref.refId];
 				}else if(ref.type == "FUNCTION_TYPE"){
-					_jsFunction = function(...args):*{
-						return ExternalInterface.call("parent.EventDispatcher.FunctionHandler", args);
-					};
-					return _jsFunction;
+					return _refMap[ref.refId];
 				}
 			}
 			return ref;
@@ -361,10 +393,12 @@ package
 			if(ref is Error){
 				out.error = Error(ref).message;
 				out.stackTrace = Error(ref).getStackTrace();
-			}else if(typeof(ref) != "object" || ref == Array){
+			}else if(!(ref is Function) && (typeof(ref) != "object" || ref == Array)){
 				return ref; //Number, uint, int, String, Boolean, Array
 			}else{
-				if(ref is Error){
+				if(ref is Event){
+					out.target = serialize(ref.target);
+					out.currentTarget = serialize(ref.currentTarget);
 					out.type = ref.type;
 				}else{
 					if(ref.hasOwnProperty('id'))

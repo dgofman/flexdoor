@@ -70,4 +70,6 @@ Sample3TestCase.prototype.test_3 = function(event) {
 		return true;
 	});
 	dataProvider.refresh();
+
+	TestEvent.Get(event).delay = 1000;
 };

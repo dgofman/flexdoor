@@ -79,20 +79,59 @@ EventDispatcher.prototype.create = function(className){
 	return Static.create(className, params);
 };
 
-EventDispatcher.prototype.dispatch = function(eventId){
-	return Static.dispatch(this, eventId);
-};
-
-EventDispatcher.prototype.serialize = function(object){
-	if( object instanceof Function ){
-		EventDispatcher.FunctionHandler = object;
-		return {type:"FUNCTION_TYPE", refId:object.refId};
-	}else if( object instanceof EventDispatcher ||
-		object instanceof flash_events_Event){
-		return {type:"CLASS_TYPE", refId:object.refId};
-	}else{
-		return object;
+EventDispatcher.prototype.createFunctionByName = function(classType, functionName){
+	if( classType instanceof Function && 
+		classType[functionName] instanceof Function){
+		//Create ActionScript function and map to JS function via ExternalInterface
+		var className = classType.toString().match(/function\s*(\w+)/)[1];
+		var func = $Function.Get(Static.createFunction(className, functionName));
+		func.Initialize(classType, functionName);
+		classType[functionName].refFunc = func;
+		return func;
 	}
 };
 
-EventDispatcher.FunctionHandler = null;
+EventDispatcher.prototype.createFunction = function(listener){
+	if(listener != undefined && listener instanceof Function){
+		var classType = EventDispatcher;
+		var functionName = "FunctionHandler" + new Date().getTime();
+		classType[functionName] = listener;
+		return this.createFunctionByName(classType, functionName);
+	}
+	return listener;
+};
+
+EventDispatcher.prototype.addEventListener = function(type, listener, target, useWeakReference, useCapture, priority){
+	var asFunction = null;
+	if(useWeakReference == undefined) useWeakReference = false;
+	if(useCapture == undefined) useCapture = false;
+	if(priority == undefined) priority = 0;
+	if(listener instanceof fd_Function){
+		asFunction = listener;
+	}else{
+		asFunction = this.createFunction(function(){
+			for(var i = 0; i < arguments.length; i++)
+				arguments[i] = Static.deserialize(arguments[i], this);
+			listener.refFunc = asFunction;
+			listener.apply(target, arguments);
+		});
+	}
+	Static.addEventListener(this, type, this.serialize(asFunction), useCapture, priority, useWeakReference);
+};
+
+EventDispatcher.prototype.removeEventListener = function(type, listener, useCapture){
+	if(listener instanceof Function && listener.refFunc instanceof fd_Function){
+		if(useCapture == undefined) useCapture = false;
+		var func = $Function.Get(listener.refFunc);
+		Static.removeEventListener(this, type, func.refId, useCapture);
+		func.destroy();
+	}
+};
+
+EventDispatcher.prototype.dispatchEvent = function(eventId){
+	return Static.dispatchEvent(this, eventId);
+};
+
+EventDispatcher.prototype.serialize = function(object){
+	return Static.serialize(object);
+};

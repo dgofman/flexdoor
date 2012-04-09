@@ -17,29 +17,41 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_Button(classType, extendType) 
+function mx_events_CollectionEvent(classType, extendType) 
 {
 	UIComponent.call(this, classType, extendType);
 
-	this.click = function(type){
-		if(type == undefined) type = $MouseEvent.CLICK;
-		var event = $MouseEvent.Get($MouseEvent.Create(type));
-		this.dispatchEvent(event);
-		event.destory();
+	this.Initialize = function(object){
+		flash_events_Event.prototype.Initialize(object);
+		this.kind = this.ref.kind;
 	};
 }
 
-mx_controls_Button.prototype.Import = function(){
-	return ["flash.events::MouseEvent"];
+mx_events_CollectionEvent.prototype.Import = function(){
+	return ["flash.events::Event"];
 };
-mx_controls_Button.prototype.Extends = function(){
-	mx_controls_Button.prototype = new UIComponent(mx_controls_Button);
+mx_events_CollectionEvent.prototype.Extends = function(){
+	mx_events_CollectionEvent.prototype = new flash_events_Event(mx_events_CollectionEvent);
 };
-mx_controls_Button.Get = function(o){
+mx_events_CollectionEvent.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, mx_controls_Button);
+	ref = UIComponent.Get(o, mx_events_CollectionEvent);
 	return ref;
 };
 
-function $Button() {}
-$Button.Get = mx_controls_Button.Get;
+function $CollectionEvent() {}
+$CollectionEvent.Get = mx_events_CollectionEvent.Get;
+$CollectionEvent.Create = function(type){
+	return Static.create("mx.events::CollectionEvent", type);
+};
+$CollectionEvent.COLLECTION_CHANGE = "collectionChange";
+
+CollectionEventKind = {};
+CollectionEventKind.ADD = "add";
+CollectionEventKind.MOVE = "move";
+CollectionEventKind.REFRESH = "refresh";
+CollectionEventKind.REMOVE = "remove";
+CollectionEventKind.REPLACE = "replace";
+CollectionEventKind.EXPAND = "expand";
+CollectionEventKind.RESET = "reset";
+CollectionEventKind.UPDATE = "update";

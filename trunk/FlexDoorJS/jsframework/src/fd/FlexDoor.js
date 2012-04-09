@@ -419,6 +419,7 @@ $(document).ready(function(){
 		"fd::Static",
 		"fd::Assert",
 		"fd::TestEvent",
+		"fd::Function",
 		"fd::EventDispatcher",
 		"flash.events::Event",], 
 		function(){

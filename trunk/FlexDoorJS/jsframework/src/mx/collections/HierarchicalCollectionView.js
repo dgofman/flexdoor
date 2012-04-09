@@ -23,7 +23,7 @@ function mx_collections_HierarchicalCollectionView()
 		return this.getter("filterFunction");
 	};
 	this.setFilterFunction = function(value){
-		this.setter("filterFunction", value);
+		this.setter("filterFunction", this.createFunction(value));
 	};
 
 	this.refresh = function(){
