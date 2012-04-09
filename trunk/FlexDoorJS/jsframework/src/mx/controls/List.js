@@ -21,25 +21,16 @@ function mx_controls_List(classType, extendType)
 {
 	UIComponent.call(this, classType, extendType);
 
-	this.getSelectedIndex = function(){
-		return this.getter("selectedIndex");
-	};
-	this.setSelectedIndex = function(value){
-		this.setter("selectedIndex", value);
+	this.selectedIndex = function(value){
+		return this.property("selectedIndex", value);
 	};
 
-	this.getSelectedItem = function(){
-		return this.getter("selectedItem");
-	};
-	this.setSelectedItem = function(value){
-		this.setter("selectedItem", value);
+	this.selectedItem = function(value){
+		return this.property("selectedItem", value);
 	};
 
-	this.getDataProvider = function(){
-		return this.getter("dataProvider");
-	};
-	this.setDataProvider = function(value){
-		this.setter("dataProvider", value);
+	this.dataProvider = function(value){
+		return this.property("dataProvider", value);
 	};
 }
 

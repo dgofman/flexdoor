@@ -24,7 +24,7 @@ Sample3TestCase.prototype.tearDown = function(){
 
 Sample3TestCase.prototype.test_1 = function(event) {
 	var dataGrid = $DataGrid.Get(this.dataGrid);
-	var dataProvider = $ListCollectionView.Get(dataGrid.getDataProvider());
+	var dataProvider = $ListCollectionView.Get(dataGrid.dataProvider());
 
 	var findItem = "3";
 	var findIndex = -1;
@@ -51,7 +51,7 @@ Sample3TestCase.prototype.test_2 = function(event) {
 		if(itemRenderer == null && item == findItem){
 			itemRenderer = $DataGridItemRenderer.Get(dataGrid.itemToItemRenderer(item));
 			Assert.assertTrue(renderer != null);
-			Assert.assertEquals(findItem, itemRenderer.getData());
+			Assert.assertEquals(findItem, itemRenderer.data());
 		}
 		return true;
 	});
@@ -64,7 +64,7 @@ Sample3TestCase.prototype.test_3 = function(event) {
 
 	//Filter and remove item
 	var findItem = "NEW ROW";
-	dataProvider.setFilterFunction(function(item){
+	dataProvider.filterFunction(function(item){
 		if(item == findItem)
 			return false;
 		return true;

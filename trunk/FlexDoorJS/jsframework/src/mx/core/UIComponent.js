@@ -27,6 +27,14 @@ function UIComponent(classType, extendType)
 	classType.prototype.toString  = function(){
 		return extendType;
 	};
+
+	this.visible = function(value){
+		return this.property("visible", value);
+	};
+
+	this.includeInLayout = function(value){
+		return this.property("includeInLayout", value);
+	};
 }
 
 UIComponent.prototype = new EventDispatcher();

@@ -21,11 +21,8 @@ function UITextField(classType, extendType)
 {
 	UIComponent.call(this, classType, extendType);
 
-	this.getText = function() {
-		return this.getter("text");
-	};
-	this.setText = function(value) {
-		return this.setter("text", value);
+	this.text = function(value) {
+		return this.property("text", value);
 	};
 }
 

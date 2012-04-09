@@ -20,14 +20,14 @@
 function mx_controls_TextInput(classType, extendType) 
 {
 	UIComponent.call(this, classType, extendType);
-
-	this.setText = function(value){
-		this.setter("text", value);
-	};
 }
 
+mx_controls_TextInput.prototype.Import = function(){
+	return ["mx.core::UITextField"];
+};
 mx_controls_TextInput.prototype.Extends = function(){
-	mx_controls_TextInput.prototype = new UIComponent(mx_controls_TextInput);
+	UITextField.prototype.Extends();
+	mx_controls_TextInput.prototype = new UITextField(mx_controls_TextInput);
 };
 mx_controls_TextInput.Get = function(o){
 	var ref = this;

@@ -21,6 +21,10 @@ function mx_controls_ComboBox(classType, extendType)
 {
 	UIComponent.call(this, classType, extendType);
 
+	this.dataProvider = function(value){
+		return this.property("dataProvider", value);
+	};
+
 	this.open = function(){
 		this.execute("open");
 	};
@@ -37,31 +41,26 @@ function mx_controls_ComboBox(classType, extendType)
 		return this.getter("dropdown");
 	};
 
-	this.getSelectedIndex = function(){
-		return this.getter("selectedIndex");
-	};
-	this.setSelectedIndex = function(value, autoClose){
-		this.open();
-		while(this.isOpen() == false){}
-		this.dropdown().setSelectedIndex(value);
-		if(autoClose != false) this.close();
-	};
-
-	this.getSelectedItem = function(){
-		return this.getter("selectedItem");
-	};
-	this.setSelectedItem = function(value){
-		this.open();
-		while(this.isOpen() == false){}
-		this.dropdown().setSelectedItem(value);
-		if(autoClose != false) this.close();
+	this.selectedIndex = function(value, autoClose){
+		if(value === undefined){
+			return this.getter("selectedIndex");
+		}else{
+			this.open();
+			while(this.isOpen() == false){}
+			this.dropdown().selectedIndex(value);
+			if(autoClose != false) this.close();
+		}
 	};
 
-	this.getDataProvider = function(){
-		return this.getter("dataProvider");
-	};
-	this.setDataProvider = function(value){
-		this.setter("dataProvider", value);
+	this.selectedItem = function(value){
+		if(value === undefined){
+			return this.getter("selectedItem");
+		}else{
+			this.open();
+			while(this.isOpen() == false){}
+			this.dropdown().selectedItem(value);
+			if(autoClose != false) this.close();
+		}
 	};
 }
 

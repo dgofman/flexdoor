@@ -21,11 +21,8 @@ function mx_controls_dataGridClasses_DataGridItemRenderer(classType, extendType)
 {
 	UIComponent.call(this, classType, extendType);
 
-	this.getData = function() {
-		return this.getter("data");
-	};
-	this.setData = function(value) {
-		return this.setter("data", value);
+	this.data = function(value) {
+		return this.property("data", value);
 	};
 }
 

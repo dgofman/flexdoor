@@ -47,15 +47,12 @@ function mx_collections_ListCollectionView()
 		return this.execute("getItemIndex", item);
 	};
 
-	this.getFilterFunction = function(){
-		return this.getter("filterFunction");
-	};
-	this.setFilterFunction = function(value){
-		this.setter("filterFunction", this.createFunction(value));
+	this.filterFunction = function(value){
+		return this.property("filterFunction", this.createFunction(value));
 	};
 
 	this.setSearchFunction = function(func){
-		Static.filterFunction(this, func);
+		Static.setSearchFunction(this, func);
 	};
 }
 

@@ -69,6 +69,14 @@ EventDispatcher.prototype.getter = function(command){
 	return Static.getter(this, command);
 };
 
+EventDispatcher.prototype.property = function(command, value){
+	if(value === undefined){
+		return this.getter(command);
+	}else{
+		this.setter(command, value);
+	}
+};
+
 EventDispatcher.prototype.execute = function(command){
 	var params = [];
 	for(var i = 1; i < arguments.length; i++)

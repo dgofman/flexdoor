@@ -19,11 +19,8 @@
  
 function mx_collections_HierarchicalCollectionView() 
 {
-	this.getFilterFunction = function(){
-		return this.getter("filterFunction");
-	};
-	this.setFilterFunction = function(value){
-		this.setter("filterFunction", this.createFunction(value));
+	this.filterFunction = function(value){
+		return this.property("filterFunction", this.createFunction(value));
 	};
 
 	this.refresh = function(){
@@ -31,7 +28,7 @@ function mx_collections_HierarchicalCollectionView()
 	};
 
 	this.setSearchFunction = function(func){
-		Static.filterFunction(this, func);
+		Static.setSearchFunction(this, func);
 	};
 }
 

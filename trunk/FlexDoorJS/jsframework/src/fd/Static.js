@@ -120,16 +120,16 @@ Static.releaseIds = function(ids, except){
 	return flash.releaseIds(ids, except);
 };
 
-Static.filterFunction = function(collection, func){
-	var filterFunc = collection.getFilterFunction();
+Static.setSearchFunction = function(collection, func){
+	var filterFunc = collection.filterFunction();
 	if(filterFunc != null)
 		filterFunc = $Function.Get(filterFunc);
 	var asFunction = $Function.Get(collection.createFunction(func));
-	collection.setFilterFunction(asFunction);
+	collection.filterFunction(asFunction);
 	collection.refresh();
 
 	//return original filter function
-	collection.setFilterFunction(filterFunc);
+	collection.filterFunction(filterFunc);
 	collection.refresh();
 
 	asFunction.destroy();
@@ -185,6 +185,12 @@ Static.deserialize = function(object, parent){
 		}
 	}
 	return object;
+};
+
+Static.doEvent = function(classType, eventType, target){
+	var event = classType.Get(classType.Create(eventType));
+	target.dispatchEvent(event);
+	event.destory();
 };
 
 Static.log = function(message) {

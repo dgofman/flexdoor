@@ -21,11 +21,8 @@ function spark_components_Panel(classType, extendType)
 {
 	UIComponent.call(this, classType, extendType);
 
-	this.getTitle = function(){
-		return this.getter("title");
-	};
-	this.setTitle = function(value){
-		this.setter("title", value);
+	this.title = function(value){
+		return this.property("title", value);
 	};
 }
 

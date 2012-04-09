@@ -72,14 +72,14 @@ Sample1TestCase.prototype.test_1 = function(event) {
 
 Sample1TestCase.prototype.test_2 = function(event) {
 	var dataGrid = $DataGrid.Get(this.dataGrid);
-	dataGrid.setSelectedIndex(0);
+	dataGrid.selectedIndex(0);
 };
 
 Sample1TestCase.prototype.test_3 = function(event) {
 	var dataGrid = $DataGrid.Get(this.dataGrid);
-	dataGrid.setSelectedItem(2);
+	dataGrid.selectedItem(2);
 
-	var dataProvider = $ListCollectionView.Get(dataGrid.getDataProvider());
+	var dataProvider = $ListCollectionView.Get(dataGrid.dataProvider());
 	Assert.assertEquals(dataProvider.source.length, 5);
 
 	//Pass local dataGrid object to the next test function 
