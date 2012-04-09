@@ -405,8 +405,11 @@ package
 			if(ref == null) return null;
 			var out:Object = {};
 			if(ref is Error){
-				out.error = Error(ref).message;
+				out.extendTypes = ["Error", ref.name];
+				out.errorID = ref.errorID;
+				out.message = ref.message;
 				out.stackTrace = Error(ref).getStackTrace();
+				return out;
 			}else if(ref is Array){
 				for(var a:uint = 0; a < ref.length; a++)
 					ref[a] = serialize(ref[a]);

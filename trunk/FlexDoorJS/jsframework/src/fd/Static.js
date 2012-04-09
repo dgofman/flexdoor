@@ -195,9 +195,11 @@ Static.deserialize = function(object, parent){
 			var className = pair[0];
 			if(pair.length == 2)
 				className = pair[1];
-			if(className == "ReferenceError" || className == "Error"){
+			if(className == "Error"){
 				Static.warn(object.stackTrace);
-				throw new ReferenceError(object.message);
+				var classType = FlexDoor.classType(object.extendTypes[1]);
+				if(classType == null) classType = Error;
+				throw new classType(object.message);
 			}
 			var classType = FlexDoor.classType(extendType);
 			if(classType != undefined){

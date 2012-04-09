@@ -103,6 +103,8 @@ FlexDoor.prototype.include = function() {
 	var testCaseType = FlexDoor.TEST_CASES[Static.testCaseIndex];
 
 	var runTestCase = function(){
+		refIds = Static.refIds();
+
 		if(testCase instanceof testCaseType.prototype.constructor){
 			var tests = [];
 			for(var name in testCaseType.prototype){
