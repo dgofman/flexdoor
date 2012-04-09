@@ -49,7 +49,7 @@ Sample3TestCase.prototype.test_2 = function(event) {
 	var findItem = "3";
 	dataProvider.setSearchFunction(function(item){
 		if(itemRenderer == null && item == findItem){
-			var itemRenderer = $DataGridItemRenderer.Get(dataGrid.itemToItemRenderer(item));
+			itemRenderer = $DataGridItemRenderer.Get(dataGrid.itemToItemRenderer(item));
 			Assert.assertTrue(renderer != null);
 			Assert.assertEquals(findItem, itemRenderer.getData());
 		}
