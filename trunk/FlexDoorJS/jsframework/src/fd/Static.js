@@ -43,9 +43,33 @@ Static.delegate = function(target, func, params){
 	return f;
 };
 
+Static.getParams = function(args, index){
+	var params = [];
+	if(args.length > index){
+		for(var i = index; i < args.length; i++)
+			params.push(args[i]);
+	}
+	return params;
+};
+
 Static.callLater = function(target, func, delay, params){
 	if(delay == undefined) delay = FlexDoor.TEST_DELAY_INTERVAL;
 	setTimeout(function(){ func.apply(target, params); }, delay);
+};
+
+Static.waitFor = function(target, func, delay, timeout, params){
+	if(delay == undefined) delay = FlexDoor.TEST_DELAY_INTERVAL;
+	var interval1 = setInterval(function(){ 
+		if(func.apply(target, params) == true){
+			clearInterval(interval1);
+			clearInterval(interval2);
+		}	
+	}, delay);
+	var interval2 = setInterval(function(){
+		clearInterval(interval1);
+		clearInterval(interval2);
+		throw new Error("Timeout!!!");
+	}, timeout);
 };
 
 Static.find = function(parent, id, index, visibleOnly){

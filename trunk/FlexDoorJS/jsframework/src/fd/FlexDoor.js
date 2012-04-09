@@ -32,11 +32,7 @@ FlexDoor.prototype.toString = function() {
 FlexDoor.prototype.addEventListener = function(type, callback){
 	this.events[type] = this.events[type] || [];
 	if(this.events[type]) {
-		var params = [callback];
-		if(arguments.length > 2){
-			for(var i = 2; i < arguments.length; i++)
-				params.push(arguments[i]);
-		}
+		var params = [callback].concat(Static.getParams(arguments, 2));
 		this.events[type].push(this.delegate.apply(this, params));
 	}
 };
@@ -65,21 +61,15 @@ FlexDoor.prototype.dispatchEvent = function(type){
 };
 
 FlexDoor.prototype.delegate = function(func){
-	var params = [];
-	if(arguments.length > 1){
-		for(var i = 1; i < arguments.length; i++)
-			params.push(arguments[i]);
-	}
-	return Static.delegate(this, func, params);
+	return Static.delegate(this, func, Static.getParams(arguments, 1));
 };
 
 FlexDoor.prototype.callLater = function(func, delay){
-	var params = [];
-	if(arguments.length > 2){
-		for(var i = 2; i < arguments.length; i++)
-			params.push(arguments[i]);
-	}
-	Static.callLater(this, func, delay, params);
+	Static.callLater(this, func, delay, Static.getParams(arguments, 2));
+};
+
+FlexDoor.prototype.waitFor = function(func, delay, timeout){
+	Static.waitFor(this, func, delay, timeout, Static.getParams(arguments, 2));
 };
 
 FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
@@ -256,7 +246,7 @@ FlexDoor.includeAll = function(instance, files, callback) {
 							Static.warn("Class not loaded: " + className);
 						}
 						clearInterval(FlexDoor.TIME_INTERVAL);
-					}, 5000, FlexDoor.LOAD_FILES);
+					}, 15000, FlexDoor.LOAD_FILES);
 				}, 500);
 			}
 		};
