@@ -165,6 +165,7 @@ FlexDoor.prototype.include = function() {
 					}
 				}catch(e){
 					Assert.fail(e.message);
+					Static.error(e.message);
 					finalizeFunction(releaseRefId);
 				}
 			};

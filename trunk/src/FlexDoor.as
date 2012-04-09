@@ -117,6 +117,7 @@ package
 				ExternalInterface.addCallback("application", js_application);
 				ExternalInterface.addCallback("systemManager", js_systemManager);
 				ExternalInterface.addCallback("find", js_find);
+				ExternalInterface.addCallback("findById", js_findById);
 				ExternalInterface.addCallback("getChildByName", js_childByName);
 				ExternalInterface.addCallback("getChildByType", js_childByType);
 				ExternalInterface.addCallback("setter", js_setter);
@@ -228,6 +229,10 @@ package
 
 		protected function js_systemManager():Object{
 			return serialize(_application.systemManager);
+		}
+
+		protected function js_findById(refId:Number):Object{
+			return serialize(_refMap[refId]);
 		}
 
 		protected function js_find(refId:Number, id:String, index:uint, visibleOnly:Boolean):*{
@@ -393,8 +398,12 @@ package
 			if(ref is Error){
 				out.error = Error(ref).message;
 				out.stackTrace = Error(ref).getStackTrace();
-			}else if(!(ref is Function) && (typeof(ref) != "object" || ref == Array)){
-				return ref; //Number, uint, int, String, Boolean, Array
+			}else if(ref is Array){
+				for(var a:uint = 0; a < ref.length; a++)
+					ref[a] = serialize(ref[a]);
+				return ref;
+			}else if(!(ref is Function) && (typeof(ref) != "object")){
+				return ref; //Number, uint, int, String, Boolean
 			}else{
 				if(ref is Event){
 					out.target = serialize(ref.target);
@@ -410,6 +419,10 @@ package
 				var extendTypes:Array = [type.@name.toString()];
 				for(var i:uint = 0; i < type.extendsClass.length(); i++)
 					extendTypes.push(type.extendsClass[i].@type.toString());
+
+				if(extendTypes.length < 2 || extendTypes[0] == "Object")
+					return ref;
+
 				out.extendTypes = extendTypes;
 				if(!(ref is DisplayObject)) //if not low level of ui components
 					out.ref = ref;

@@ -54,6 +54,12 @@ Static.find = function(parent, id, index, visibleOnly){
 	return Static.deserialize(object, parent);
 };
 
+Static.findById = function(refId){
+	var flash = Application.application.flash;
+	var object = flash.findById(refId);
+	return Static.deserialize(object);
+};
+
 Static.getChildByName = function(parent, name){
 	var flash = Application.application.flash;
 	var object = flash.getChildByName(parent.refId, name);

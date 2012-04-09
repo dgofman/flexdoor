@@ -47,6 +47,10 @@ EventDispatcher.prototype.find = function(id, index, visibleOnly) {
 	return Static.find(this, id, index, visibleOnly);
 };
 
+EventDispatcher.prototype.findById = function(refId) {
+	return Static.findById(refId);
+};
+
 EventDispatcher.prototype.getChildByName = function(name) {
 	return Static.getChildByName(this, name);
 };
