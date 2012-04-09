@@ -19,6 +19,7 @@
 
 function mx_controls_Image(classType, extendType) 
 {
+	/* extendType - mx.controls::Image */
 	UIComponent.call(this, classType, extendType);
 }
 

@@ -19,6 +19,7 @@
 
 function mx_events_CollectionEvent(classType, extendType) 
 {
+	/* extendType - mx.events::CollectionEvent */
 	UIComponent.call(this, classType, extendType);
 
 	this.Initialize = function(object){

@@ -19,6 +19,7 @@
 
 function spark_components_supportClasses_SkinnableComponent(classType, extendType) 
 {
+	/* extendType - spark.components.supportClasses::SkinnableComponent */
 	UIComponent.call(this, classType, extendType);
 }
 

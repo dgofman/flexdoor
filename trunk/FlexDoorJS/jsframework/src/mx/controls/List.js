@@ -19,6 +19,7 @@
 
 function mx_controls_List(classType, extendType) 
 {
+	/* extendType - mx.controls::List */
 	UIComponent.call(this, classType, extendType);
 
 	this.selectedIndex = function(value){

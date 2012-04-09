@@ -19,6 +19,7 @@
 
 function flash_events_Event(classType, extendType) 
 {
+	/* extendType - flash.events::Event */
 	UIComponent.call(this, classType, extendType);
 
 	this.destory = function(){

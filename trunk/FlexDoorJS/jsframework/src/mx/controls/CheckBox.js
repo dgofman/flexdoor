@@ -19,6 +19,7 @@
 
 function mx_controls_CheckBox(classType, extendType) 
 {
+	/* extendType - mx.controls::CheckBox */
 	UIComponent.call(this, classType, extendType);
 
 	this.selected= function(value){

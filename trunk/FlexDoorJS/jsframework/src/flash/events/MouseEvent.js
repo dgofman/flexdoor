@@ -19,6 +19,7 @@
 
 function flash_events_MouseEvent(classType, extendType) 
 {
+	/* extendType - flash.events::MouseEvent */
 	UIComponent.call(this, classType, extendType);
 }
 

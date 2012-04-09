@@ -19,6 +19,7 @@
 
 function mx_controls_ComboBox(classType, extendType) 
 {
+	/* extendType - mx.controls::ComboBox */
 	UIComponent.call(this, classType, extendType);
 
 	this.dataProvider = function(value){

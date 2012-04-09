@@ -17,8 +17,11 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-function mx_collections_HierarchicalCollectionView() 
+function mx_collections_HierarchicalCollectionView(classType, extendType) 
 {
+	/* extendType - mx.collections::HierarchicalCollectionView */
+	UIComponent.call(this, classType, extendType);
+
 	this.filterFunction = function(value){
 		return this.property("filterFunction", this.createFunction(value));
 	};

@@ -19,6 +19,7 @@
 
 function mx_controls_Alert(classType, extendType) 
 {
+	/* extendType - mx.controls::Alert */
 	UIComponent.call(this, classType, extendType);
 	
 	this.buttonOK = function(){

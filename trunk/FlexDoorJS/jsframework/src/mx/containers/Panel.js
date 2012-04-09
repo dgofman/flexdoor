@@ -19,6 +19,7 @@
 
 function mx_containers_Panel(classType, extendType) 
 {
+	/* extendType - mx.containers::Panel */
 	UIComponent.call(this, classType, extendType);
 
 	this.title = function(value){

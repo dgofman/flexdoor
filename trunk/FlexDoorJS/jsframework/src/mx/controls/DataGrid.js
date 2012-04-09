@@ -19,6 +19,7 @@
 
 function mx_controls_DataGrid(classType, extendType) 
 {
+	/* extendType - mx.controls::DataGrid */
 	UIComponent.call(this, classType, extendType);
 	
 	this.indexToItemRenderer = function(index){

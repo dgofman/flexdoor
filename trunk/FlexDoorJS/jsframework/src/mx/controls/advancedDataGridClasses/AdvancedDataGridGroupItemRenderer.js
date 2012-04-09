@@ -19,6 +19,7 @@
 
 function mx_controls_advancedDataGridClasses_AdvancedDataGridGroupItemRenderer(classType, extendType) 
 {
+	/* extendType - mx.controls.advancedDataGridClasses::AdvancedDataGridGroupItemRenderer */
 	UIComponent.call(this, classType, extendType);
 }
 

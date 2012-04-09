@@ -19,6 +19,7 @@
 
 function mx_controls_TextInput(classType, extendType) 
 {
+	/* extendType - mx.controls::TextInput */
 	UIComponent.call(this, classType, extendType);
 }
 

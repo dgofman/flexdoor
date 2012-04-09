@@ -19,6 +19,7 @@
 
 function spark_components_TitleWindow(classType, extendType) 
 {
+	/* extendType - spark.components::TitleWindow */
 	UIComponent.call(this, classType, extendType);
 }
 

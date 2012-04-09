@@ -19,6 +19,7 @@
 
 function spark_components_Button(classType, extendType) 
 {
+	/* extendType - spark.components::Button */
 	UIComponent.call(this, classType, extendType);
 
 	this.click = function(type){

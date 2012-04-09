@@ -17,8 +17,11 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-function mx_collections_ListCollectionView() 
+function mx_collections_ListCollectionView(classType, extendType) 
 {
+	/* extendType - mx.collections::ListCollectionView */
+	UIComponent.call(this, classType, extendType);
+
 	this.contains = function(item){
 		return this.execute("contains", item);
 	};

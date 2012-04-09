@@ -19,6 +19,7 @@
 
 function mx_controls_AdvancedDataGrid(classType, extendType) 
 {
+	/* extendType - mx.controls::AdvancedDataGrid */
 	UIComponent.call(this, classType, extendType);
 	
 	this.expandItem = function(item, open, animate, dispatchEvent){

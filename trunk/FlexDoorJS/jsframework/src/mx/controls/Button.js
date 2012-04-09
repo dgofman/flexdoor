@@ -19,6 +19,7 @@
 
 function mx_controls_Button(classType, extendType) 
 {
+	/* extendType - mx.controls::Button */
 	UIComponent.call(this, classType, extendType);
 
 	this.click = function(type){

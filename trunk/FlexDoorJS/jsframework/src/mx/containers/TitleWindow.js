@@ -19,6 +19,7 @@
 
 function mx_containers_TitleWindow(classType, extendType) 
 {
+	/* extendType - mx.containers::TitleWindow */
 	UIComponent.call(this, classType, extendType);
 }
 
