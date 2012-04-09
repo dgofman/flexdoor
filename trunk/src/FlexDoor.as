@@ -118,6 +118,7 @@ package
 				ExternalInterface.addCallback("systemManager", js_systemManager);
 				ExternalInterface.addCallback("find", js_find);
 				ExternalInterface.addCallback("findById", js_findById);
+				ExternalInterface.addCallback("getClass", js_class);
 				ExternalInterface.addCallback("getChildByName", js_childByName);
 				ExternalInterface.addCallback("getChildByType", js_childByType);
 				ExternalInterface.addCallback("setter", js_setter);
@@ -312,9 +313,8 @@ package
 			return null;
 		}
 
-		protected function js_create(className:String, args:Array):Object{
+		protected function js_class(className:String, isSerialize:Boolean=true):Object{
 			var classRef:Class;
-			var obj:*;
 			try{
 				classRef = getDefinitionByName(className) as Class;
 			}catch(e:Error){
@@ -323,14 +323,23 @@ package
 				}catch(refError:ReferenceError){}
 				try{
 					var moduleManager:* = _application.loaderInfo.applicationDomain.getDefinition("mx.modules::ModuleManager");
-					obj = moduleManager.getAssociatedFactory(className); //FlexModuleFactory
+					var obj:* = moduleManager.getAssociatedFactory(className); //FlexModuleFactory
 					if(obj != null) 
 						classRef = obj.getDefinitionByName(className);
 				}catch(refError:ReferenceError){}
 			}
-			if(classRef != null)
-				obj = create(classRef, deserializeAll(args));
-			return serialize(obj);
+			if(isSerialize == true)
+				return serialize(classRef);
+			return classRef;
+		}
+
+		protected function js_create(className:String, args:Array):Object{
+			var classRef:Class = js_class(className, false) as Class;
+			if(classRef != null){
+				var obj:* = create(classRef, deserializeAll(args));
+				return serialize(obj);
+			}
+			return null;
 		}
 
 		protected function js_createFunction(className:String, functionName:String):Object{
@@ -415,17 +424,20 @@ package
 					if(ref.hasOwnProperty('name'))
 						out.name = ref.name;
 				}
-				var type:XML = describeType(ref);
-				var extendTypes:Array = [type.@name.toString()];
-				for(var i:uint = 0; i < type.extendsClass.length(); i++)
-					extendTypes.push(type.extendsClass[i].@type.toString());
-
-				if(extendTypes.length < 2 || extendTypes[0] == "Object")
-					return ref;
-
-				out.extendTypes = extendTypes;
-				if(!(ref is DisplayObject)) //if not low level of ui components
-					out.ref = ref;
+				
+				if(!(ref is Class)){
+					var type:XML = describeType(ref);
+					var extendTypes:Array = [type.@name.toString()];
+					for(var i:uint = 0; i < type.extendsClass.length(); i++)
+						extendTypes.push(type.extendsClass[i].@type.toString());
+	
+					if(extendTypes.length < 2 || extendTypes[0] == "Object")
+						return ref;
+	
+					out.extendTypes = extendTypes;
+					if(!(ref is DisplayObject)) //if not low level of ui components
+						out.ref = ref;
+				}
 			}
 
 			var id:*;

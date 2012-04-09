@@ -22,6 +22,10 @@ function mx_controls_Button(classType, extendType)
 	/* extendType - mx.controls::Button */
 	UIComponent.call(this, classType, extendType);
 
+	this.label = function(value){
+		return this.property("label", value);
+	};
+
 	this.click = function(type){
 		if(type == undefined) type = $MouseEvent.CLICK;
 		Static.doEvent($MouseEvent, type, this);

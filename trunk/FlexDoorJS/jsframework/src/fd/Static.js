@@ -84,6 +84,12 @@ Static.findById = function(refId){
 	return Static.deserialize(object);
 };
 
+Static.getClass = function(className){
+	var flash = Application.application.flash;
+	var object = flash.getClass(className);
+	return Static.deserialize(object);
+};
+
 Static.getChildByName = function(parent, name){
 	var flash = Application.application.flash;
 	var object = flash.getChildByName(parent.refId, name);
