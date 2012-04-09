@@ -17,17 +17,17 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function Static() {
+function System() {
 	throw new Error("DO NOT CREATE THIS OBJECT");
 }
 
 //Static API's and Variables
-Static.CLASSES = [];
-Static.LOADING = {};
-Static.LOAD_DELAY;
-Static.INIT_PHASE = 0;
+System.CLASSES = [];
+System.LOADING = {};
+System.LOAD_DELAY;
+System.INIT_PHASE = 0;
 
-Static.getFlash = function(flashPlayerId){
+System.getFlash = function(flashPlayerId){
 	if(navigator.appName.indexOf ("Microsoft") != -1) {
 		return window[flashPlayerId];
 	}else{
@@ -35,7 +35,7 @@ Static.getFlash = function(flashPlayerId){
 	}
 };
 
-Static.delegate = function(target, func, params){
+System.delegate = function(target, func, params){
 	var f = function() { 
 		return func.apply(target, params);
 	};
@@ -43,7 +43,7 @@ Static.delegate = function(target, func, params){
 	return f;
 };
 
-Static.getParams = function(args, index){
+System.getParams = function(args, index){
 	var params = [];
 	if(args.length > index){
 		for(var i = index; i < args.length; i++)
@@ -52,12 +52,12 @@ Static.getParams = function(args, index){
 	return params;
 };
 
-Static.callLater = function(target, func, delay, params){
+System.callLater = function(target, func, delay, params){
 	if(delay == undefined) delay = FlexDoor.TEST_DELAY_INTERVAL;
 	setTimeout(function(){ func.apply(target, params); }, delay);
 };
 
-Static.waitFor = function(target, func, delay, timeout, params){
+System.waitFor = function(target, func, delay, timeout, params){
 	if(delay == undefined) delay = FlexDoor.TEST_DELAY_INTERVAL;
 	var interval1 = setInterval(function(){ 
 		if(func.apply(target, params) == true){
@@ -72,85 +72,85 @@ Static.waitFor = function(target, func, delay, timeout, params){
 	}, timeout);
 };
 
-Static.find = function(parent, id, index, visibleOnly){
+System.find = function(parent, id, index, visibleOnly){
 	var flash = Application.application.flash;
 	var object = flash.find(parent.refId, id, index, visibleOnly);
-	return Static.deserialize(object, parent);
+	return System.deserialize(object, parent);
 };
 
-Static.findById = function(refId){
+System.findById = function(refId){
 	var flash = Application.application.flash;
 	var object = flash.findById(refId);
-	return Static.deserialize(object);
+	return System.deserialize(object);
 };
 
-Static.getClass = function(className){
+System.getClass = function(className){
 	var flash = Application.application.flash;
 	var object = flash.getClass(className);
-	return Static.deserialize(object);
+	return System.deserialize(object);
 };
 
-Static.getChildByName = function(parent, name){
+System.getChildByName = function(parent, name){
 	var flash = Application.application.flash;
 	var object = flash.getChildByName(parent.refId, name);
-	return Static.deserialize(object, parent);
+	return System.deserialize(object, parent);
 };
 
-Static.getChildByType = function(parent, classType, index, visibleOnly){
+System.getChildByType = function(parent, classType, index, visibleOnly){
 	var flash = Application.application.flash;
 	var object = flash.getChildByType(parent.refId, classType, index, visibleOnly);
-	return Static.deserialize(object, parent);
+	return System.deserialize(object, parent);
 };
 
-Static.setter = function(target, command, value){
+System.setter = function(target, command, value){
 	var flash = Application.application.flash;
 	flash.setter(target.refId, command, value);
 };
 
-Static.getter = function(target, command){
+System.getter = function(target, command){
 	var flash = Application.application.flash;
-	return Static.deserialize(flash.getter(target.refId, command));
+	return System.deserialize(flash.getter(target.refId, command));
 };
 
-Static.execute = function(target, command, values){
+System.execute = function(target, command, values){
 	if(values != null && !(values instanceof Array)) values = [values];
 	var flash = Application.application.flash;
-	return Static.deserialize(flash.execute(target.refId, command, values));
+	return System.deserialize(flash.execute(target.refId, command, values));
 };
 
-Static.create = function(extendType, args){
+System.create = function(extendType, args){
 	if(args != null && !(args instanceof Array)) args = [args];
 	var flash = Application.application.flash;
-	return Static.deserialize(flash.create(extendType, args));
+	return System.deserialize(flash.create(extendType, args));
 };
 
-Static.addEventListener = function(target, type, listenerId, useWeakReference, useCapture, priority){
+System.addEventListener = function(target, type, listenerId, useWeakReference, useCapture, priority){
 	var flash = Application.application.flash;
 	flash.addEventListener(target.refId, type, listenerId, useWeakReference, useCapture, priority);
 };
 
-Static.removeEventListener = function(target, type, listenerId, useCapture){
+System.removeEventListener = function(target, type, listenerId, useCapture){
 	var flash = Application.application.flash;
 	flash.removeEventListener(target.refId, type, listenerId, useCapture);
 };
 
-Static.dispatchEvent = function(target, event){
+System.dispatchEvent = function(target, event){
 	var flash = Application.application.flash;
 	return flash.dispatchEvent(target.refId, event.refId);
 };
 
-Static.refIds = function(){
+System.refIds = function(){
 	var flash = Application.application.flash;
 	return flash.refIds();
 };
 
-Static.releaseIds = function(ids, except){
+System.releaseIds = function(ids, except){
 	if(except == undefined) except = false;
 	var flash = Application.application.flash;
 	return flash.releaseIds(ids, except);
 };
 
-Static.setSearchFunction = function(collection, func){
+System.setSearchFunction = function(collection, func){
 	var filterFunc = collection.filterFunction();
 	if(filterFunc != null)
 		filterFunc = $Function.Get(filterFunc);
@@ -167,12 +167,12 @@ Static.setSearchFunction = function(collection, func){
 		filterFunc.destroy();
 };
 
-Static.createFunction = function(classType, functionName){
+System.createFunction = function(classType, functionName){
 	var flash = Application.application.flash;
-	return Static.deserialize(flash.createFunction(classType, functionName));
+	return System.deserialize(flash.createFunction(classType, functionName));
 };
 
-Static.serialize = function(object){
+System.serialize = function(object){
 	if( object instanceof fd_Function ){
 		return {type:"FUNCTION_TYPE", refId:object.refId};
 	}else if( object instanceof EventDispatcher ||
@@ -183,7 +183,7 @@ Static.serialize = function(object){
 	}
 };
 
-Static.deserialize = function(object, parent){
+System.deserialize = function(object, parent){
 	if(object != null && object["extendTypes"] != undefined){
 		for(var i = 0; object.extendTypes.length; i++){
 			var extendType = object.extendTypes[i];
@@ -196,7 +196,7 @@ Static.deserialize = function(object, parent){
 			if(pair.length == 2)
 				className = pair[1];
 			if(className == "Error"){
-				Static.warn(object.stackTrace);
+				System.warn(object.stackTrace);
 				var classType = FlexDoor.classType(object.extendTypes[1]);
 				if(classType == null) classType = Error;
 				throw new classType(object.message);
@@ -219,49 +219,49 @@ Static.deserialize = function(object, parent){
 	return object;
 };
 
-Static.doEvent = function(classType, eventType, target){
+System.doEvent = function(classType, eventType, target){
 	var event = classType.Get(classType.Create(eventType));
 	target.dispatchEvent(event);
 	event.destory();
 };
 
-Static.log = function(message) {
-	Static.trace(message, "log");
+System.log = function(message) {
+	System.trace(message, "log");
 };
-Static.warn = function(message) {
-	Static.trace(message, "warn");
+System.warn = function(message) {
+	System.trace(message, "warn");
 };
-Static.info = function(message) {
-	Static.trace(message, "info");
+System.info = function(message) {
+	System.trace(message, "info");
 };
-Static.error = function(message) {
-	Static.trace(message, "error");
+System.error = function(message) {
+	System.trace(message, "error");
 };
-Static.trace = function(message, level) {
+System.trace = function(message, level) {
 	if(level == undefined)
 		level = "log";
 	if(window['console'] != undefined)
 		window['console'][level](message);
 };
 
-Static.startTestCase = function(index){
-	Static.testCaseIndex = index;
+System.startTestCase = function(index){
+	System.testCaseIndex = index;
 	if(FlexDoor.TEST_CASES.length > index)
 		new FlexDoor.TEST_CASES[index]();
 };
 
-Static.loadQUnit = function(){
+System.loadQUnit = function(){
 	var index = 0;
 	function loadHandler(){
 		if(++index == 3)
-			Static.doTestLoader();
+			System.doTestLoader();
 	};
 	FlexDoor.include("jquery-ui", "jquery/jquery.ui.js", loadHandler);
 	FlexDoor.include("qunit-js", "qunit.js", loadHandler);
 	FlexDoor.include("qunit-css", "qunit.css", loadHandler);
 };
 
-Static.doTestLoader = function(){
+System.doTestLoader = function(){
 	$(document.body).append($("<div id='draggable' style='width: 600px; height: 450px; padding: 0.5em; position:absolute; top:0;right:0;display:none;'>" +
 							"<h1 id='qunit-header'>Test Runner</h1>" + 
 							"<h2 id='qunit-banner'></h2>" +
@@ -275,7 +275,7 @@ Static.doTestLoader = function(){
 	$("#draggable").show();
 
 	$('#runTest').click( function() {
-		Static.startTestCase(0);
+		System.startTestCase(0);
 	});
 	
 	if(QUnit.config.autostart == undefined){

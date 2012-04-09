@@ -43,7 +43,7 @@ mx_events_FlexEvent.Get = function(o){
 function $FlexEvent() {}
 $FlexEvent.Get = mx_events_FlexEvent.Get;
 $FlexEvent.Create = function(type){
-	return Static.create("mx.events::FlexEvent", type);
+	return System.create("mx.events::FlexEvent", type);
 };
 $FlexEvent.COLLECTION_CHANGE = "collectionChange";
 

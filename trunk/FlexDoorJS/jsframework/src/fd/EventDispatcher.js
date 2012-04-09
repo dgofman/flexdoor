@@ -44,29 +44,29 @@ EventDispatcher.Get = function(o, classType){
 EventDispatcher.prototype.find = function(id, index, visibleOnly) {
 	if(index == undefined) index = 0;
 	if(visibleOnly == undefined) visibleOnly = true;
-	return Static.find(this, id, index, visibleOnly);
+	return System.find(this, id, index, visibleOnly);
 };
 
 EventDispatcher.prototype.findById = function(refId) {
-	return Static.findById(refId);
+	return System.findById(refId);
 };
 
 EventDispatcher.prototype.getChildByName = function(name) {
-	return Static.getChildByName(this, name);
+	return System.getChildByName(this, name);
 };
 
 EventDispatcher.prototype.getChildByType = function(classType, index, visibleOnly) {
 	if(index == undefined) index = 0;
 	if(visibleOnly == undefined) visibleOnly = true;
-	return Static.getChildByType(this, classType, index, visibleOnly);
+	return System.getChildByType(this, classType, index, visibleOnly);
 };
 
 EventDispatcher.prototype.setter = function(command, value){
-	Static.setter(this, command, this.serialize(value));
+	System.setter(this, command, this.serialize(value));
 };
 
 EventDispatcher.prototype.getter = function(command){
-	return Static.getter(this, command);
+	return System.getter(this, command);
 };
 
 EventDispatcher.prototype.property = function(command, value){
@@ -81,14 +81,14 @@ EventDispatcher.prototype.execute = function(command){
 	var params = [];
 	for(var i = 1; i < arguments.length; i++)
 		params.push(this.serialize(arguments[i]));
-	return Static.execute(this, command, params);
+	return System.execute(this, command, params);
 };
 
 EventDispatcher.prototype.create = function(className){
 	var params = [];
 	for(var i = 1; i < arguments.length; i++)
 		params.push(this.serialize(arguments[i]));
-	return Static.create(className, params);
+	return System.create(className, params);
 };
 
 EventDispatcher.prototype.createFunctionByName = function(classType, functionName){
@@ -96,7 +96,7 @@ EventDispatcher.prototype.createFunctionByName = function(classType, functionNam
 		classType[functionName] instanceof Function){
 		//Create ActionScript function and map to JS function via ExternalInterface
 		var className = classType.toString().match(/function\s*(\w+)/)[1];
-		var func = $Function.Get(Static.createFunction(className, functionName));
+		var func = $Function.Get(System.createFunction(className, functionName));
 		func.Initialize(classType, functionName);
 		classType[functionName].refFunc = func;
 		return func;
@@ -123,27 +123,27 @@ EventDispatcher.prototype.addEventListener = function(type, listener, target, us
 	}else{
 		asFunction = this.createFunction(function(){
 			for(var i = 0; i < arguments.length; i++)
-				arguments[i] = Static.deserialize(arguments[i], this);
+				arguments[i] = System.deserialize(arguments[i], this);
 			listener.refFunc = asFunction;
 			listener.apply(target, arguments);
 		});
 	}
-	Static.addEventListener(this, type, this.serialize(asFunction), useCapture, priority, useWeakReference);
+	System.addEventListener(this, type, this.serialize(asFunction), useCapture, priority, useWeakReference);
 };
 
 EventDispatcher.prototype.removeEventListener = function(type, listener, useCapture){
 	if(listener instanceof Function && listener.refFunc instanceof fd_Function){
 		if(useCapture == undefined) useCapture = false;
 		var func = $Function.Get(listener.refFunc);
-		Static.removeEventListener(this, type, func.refId, useCapture);
+		System.removeEventListener(this, type, func.refId, useCapture);
 		func.destroy();
 	}
 };
 
 EventDispatcher.prototype.dispatchEvent = function(eventId){
-	return Static.dispatchEvent(this, eventId);
+	return System.dispatchEvent(this, eventId);
 };
 
 EventDispatcher.prototype.serialize = function(object){
-	return Static.serialize(object);
+	return System.serialize(object);
 };

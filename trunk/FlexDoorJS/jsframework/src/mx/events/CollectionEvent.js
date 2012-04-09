@@ -43,7 +43,7 @@ mx_events_CollectionEvent.Get = function(o){
 function $CollectionEvent() {}
 $CollectionEvent.Get = mx_events_CollectionEvent.Get;
 $CollectionEvent.Create = function(type){
-	return Static.create("mx.events::CollectionEvent", type);
+	return System.create("mx.events::CollectionEvent", type);
 };
 $CollectionEvent.COLLECTION_CHANGE = "collectionChange";
 

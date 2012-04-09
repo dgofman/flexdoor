@@ -32,7 +32,7 @@ FlexDoor.prototype.toString = function() {
 FlexDoor.prototype.addEventListener = function(type, callback){
 	this.events[type] = this.events[type] || [];
 	if(this.events[type]) {
-		var params = [callback].concat(Static.getParams(arguments, 2));
+		var params = [callback].concat(System.getParams(arguments, 2));
 		this.events[type].push(this.delegate.apply(this, params));
 	}
 };
@@ -61,20 +61,20 @@ FlexDoor.prototype.dispatchEvent = function(type){
 };
 
 FlexDoor.prototype.delegate = function(func){
-	return Static.delegate(this, func, Static.getParams(arguments, 1));
+	return System.delegate(this, func, System.getParams(arguments, 1));
 };
 
 FlexDoor.prototype.callLater = function(func, delay){
-	Static.callLater(this, func, delay, Static.getParams(arguments, 2));
+	System.callLater(this, func, delay, System.getParams(arguments, 2));
 };
 
 FlexDoor.prototype.waitFor = function(func, delay, timeout){
-	Static.waitFor(this, func, delay, timeout, Static.getParams(arguments, 2));
+	System.waitFor(this, func, delay, timeout, System.getParams(arguments, 2));
 };
 
 FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
 {
-	var flash =  Static.getFlash(flashPlayerId);
+	var flash =  System.getFlash(flashPlayerId);
 	if(flash == undefined)
 		throw new Error("You must provide a valid Flash Player Object ID");
 
@@ -100,10 +100,10 @@ FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
 FlexDoor.prototype.include = function() {
 	var testCase = this;
 	var refIds = null;
-	var testCaseType = FlexDoor.TEST_CASES[Static.testCaseIndex];
+	var testCaseType = FlexDoor.TEST_CASES[System.testCaseIndex];
 
 	var runTestCase = function(){
-		refIds = Static.refIds();
+		refIds = System.refIds();
 
 		if(testCase instanceof testCaseType.prototype.constructor){
 			var tests = [];
@@ -129,10 +129,10 @@ FlexDoor.prototype.include = function() {
 				}else{
 					if(testCaseType.prototype.tearDownAfterClass != undefined){
 						testCase["tearDownAfterClass"].call(testCase, "tearDownAfterClass");
-						Static.releaseIds();
+						System.releaseIds();
 					}
 					//Run Next TestCase
-					Static.startTestCase(Static.testCaseIndex + 1);
+					System.startTestCase(System.testCaseIndex + 1);
 				}
 			};
 
@@ -148,7 +148,7 @@ FlexDoor.prototype.include = function() {
 					//Set timeout interval
 					if(testEvent.timeout <= testEvent.delay + 100)
 						testEvent.timeout = testEvent.delay + 100;
-					testCase.interval = setInterval(Static.delegate(testCase, finalizeFunction), testEvent.timeout);
+					testCase.interval = setInterval(System.delegate(testCase, finalizeFunction), testEvent.timeout);
 
 					if(testEvent.type == TestEvent.NEXT_TYPE){
 						finalizeFunction(releaseRefId);
@@ -157,7 +157,7 @@ FlexDoor.prototype.include = function() {
 					}
 				}catch(e){
 					Assert.fail(e.message);
-					Static.error(e.message);
+					System.error(e.message);
 					finalizeFunction(releaseRefId);
 				}
 			};
@@ -179,11 +179,11 @@ FlexDoor.prototype.include = function() {
 						if(item instanceof EventDispatcher)
 							releaseRefId.push(item.refId);
 					}
-					Static.releaseIds(releaseRefId, true);
+					System.releaseIds(releaseRefId, true);
 
 					Assert.assertTrue(true, "ok succeeds");
 				}else{
-					Static.warn("Test timed out: " + testEvent.functionName);
+					System.warn("Test timed out: " + testEvent.functionName);
 				}
 
 				if(testCaseType.prototype.tearDown != undefined)
@@ -197,7 +197,7 @@ FlexDoor.prototype.include = function() {
 			if(tests.length > 0){
 				if(testCaseType.prototype.setUpBeforeClass != undefined){
 					testCase["setUpBeforeClass"].call(testCase, "setUpBeforeClass");
-					refIds = Static.refIds();
+					refIds = System.refIds();
 				}
 				runTest();
 			}
@@ -230,8 +230,8 @@ FlexDoor.includeAll = function(instance, files, callback) {
 			var classType = FlexDoor.classType(className);
 			if(classType && classType.prototype.Import != undefined){
 				var importFiles = classType.prototype.Import();
-				if(window["Static"])
-					Static.info("Class: " + className + ". Total dependencies: " + importFiles.length);
+				if(window["System"])
+					System.info("Class: " + className + ". Total dependencies: " + importFiles.length);
 				FlexDoor.includeAll(instance, importFiles, validateAllClasses);
 			}else{
 				index++;
@@ -245,7 +245,7 @@ FlexDoor.includeAll = function(instance, files, callback) {
 					//Validate if all classes are loaded
 					FlexDoor.TIME_INTERVAL = setInterval(function(files){
 						for(var className in files){
-							Static.warn("Class not loaded: " + className);
+							System.warn("Class not loaded: " + className);
 						}
 						clearInterval(FlexDoor.TIME_INTERVAL);
 					}, 15000, FlexDoor.LOAD_FILES);
@@ -367,8 +367,8 @@ FlexDoor.include = function(cls, src, callback) {
 				var cls = arguments.callee.prototype.cls;
 				var callbacks = FlexDoor.LOAD_FILES[cls];
 				delete FlexDoor.LOAD_FILES[cls];
-				if(window["Static"])
-					Static.log("Loaded class: " + cls + ". Total callback functions: " + callbacks.length);
+				if(window["System"])
+					System.log("Loaded class: " + cls + ". Total callback functions: " + callbacks.length);
 	
 				for(var i = 0; i < callbacks.length; i++)
 					callbacks[i]();
@@ -398,9 +398,9 @@ FlexDoor.dispatchEvent = function(eventType){
 FlexDoor.run = function(){
 	if(++FlexDoor.INIT_PHASE == 2){
 		if(FlexDoor.AUTO_START == true){
-			Static.startTestCase(0);
+			System.startTestCase(0);
 		}else{
-			Static.loadQUnit();
+			System.loadQUnit();
 		}
 	}
 };
@@ -409,7 +409,7 @@ FlexDoor.run = function(){
 
 $(document).ready(function(){
 	FlexDoor.includeAll(this, [
-		"fd::Static",
+		"fd::System",
 		"fd::Assert",
 		"fd::TestEvent",
 		"fd::Function",

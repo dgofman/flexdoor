@@ -55,7 +55,7 @@ function mx_collections_ListCollectionView(classType, extendType)
 	};
 
 	this.setSearchFunction = function(func){
-		Static.setSearchFunction(this, func);
+		System.setSearchFunction(this, func);
 	};
 }
 

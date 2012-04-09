@@ -31,7 +31,7 @@ function mx_collections_HierarchicalCollectionView(classType, extendType)
 	};
 
 	this.setSearchFunction = function(func){
-		Static.setSearchFunction(this, func);
+		System.setSearchFunction(this, func);
 	};
 }
 

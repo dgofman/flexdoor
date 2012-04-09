@@ -28,7 +28,7 @@ function fd_Function(object)
 	};
 
 	this.destroy = function(){
-		Static.releaseIds([this.refId]);
+		System.releaseIds([this.refId]);
 		if( this.classType instanceof Function && 
 			this.classType[this.funtionName] instanceof Function){
 			this.classType[this.funtionName] = null;

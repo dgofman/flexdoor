@@ -62,7 +62,7 @@ Sample4TestCase.prototype.test_3 = function(event) {
 };
 
 Sample4TestCase.dataGridChangeHandler = function(event){
-	var dataProvider = $ListCollectionView.Get(Static.deserialize(event.currentTarget));
+	var dataProvider = $ListCollectionView.Get(System.deserialize(event.currentTarget));
 	dataProvider.removeEventListener($CollectionEvent.COLLECTION_CHANGE, Sample4TestCase.dataGridChangeHandler);
 
 	//Validate changeHandler is not attached to DataGrid 

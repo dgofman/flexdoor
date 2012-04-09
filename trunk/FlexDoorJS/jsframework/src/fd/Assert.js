@@ -40,7 +40,7 @@ Assert.assertEquals = function(actual, expected, message) {
 		equal(actual, expected, message);
 	}else{
 		var error = (actual != expected);
-		Static.trace(
+		System.trace(
 				(message != undefined ? message : (error ? "failed" : "okay")) +
 				" - Expected: " + expected +
 				(error ? ", Result: " + actual : ""), 
@@ -63,6 +63,6 @@ Assert.fail = function(message) {
 	if(FlexDoor.AUTO_START != true){
 		ok(false, message);
 	}else{
-		Static.error(message);
+		System.error(message);
 	}
 };

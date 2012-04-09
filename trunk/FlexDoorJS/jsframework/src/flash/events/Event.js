@@ -23,7 +23,7 @@ function flash_events_Event(classType, extendType)
 	UIComponent.call(this, classType, extendType);
 
 	this.destory = function(){
-		Static.releaseIds([this.refId]);
+		System.releaseIds([this.refId]);
 	};
 }
 flash_events_Event.prototype = new Object();
@@ -45,5 +45,5 @@ flash_events_Event.Get = function(o){
 function $Event() {}
 $Event.Get = flash_events_Event.Get;
 $Event.Create = function(type){
-	return Static.create("flash.events::Event", type);
+	return System.create("flash.events::Event", type);
 };
