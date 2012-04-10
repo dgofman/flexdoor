@@ -60,6 +60,10 @@ FlexDoor.prototype.dispatchEvent = function(type){
 	}
 };
 
+FlexDoor.prototype.fireEvent = function(target, event){
+	return System.fireEvent(target, event);
+};
+
 FlexDoor.prototype.delegate = function(func){
 	return System.delegate(this, func, System.getParams(arguments, 1));
 };

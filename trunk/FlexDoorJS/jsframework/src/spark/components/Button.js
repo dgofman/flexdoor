@@ -28,7 +28,7 @@ function spark_components_Button(classType, extendType)
 
 	this.click = function(type){
 		if(type == undefined) type = $MouseEvent.CLICK;
-		System.doEvent(this, $MouseEvent.Create(type));
+		System.fireEvent(this, $MouseEvent.Create(type));
 	};
 }
 

@@ -225,9 +225,10 @@ System.deserialize = function(object, parent){
 	return object;
 };
 
-System.doEvent = function(target, event){
-	target.dispatchEvent(event);
+System.fireEvent = function(target, event){
+	var result = target.dispatchEvent(event);
 	event.destory();
+	return result;
 };
 
 System.log = function(message) {
