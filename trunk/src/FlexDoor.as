@@ -56,6 +56,7 @@ package
 	import flash.display.DisplayObject;
 	import flash.events.EventDispatcher;
 	import flash.utils.ByteArray;
+	import mx.utils.ObjectUtil;
 
 	[Mixin]
 	[SWF(backgroundColor="#FFFFFF")]
@@ -111,7 +112,7 @@ package
 			}
 		}
 
-		public function ready():void{
+		protected function ready():void{
 			if(ExternalInterface.available){
 				ExternalInterface.addCallback("refIds", js_refIds);
 				ExternalInterface.addCallback("releaseIds", js_releaseIds);
@@ -348,8 +349,7 @@ package
 			handler = function():*{
 				var listenerId:Number = arguments.callee.prototype.listenerId;
 				var jsName:String = arguments.callee.prototype.jsName;
-				for(var i:uint = 0; i < arguments.length; i++)
-					arguments[i] = serialize(arguments[i]);
+				serializeAll(arguments);
 				var args:* = (arguments.length == 1 ? arguments[0] : arguments);
 				var result:* = ExternalInterface.call("parent." + jsName, args);
 				return result;
@@ -382,7 +382,7 @@ package
 			return false;
 		}
 
-		public function deserializeAll(params:Array):Array{
+		protected function deserializeAll(params:Array):Array{
 			if(params is Array){
 				for(var i:uint = 0; i < params.length; i++)
 					params[i] = deserialize(params[i]);
@@ -390,7 +390,7 @@ package
 			return params;
 		}
 
-		public function deserialize(ref:*):*{
+		protected function deserialize(ref:*):*{
 			if(ref is Object && Object(ref).hasOwnProperty("type")
 							 && Object(ref).hasOwnProperty("refId")){
 				if(ref.type == "CLASS_TYPE"){
@@ -400,6 +400,14 @@ package
 				}
 			}
 			return ref;
+		}
+
+		protected function serializeAll(params:*):*{
+			if(params is Array){
+				for(var i:uint = 0; i < params.length; i++)
+					params[i] = serialize(params[i]);
+			}
+			return params;
 		}
 
 		protected function serialize(ref:Object):Object{
@@ -439,12 +447,7 @@ package
 						return ref;
 	
 					out.extendTypes = extendTypes;
-					if(!(ref is DisplayObject)){ //if not low level of ui components
-						var buffer:ByteArray = new ByteArray();
-						buffer.writeObject(ref);
-						buffer.position = 0;
-						out.ref = buffer.readObject();
-					}
+					out.ref = createProxyObject(ref);
 				}
 			}
 
@@ -464,6 +467,28 @@ package
 			}
 			out.refId = id;
 			_refMap[id] = ref;
+			return out;
+		}
+		
+		private function createProxyObject(ref:*):*{
+			if(ref is DisplayObject || ref is Function)
+				return null;
+			if(typeof(ref) != "object")
+				return ref;
+	
+			var properties:Array = ObjectUtil.getClassInfo(ref).properties;
+			var out:Object = {};
+			for(var p:uint = 0; p < properties.length; p++){
+				var qn:QName = properties[p];
+				var value:* = ref[qn.localName];
+				if(value is Array){
+					out[qn.localName] = [];
+					for(var i:uint = 0; i < value.length; i++)
+						out[qn.localName][i] = createProxyObject(value[i]);
+				}else{
+					out[qn.localName] = createProxyObject(value);
+				}
+			}
 			return out;
 		}
 
@@ -501,6 +526,16 @@ package
 					return new classRef(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
 				case 10:
 					return new classRef(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9]);
+				case 11:
+					return new classRef(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10]);
+				case 12:
+					return new classRef(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11]);
+				case 13:
+					return new classRef(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11], args[12]);
+				case 14:
+					return new classRef(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11], args[12], args[13]);
+				case 15:
+					return new classRef(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11], args[12], args[13], args[14]);
 			}
 		}
 	}

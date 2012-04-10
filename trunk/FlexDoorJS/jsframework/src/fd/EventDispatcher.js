@@ -140,8 +140,8 @@ EventDispatcher.prototype.removeEventListener = function(type, listener, useCapt
 	}
 };
 
-EventDispatcher.prototype.dispatchEvent = function(eventId){
-	return System.dispatchEvent(this, eventId);
+EventDispatcher.prototype.dispatchEvent = function(event){
+	return System.dispatchEvent(this, event);
 };
 
 EventDispatcher.prototype.serialize = function(object){

@@ -43,11 +43,17 @@ System.delegate = function(target, func, params){
 	return f;
 };
 
-System.getParams = function(args, index){
+System.getParams = function(args, index, isSerializable){
+	if(index == undefined) index = 0;
 	var params = [];
 	if(args.length > index){
-		for(var i = index; i < args.length; i++)
-			params.push(args[i]);
+		for(var i = index; i < args.length; i++){
+			if(isSerializable == true){
+				params.push(System.serialize(args[i]));
+			}else{
+				params.push(args[i]);
+			}
+		}
 	}
 	return params;
 };
@@ -219,8 +225,7 @@ System.deserialize = function(object, parent){
 	return object;
 };
 
-System.doEvent = function(classType, eventType, target){
-	var event = classType.Get(classType.Create(eventType));
+System.doEvent = function(target, event){
 	target.dispatchEvent(event);
 	event.destory();
 };

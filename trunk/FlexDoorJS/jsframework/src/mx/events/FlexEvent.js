@@ -24,7 +24,6 @@ function mx_events_FlexEvent(classType, extendType)
 
 	this.Initialize = function(object){
 		flash_events_Event.prototype.Initialize(object);
-		this.kind = this.ref.kind;
 	};
 }
 
@@ -42,10 +41,10 @@ mx_events_FlexEvent.Get = function(o){
 
 function $FlexEvent() {}
 $FlexEvent.Get = mx_events_FlexEvent.Get;
-$FlexEvent.Create = function(type){
-	return System.create("mx.events::FlexEvent", type);
+$FlexEvent.Create = function(type, bubbles, cancelable){
+	return System.create("mx.events::FlexEvent", 
+			$Event.Params(type, bubbles, cancelable));
 };
-$FlexEvent.COLLECTION_CHANGE = "collectionChange";
 
 $FlexEvent.ADD = "add";
 $FlexEvent.ADD_FOCUS_MANAGER = "addFocusManager";

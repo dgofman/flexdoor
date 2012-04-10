@@ -28,7 +28,7 @@ function mx_controls_Button(classType, extendType)
 
 	this.click = function(type){
 		if(type == undefined) type = $MouseEvent.CLICK;
-		System.doEvent($MouseEvent, type, this);
+		System.doEvent(this, $MouseEvent.Create(type));
 	};
 }
 

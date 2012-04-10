@@ -42,8 +42,11 @@ mx_events_CollectionEvent.Get = function(o){
 
 function $CollectionEvent() {}
 $CollectionEvent.Get = mx_events_CollectionEvent.Get;
-$CollectionEvent.Create = function(type){
-	return System.create("mx.events::CollectionEvent", type);
+$CollectionEvent.Create = function(type, kind, location, oldLocation, items, bubbles, cancelable){
+	if(location == undefined) location = -1;
+	if(oldLocation == undefined) oldLocation = -1;
+	return System.create("mx.events::CollectionEvent",
+						$Event.Params(type, bubbles, cancelable, kind, location, oldLocation, items));
 };
 $CollectionEvent.COLLECTION_CHANGE = "collectionChange";
 

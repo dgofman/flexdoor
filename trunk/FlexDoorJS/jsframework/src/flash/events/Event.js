@@ -44,6 +44,12 @@ flash_events_Event.Get = function(o){
 
 function $Event() {}
 $Event.Get = flash_events_Event.Get;
-$Event.Create = function(type){
-	return System.create("flash.events::Event", type);
+$Event.Params = function(type, bubbles, cancelable){
+	if(bubbles == undefined) bubbles = false;
+	if(cancelable == undefined) cancelable = false;
+	return System.getParams(arguments, 0, true);
+};
+$Event.Create = function(type, bubbles, cancelable){
+	return System.create("flash.events::Event",
+			$Event.Params(type, bubbles, cancelable));
 };

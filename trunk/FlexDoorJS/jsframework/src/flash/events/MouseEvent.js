@@ -37,8 +37,17 @@ flash_events_MouseEvent.Get = function(o){
 
 function $MouseEvent() {}
 $MouseEvent.Get = flash_events_MouseEvent.Get;
-$MouseEvent.Create = function(type){
-	return System.create("flash.events::MouseEvent", type);
+$MouseEvent.Create = function(type, bubbles, cancelable, localX, localY, 
+								ctrlKey, altKey, shiftKey, buttonDown, relatedObject, delta){
+	if(bubbles == undefined) bubbles = true;
+	if(ctrlKey == undefined) ctrlKey = false;
+	if(altKey == undefined) altKey = false;
+	if(shiftKey == undefined) shiftKey = false;
+	if(buttonDown == undefined) buttonDown = false;
+	if(delta == undefined) delta = 0;
+	return System.create("flash.events::MouseEvent", 
+			$Event.Params(type, bubbles, cancelable, localX, localY, 
+					relatedObject, ctrlKey, altKey, shiftKey, buttonDown, delta));
 };
 
 $MouseEvent.CLICK = "click";
