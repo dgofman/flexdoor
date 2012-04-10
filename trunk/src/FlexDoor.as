@@ -55,6 +55,7 @@ package
 	import mx.core.UIComponent;
 	import flash.display.DisplayObject;
 	import flash.events.EventDispatcher;
+	import flash.utils.ByteArray;
 
 	[Mixin]
 	[SWF(backgroundColor="#FFFFFF")]
@@ -438,8 +439,12 @@ package
 						return ref;
 	
 					out.extendTypes = extendTypes;
-					if(!(ref is DisplayObject)) //if not low level of ui components
-						out.ref = ref;
+					if(!(ref is DisplayObject)){ //if not low level of ui components
+						var buffer:ByteArray = new ByteArray();
+						buffer.writeObject(ref);
+						buffer.position = 0;
+						out.ref = buffer.readObject();
+					}
 				}
 			}
 
