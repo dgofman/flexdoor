@@ -29,6 +29,26 @@ function mx_controls_DataGrid(classType, extendType)
 	this.itemToItemRenderer = function(item){
 		return this.execute("itemToItemRenderer", item);
 	};
+
+	this.indicesToItemRenderer = function(row, col){
+		return this.execute("mx_internal::indicesToItemRenderer", row, col);
+	};
+
+	this.createItemEditor = function(colIndex, rowIndex){
+		return this.execute("createItemEditor", colIndex, rowIndex);
+	};
+
+	this.editedItemRenderer = function(){
+		return this.getter("editedItemRenderer");
+	};
+
+	this.itemEditorInstance = function(){
+		return this.getter("itemEditorInstance");
+	};
+
+	this.rendererArray = function(){
+		return this.getter("rendererArray");
+	};
 }
 
 mx_controls_DataGrid.prototype.Import = function(){

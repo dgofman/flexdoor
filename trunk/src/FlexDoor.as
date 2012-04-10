@@ -39,8 +39,12 @@ package
 	import flash.utils.Timer;
 	
 	import mx.core.mx_internal;
+	import mx.utils.object_proxy;
+	import flash.utils.flash_proxy;
 
 	use namespace mx_internal;
+	use namespace object_proxy;
+	use namespace flash_proxy;
 
 	import mx.events.FlexEvent;
 	import flash.utils.setTimeout;
@@ -298,14 +302,16 @@ package
 		}
 
 		protected function js_execute(refId:Number, command:String, values:Array):Object{
-			var target:Object = _refMap[refId];
-			if(validateCommand(target, command)){
+			var target:* = _refMap[refId];
+			var pair:Array = command.split("::");
+			if(validateCommand(target, (pair.length == 2 ? pair[1] : pair[0]))){
 				try{
 					var ret:*;
+					var func:Function = getFunction(target, pair);
 					if(values != null && values.length > 0){
-						ret = target[command].apply(target, deserializeAll(values));
+						ret = func.apply(target, deserializeAll(values));
 					}else{
-						ret = target[command]();
+						ret = func();
 					}
 					return serialize(ret);
 				}catch(e:Error){
@@ -313,6 +319,20 @@ package
 				}
 			}
 			return null;
+		}
+
+		protected function getFunction(target:*, pair:Array):Function{
+			if(pair.length == 2){
+				switch(pair[0]){ //namespace such as mx_internal
+					case "mx_internal":
+						return target.mx_internal::[pair[1]];
+					case "object_proxy":
+						return target.object_proxy::[pair[1]];
+					case "flash_proxy":
+						return target.flash_proxy::[pair[1]];
+				}
+			}
+			return target[pair[0]];
 		}
 
 		protected function js_class(className:String, isSerialize:Boolean=true):Object{
@@ -471,8 +491,8 @@ package
 		}
 		
 		private function createProxyObject(ref:*):*{
-			if(ref is DisplayObject || ref is Function)
-				return null;
+			if(ref is DisplayObject)
+				return DisplayObject(ref).toString();
 			if(typeof(ref) != "object")
 				return ref;
 	

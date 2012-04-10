@@ -78,17 +78,11 @@ EventDispatcher.prototype.property = function(command, value){
 };
 
 EventDispatcher.prototype.execute = function(command){
-	var params = [];
-	for(var i = 1; i < arguments.length; i++)
-		params.push(this.serialize(arguments[i]));
-	return System.execute(this, command, params);
+	return System.execute(this, command, System.getParams(arguments, 1, true));
 };
 
 EventDispatcher.prototype.create = function(className){
-	var params = [];
-	for(var i = 1; i < arguments.length; i++)
-		params.push(this.serialize(arguments[i]));
-	return System.create(className, params);
+	return System.create(className, System.getParams(arguments, 1, true));
 };
 
 EventDispatcher.prototype.createFunctionByName = function(classType, functionName){

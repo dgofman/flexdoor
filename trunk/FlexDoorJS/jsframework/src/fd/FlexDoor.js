@@ -170,6 +170,7 @@ FlexDoor.prototype.include = function() {
 				testCase.removeEventListener(testEvent.type, finalizeFunction);
 
 				var nextTestEvent = new TestEvent(testEvent.nextOrder);
+				nextTestEvent.delay = testEvent.delay;
 				nextTestEvent.items = testEvent.items;
 
 				if(testCase.interval != undefined){
