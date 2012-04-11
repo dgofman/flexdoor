@@ -259,12 +259,11 @@ System.startTestCase = function(index){
 System.loadQUnit = function(){
 	var index = 0;
 	function loadHandler(){
-		if(++index == 3)
+		if(++index == 2)
 			System.doTestLoader();
 	};
 	FlexDoor.include("jquery-ui", "jquery/jquery.ui.js", loadHandler);
 	FlexDoor.include("qunit-js", "qunit.js", loadHandler);
-	FlexDoor.include("qunit-css", "qunit.css", loadHandler);
 };
 
 System.doTestLoader = function(){

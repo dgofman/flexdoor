@@ -416,6 +416,8 @@ FlexDoor.run = function(){
 
 //Loading depended libraries
 function mainFlexDoor(){
+	FlexDoor.include("qunit-css", "qunit.css");
+	
 	FlexDoor.includeAll(this, [
 	"fd::System",
 	"fd::Assert",
