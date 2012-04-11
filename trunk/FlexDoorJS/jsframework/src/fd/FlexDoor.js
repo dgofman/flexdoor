@@ -422,7 +422,7 @@ function mainFlexDoor(){
 	"fd::TestEvent",
 	"fd::Function",
 	"fd::EventDispatcher",
-	"flash.events::Event",], 
+	"flash.events::Event"], 
 	function(){
 		FlexDoor.includeAll(this, [
 			"mx.core::UIComponent",
@@ -436,7 +436,7 @@ function mainFlexDoor(){
 );}
 
 if (document.readyState == "complete") {
-	return setTimeout(mainFlexDoor, 1);
+	setTimeout(mainFlexDoor, 1);
 }else{
 	if (document.addEventListener) {
 		var DOMContentLoaded = function() {
