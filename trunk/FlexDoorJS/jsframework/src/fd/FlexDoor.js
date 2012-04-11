@@ -160,8 +160,12 @@ FlexDoor.prototype.include = function() {
 						testCase.addEventListener(testEvent.type, finalizeFunction, releaseRefId);
 					}
 				}catch(e){
-					Assert.fail(e.message);
-					System.error(e.message);
+					Assert.fail(e.fileName + '#' + e.lineNumber + '\n' + e.message);
+					System.error(e);
+
+					if(QUnit && QUnit.config.notrycatch)
+						debugger;
+
 					finalizeFunction(releaseRefId);
 				}
 			};
