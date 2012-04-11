@@ -37,10 +37,10 @@ package
 	import flash.system.Security;
 	import flash.system.SecurityDomain;
 	import flash.utils.Timer;
+	import flash.utils.flash_proxy;
 	
 	import mx.core.mx_internal;
 	import mx.utils.object_proxy;
-	import flash.utils.flash_proxy;
 
 	use namespace mx_internal;
 	use namespace object_proxy;
@@ -56,7 +56,6 @@ package
 	import flash.utils.getQualifiedClassName;
 	import flash.utils.Dictionary;
 	import flash.display.DisplayObjectContainer;
-	import mx.core.UIComponent;
 	import flash.display.DisplayObject;
 	import flash.events.EventDispatcher;
 	import flash.utils.ByteArray;
@@ -269,10 +268,21 @@ package
 		}
 
 		protected function js_childByType(refId:Number, classType:String, index:uint, visibleOnly:Boolean):Object{
-			var target:DisplayObjectContainer = _refMap[refId];
+			var target:* = _refMap[refId];
 			var visibleCount:uint = 0;
-			for(var i:uint = 0; i < target.numChildren; i++){
-				var child:DisplayObject = target.getChildAt(i);
+			var length:uint;
+			var func:Function;
+			if( target.hasOwnProperty("numElements") && 
+				target.hasOwnProperty("getElementAt") && 
+				target.getElementAt is Function){
+				length = target.numElements;
+				func = target.getElementAt;
+			}else{
+				length = target.numChildren;
+				func = target.getChildAt;
+			}
+			for(var i:uint = 0; i < length; i++){
+				var child:DisplayObject = func(i);
 				if(visibleOnly == true && child.visible != true)
 					continue;
 				var type:XML = describeType(child);

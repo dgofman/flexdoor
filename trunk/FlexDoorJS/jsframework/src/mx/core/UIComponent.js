@@ -35,6 +35,11 @@ function UIComponent(classType, extendType)
 	this.includeInLayout = function(value){
 		return this.property("includeInLayout", value);
 	};
+
+	this.fireEvent = function(event, value, returnValue){
+		if(value !== undefined) System.fireEvent(this, event);
+		return returnValue;
+	};
 }
 
 UIComponent.prototype = new EventDispatcher();

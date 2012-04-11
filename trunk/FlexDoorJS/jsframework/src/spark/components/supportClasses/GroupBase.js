@@ -17,37 +17,19 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_List(classType, extendType) 
+function spark_components_supportClasses_GroupBase(classType, extendType) 
 {
-	/* extendType - mx.controls::List */
+	/* extendType - spark.components.supportClasses::GroupBase */
 	UIComponent.call(this, classType, extendType);
-
-	this.selectedIndex = function(value){
-		var index = this.property("selectedIndex", value);
-		return this.fireEvent($ListEvent.Create($ListEvent.CHANGE, value, 0), value, index);
-	};
-
-	this.selectedItem = function(value){
-		var item = this.property("selectedItem", value);
-		return this.fireEvent($ListEvent.Create($ListEvent.CHANGE, value, 0), value, item);
-	};
-
-	this.dataProvider = function(value){
-		return this.property("dataProvider", value);
-	};
 }
 
-mx_controls_List.prototype.Import = function(){
-	return ["mx.events::ListEvent"];
-};
-mx_controls_List.prototype.Extends = function(){
-	mx_controls_List.prototype = new UIComponent(mx_controls_List);
-};
-mx_controls_List.Get = function(o){
+spark_components_supportClasses_GroupBase.prototype = new UIComponent(spark_components_supportClasses_GroupBase);
+spark_components_supportClasses_GroupBase.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, mx_controls_List);
+	ref = UIComponent.Get(o, spark_components_supportClasses_GroupBase);
 	return ref;
 };
 
-function $List() {}
-$List.Get = mx_controls_List.Get;
+function $$GroupBase() {}
+$$GroupBase.Get = spark_components_supportClasses_GroupBase.Get;
+$$GroupBase.prototype = new UIComponent($$GroupBase);

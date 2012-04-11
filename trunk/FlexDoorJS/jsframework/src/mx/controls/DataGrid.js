@@ -22,6 +22,10 @@ function mx_controls_DataGrid(classType, extendType)
 	/* extendType - mx.controls::DataGrid */
 	UIComponent.call(this, classType, extendType);
 	
+	this.columns = function(value){
+		return this.property("columns", value);
+	};
+
 	this.indexToItemRenderer = function(index){
 		return this.execute("indexToItemRenderer", index);
 	};
