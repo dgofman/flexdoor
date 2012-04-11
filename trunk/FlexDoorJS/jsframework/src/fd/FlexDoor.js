@@ -415,24 +415,63 @@ FlexDoor.run = function(){
 };
 
 //Loading depended libraries
-
-$(document).ready(function(){
+function mainFlexDoor(){
 	FlexDoor.includeAll(this, [
-		"fd::System",
-		"fd::Assert",
-		"fd::TestEvent",
-		"fd::Function",
-		"fd::EventDispatcher",
-		"flash.events::Event",], 
-		function(){
-			FlexDoor.includeAll(this, [
-				"mx.core::UIComponent",
-				"mx.core::Container",
-				"mx.core::Application"],
-				function(){
-					FlexDoor.run();
+	"fd::System",
+	"fd::Assert",
+	"fd::TestEvent",
+	"fd::Function",
+	"fd::EventDispatcher",
+	"flash.events::Event",], 
+	function(){
+		FlexDoor.includeAll(this, [
+			"mx.core::UIComponent",
+			"mx.core::Container",
+			"mx.core::Application"],
+			function(){
+				FlexDoor.run();
+			}
+		);
+	}
+);}
+
+if (document.readyState == "complete") {
+	return setTimeout(mainFlexDoor, 1);
+}else{
+	if (document.addEventListener) {
+		var DOMContentLoaded = function() {
+			document.removeEventListener("DOMContentLoaded", DOMContentLoaded, false);
+			mainFlexDoor();
+		};
+		document.addEventListener("DOMContentLoaded", DOMContentLoaded, false);
+		window.addEventListener("load", mainFlexDoor, false);
+	} else if (document.attachEvent) {
+		var DOMContentLoaded = function() {
+			if (document.readyState == "complete") {
+				document.detachEvent( "onreadystatechange", DOMContentLoaded);
+				mainFlexDoor();
+			}
+		};
+		document.attachEvent( "onreadystatechange", DOMContentLoaded);
+		window.attachEvent("onload", mainFlexDoor);
+	
+		var toplevel = false;
+		try {
+			toplevel = window.frameElement == null;
+		} catch(e) {}
+		if(document.documentElement.doScroll && toplevel){
+			function doScrollCheck(){
+				try {
+					// If IE is used, use the trick by Diego Perini
+					// http://javascript.nwbox.com/IEContentLoaded/
+					document.documentElement.doScroll("left");
+				} catch(e) {
+					setTimeout(doScrollCheck, 1);
+					return;
 				}
-			);
+				mainFlexDoor();
+			}
+			doScrollCheck();
 		}
-	);
-});
+	}
+}
