@@ -376,11 +376,13 @@ FlexDoor.include = function(cls, src, callback) {
 				var cls = arguments.callee.prototype.cls;
 				var callbacks = FlexDoor.LOAD_FILES[cls];
 				delete FlexDoor.LOAD_FILES[cls];
-				if(window["System"] && window["System"].log)
-					System.log("Loaded class: " + cls + ". Total callback functions: " + callbacks.length);
-	
-				for(var i = 0; i < callbacks.length; i++)
-					callbacks[i]();
+				if(callbacks != undefined){
+					if(window["System"])
+						System.log("Loaded class: " + cls + ". Total callback functions: " + callbacks.length);
+
+					for(var i = 0; i < callbacks.length; i++)
+						callbacks[i]();
+				}
 			};
 			onJsLoaded.prototype.cls = cls;
 	
