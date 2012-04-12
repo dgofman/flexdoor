@@ -158,6 +158,13 @@ System.releaseIds = function(ids, except){
 	return flash.releaseIds(ids, except);
 };
 
+System.releaseItems = function(){
+	var ids = [];
+	for(var i = 0; i < arguments.length; i++)
+		ids.push(arguments[i].refId);
+	return System.releaseIds(ids);
+};
+
 System.setSearchFunction = function(collection, func){
 	var filterFunc = collection.filterFunction();
 	if(filterFunc != null)
