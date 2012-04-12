@@ -80,16 +80,18 @@ System.waitFor = function(target, func, delay, timeout, params){
 	}, timeout);
 };
 
-System.find = function(parent, id, index, visibleOnly){
+System.find = function(parent, id, index, visibleOnly, includeRef){
+	includeRef = (includeRef == undefined ? true : includeRef);
 	var flash = Application.application.flash;
-	var object = flash.find(parent.refId, id, index, visibleOnly);
+	var object = flash.find(parent.refId, id, index, visibleOnly, includeRef);
 	return System.deserialize(object, parent);
 };
 
-System.findById = function(refId){
+System.findById = function(refId, includeRef){
+	includeRef = (includeRef == undefined ? true : includeRef);
 	var flash = Application.application.flash;
 	var object = flash.findById(refId);
-	return System.deserialize(object);
+	return System.deserialize(object, includeRef);
 };
 
 System.getClass = function(className){
@@ -98,15 +100,17 @@ System.getClass = function(className){
 	return System.deserialize(object);
 };
 
-System.getChildByName = function(parent, name){
+System.getChildByName = function(parent, name, includeRef){
+	includeRef = (includeRef == undefined ? true : includeRef);
 	var flash = Application.application.flash;
-	var object = flash.getChildByName(parent.refId, name);
+	var object = flash.getChildByName(parent.refId, name, includeRef);
 	return System.deserialize(object, parent);
 };
 
-System.getChildByType = function(parent, classType, index, visibleOnly){
+System.getChildByType = function(parent, classType, index, visibleOnly, includeRef){
+	includeRef = (includeRef == undefined ? true : includeRef);
 	var flash = Application.application.flash;
-	var object = flash.getChildByType(parent.refId, classType, index, visibleOnly);
+	var object = flash.getChildByType(parent.refId, classType, index, visibleOnly, includeRef);
 	return System.deserialize(object, parent);
 };
 
@@ -115,21 +119,25 @@ System.setter = function(target, command, value){
 	flash.setter(target.refId, command, value);
 };
 
-System.getter = function(target, command){
+System.getter = function(target, command, includeRef){
+	includeRef = (includeRef == undefined ? true : includeRef);
 	var flash = Application.application.flash;
-	return System.deserialize(flash.getter(target.refId, command));
+	var object = flash.getter(target.refId, command, includeRef);
+	return System.deserialize(object);
 };
 
 System.execute = function(target, command, values){
 	if(values != null && !(values instanceof Array)) values = [values];
 	var flash = Application.application.flash;
-	return System.deserialize(flash.execute(target.refId, command, values));
+	var object = flash.execute(target.refId, command, values);
+	return System.deserialize(object);
 };
 
 System.create = function(extendType, args){
 	if(args != null && !(args instanceof Array)) args = [args];
 	var flash = Application.application.flash;
-	return System.deserialize(flash.create(extendType, args));
+	var object = flash.create(extendType, args);
+	return System.deserialize(object);
 };
 
 System.addEventListener = function(target, type, listenerId, useWeakReference, useCapture, priority){
@@ -184,7 +192,8 @@ System.setSearchFunction = function(collection, func){
 
 System.createFunction = function(classType, functionName){
 	var flash = Application.application.flash;
-	return System.deserialize(flash.createFunction(classType, functionName));
+	var object = flash.createFunction(classType, functionName);
+	return System.deserialize(object);
 };
 
 System.serialize = function(object){

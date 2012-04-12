@@ -237,11 +237,11 @@ package
 			return serialize(_application.systemManager);
 		}
 
-		protected function js_findById(refId:Number):Object{
-			return serialize(_refMap[refId]);
+		protected function js_findById(refId:Number, includeRef:Boolean=true):Object{
+			return serialize(_refMap[refId], includeRef);
 		}
 
-		protected function js_find(refId:Number, id:String, index:uint, visibleOnly:Boolean):*{
+		protected function js_find(refId:Number, id:String, index:uint, visibleOnly:Boolean, includeRef:Boolean=true):*{
 			try{
 				var target:* = _refMap[refId];
 				var o:* = target[id];
@@ -251,23 +251,23 @@ package
 						if(visibleOnly == true && o[i].visible != true)
 							continue;
 						if(visibleCount == index)
-							return serialize(o[i]);
+							return serialize(o[i], includeRef);
 						visibleCount++;
 					}
-					return serialize(o[0]);
+					return serialize(o[0], includeRef);
 				}
-				return serialize(o);
+				return serialize(o, includeRef);
 			}catch(e:Error){ 
 				return serialize(e);
 			}
 		}
 
-		protected function js_childByName(refId:Number, name:String):Object{
+		protected function js_childByName(refId:Number, name:String, includeRef:Boolean=true):Object{
 			var target:DisplayObjectContainer = _refMap[refId];
-			return serialize(target.getChildByName(name));
+			return serialize(target.getChildByName(name), includeRef);
 		}
 
-		protected function js_childByType(refId:Number, classType:String, index:uint, visibleOnly:Boolean):Object{
+		protected function js_childByType(refId:Number, classType:String, index:uint, visibleOnly:Boolean, includeRef:Boolean=true):Object{
 			var target:* = _refMap[refId];
 			var visibleCount:uint = 0;
 			var length:uint;
@@ -289,7 +289,7 @@ package
 				if( type.@base.toString() == classType || 
 					type.@name.toString() == classType){
 					if(visibleCount == index)
-						return serialize(child);
+						return serialize(child, includeRef);
 					visibleCount++;
 				}
 			}
@@ -304,10 +304,10 @@ package
 			}
 		}
 
-		protected function js_getter(refId:Number, command:String):*{
+		protected function js_getter(refId:Number, command:String, includeRef:Boolean=true):*{
 			var target:Object = _refMap[refId];
 			if(validateCommand(target, command))
-				return serialize(target[command]);
+				return serialize(target[command], includeRef);
 			return null;
 		}
 
@@ -440,7 +440,7 @@ package
 			return params;
 		}
 
-		protected function serialize(ref:Object):Object{
+		protected function serialize(ref:Object, includeRef:Boolean=true):Object{
 			if(ref == null) return null;
 			var out:Object = {};
 			if(ref is Error){
@@ -477,7 +477,8 @@ package
 						return ref;
 	
 					out.extendTypes = extendTypes;
-					out.ref = createProxyObject(ref);
+					if(includeRef == true)
+						out.ref = createProxyObject(ref);
 				}
 			}
 
