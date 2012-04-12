@@ -28,10 +28,12 @@ System.LOAD_DELAY;
 System.INIT_PHASE = 0;
 
 System.getFlash = function(flashPlayerId){
-	if(navigator.appName.indexOf ("Microsoft") != -1) {
-		return window[flashPlayerId];
-	}else{
-		return document[flashPlayerId];
+	if(document.embeds && document.embeds[flashPlayerId]){ //FireFox, Chrome, Opera
+		return document.embeds[flashPlayerId]; 
+	}else if(window.document[flashPlayerId]){ //IE
+		return window.document[flashPlayerId];
+	}else{ //Others
+		return document.getElementById(flashPlayerId);
 	}
 };
 
