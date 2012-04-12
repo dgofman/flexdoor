@@ -26,7 +26,7 @@ EventDispatcher.prototype.Initialize = function(object, parent){
 	this.name = object.name;
 	this.refId = object.refId;
 	this.extendTypes = object.extendTypes;
-	this.refId = object.ref;
+	this.ref = object.ref;
 	this.parent = parent;
 };
 EventDispatcher.prototype.toString = function() {
