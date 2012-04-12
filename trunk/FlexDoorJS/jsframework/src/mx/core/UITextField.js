@@ -21,9 +21,10 @@ function UITextField(classType, extendType)
 {
 	UIComponent.call(this, classType, extendType);
 
-	this.text = function(value) {
-		var textValue = this.property("text", value);
-		return this.fireEvent($Event.Create($Event.CHANGE), value, textValue);
+	this.text = function() { /* getter and setter */
+		return this.property("text", arguments, function(value){
+			this.fireEvent($Event.Create($Event.CHANGE));
+		});
 	};
 }
 

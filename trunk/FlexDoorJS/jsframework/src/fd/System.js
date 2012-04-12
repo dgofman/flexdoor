@@ -184,7 +184,9 @@ System.serialize = function(object){
 	if( object instanceof fd_Function ){
 		return {type:"FUNCTION_TYPE", refId:object.refId};
 	}else if( object instanceof EventDispatcher ||
-		object instanceof flash_events_Event){
+		object instanceof flash_events_Event || 
+		(typeof(object) == "object" && !isNaN(object.refId) && 
+				object.extendTypes instanceof Array)){
 		return {type:"CLASS_TYPE", refId:object.refId};
 	}else{
 		return object;
@@ -198,7 +200,7 @@ System.deserialize = function(object, parent){
 			if(extendType == "Function")
 				return new fd_Function(object);
 			if(extendType == "Object")
-				return object.ref;
+				return isNaN(object.refId) ? object.ref : object;
 			var pair = extendType.split("::");
 			var className = pair[0];
 			if(pair.length == 2)

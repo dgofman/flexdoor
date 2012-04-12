@@ -22,8 +22,8 @@ function mx_controls_ComboBox(classType, extendType)
 	/* extendType - mx.controls::ComboBox */
 	UIComponent.call(this, classType, extendType);
 
-	this.dataProvider = function(value){
-		return this.property("dataProvider", value);
+	this.dataProvider = function(){ /* getter and setter */
+		return this.property("dataProvider", arguments);
 	};
 
 	this.open = function(){
@@ -42,24 +42,24 @@ function mx_controls_ComboBox(classType, extendType)
 		return this.getter("dropdown");
 	};
 
-	this.selectedIndex = function(value, autoClose){
-		if(value === undefined){
+	this.selectedIndex = function(){ /* getter and setter */
+		if(arguments.length == 0){
 			return this.getter("selectedIndex");
 		}else{
 			this.open();
 			while(this.isOpen() == false){}
-			this.dropdown().selectedIndex(value);
-			if(autoClose != false) this.close();
+			this.dropdown().selectedIndex(arguments[0]);
+			this.close();
 		}
 	};
 
-	this.selectedItem = function(value){
-		if(value === undefined){
+	this.selectedItem = function(){ /* getter and setter */
+		if(arguments.length == 0){
 			return this.getter("selectedItem");
 		}else{
 			this.open();
 			while(this.isOpen() == false){}
-			this.dropdown().selectedItem(value);
+			this.dropdown().selectedItem(arguments[0]);
 			if(autoClose != false) this.close();
 		}
 	};

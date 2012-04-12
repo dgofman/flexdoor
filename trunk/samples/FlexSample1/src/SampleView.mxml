@@ -7,22 +7,39 @@
 	<fx:Script>
 		<![CDATA[
 			import mx.controls.Alert;
+			import mx.events.ListEvent;
 
-			private function clickHandler(event:MouseEvent):void{
+			private function buttonClickHandler(event:MouseEvent):void{
 				Alert.show(event.type + " :: " + event.currentTarget.name);
+			}
+
+			protected function itemClickHandler(event:ListEvent):void{
+				trace("itemClickHandler:: rowIndex=" + event.rowIndex + ", columnIndex="+ event.columnIndex + ", " + event.itemRenderer);
+			}
+
+			protected function changeHandler(event:ListEvent):void{
+				trace("changeHandler:: rowIndex=" + event.rowIndex + ", columnIndex="+ event.columnIndex + ", " + event.itemRenderer);
+			}
+
+			protected function clickHandler(event:MouseEvent):void{
+				trace("clickHandler");
 			}
 		]]>
 	</fx:Script>
 	<mx:VBox width="40%" height="100%">
-		<mx:DataGrid id="dataGrid" width="100%" height="100%" dataProvider="{[1,2,3,4,5]}">
+		<mx:DataGrid id="dataGrid" width="100%" height="100%" dataProvider="{[1,2,3,4,5]}"
+					 itemClick="itemClickHandler(event)"
+					 change="changeHandler(event)"
+					 click="clickHandler(event)">
 			<mx:columns>
 				<mx:DataGridColumn headerText="Column 1"/>
+				<mx:DataGridColumn headerText="Column 2"/>
 			</mx:columns>
 		</mx:DataGrid>
 	</mx:VBox>
 	<mx:VBox id="buttonBox" width="60%">
-		<mx:Button toolTip="Add" label="Add" id="add_btn" click="clickHandler(event)"/>
-		<s:Button toolTip="Delete" label="Delete" click="clickHandler(event)"/>
-		<mx:Button toolTip="Reset" icon="@Embed('reload.swf')" click="clickHandler(event)"/>
+		<mx:Button toolTip="Add" label="Add" id="add_btn" click="buttonClickHandler(event)"/>
+		<s:Button toolTip="Delete" label="Delete" click="buttonClickHandler(event)"/>
+		<mx:Button toolTip="Reset" icon="@Embed('reload.swf')" click="buttonClickHandler(event)"/>
 	</mx:VBox>
 </mx:TitleWindow>

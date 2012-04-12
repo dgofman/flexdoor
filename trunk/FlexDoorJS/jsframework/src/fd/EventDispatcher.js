@@ -20,7 +20,6 @@
 function EventDispatcher() 
 {
 }
-
 EventDispatcher.prototype.Extends = function() {};
 EventDispatcher.prototype.Initialize = function(object, parent){
 	this.id = object.id;
@@ -39,6 +38,24 @@ EventDispatcher.Get = function(o, classType){
 	var ref = this;
 	ref = UIComponent.Get(o, EventDispatcher);
 	return ref;
+};
+
+EventDispatcher.prototype.fireEvent = function(event){
+	System.fireEvent(this, event);
+};
+
+EventDispatcher.prototype.property = function(command, args, postEventFunction){
+	if(args != undefined && args.length > 0){
+		var value = args[0]; //setter arguments
+		this.setter(command, value);
+		if(args[1] instanceof Function){
+			args[1].apply(this, [value]);
+		}else if(postEventFunction instanceof Function){
+			postEventFunction.apply(this, [value]);
+		}
+	}else{
+		return this.getter(command);
+	}
 };
 
 EventDispatcher.prototype.find = function(id, index, visibleOnly) {
@@ -69,14 +86,6 @@ EventDispatcher.prototype.getter = function(command){
 	return System.getter(this, command);
 };
 
-EventDispatcher.prototype.property = function(command, value){
-	if(value === undefined){
-		return this.getter(command);
-	}else{
-		this.setter(command, value);
-	}
-};
-
 EventDispatcher.prototype.execute = function(command){
 	return System.execute(this, command, System.getParams(arguments, 1, true));
 };
@@ -97,8 +106,12 @@ EventDispatcher.prototype.createFunctionByName = function(classType, functionNam
 	}
 };
 
-EventDispatcher.prototype.createFunction = function(listener){
-	if(listener != undefined && listener instanceof Function){
+EventDispatcher.prototype.createFunction = function(){
+	var listener = undefined;
+	if(arguments.length > 0 && arguments[0] instanceof Function)
+		listener = arguments[0];
+
+	if(listener instanceof Function){
 		var classType = EventDispatcher;
 		var functionName = "FunctionHandler" + new Date().getTime();
 		classType[functionName] = listener;
@@ -143,3 +156,5 @@ EventDispatcher.prototype.serialize = function(object){
 };
 
 fd_EventDispatcher = function(){};
+function flash_events_EventDispatcher(){};
+flash_events_EventDispatcher.prototype = new EventDispatcher();

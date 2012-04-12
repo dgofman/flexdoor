@@ -3,7 +3,8 @@ function Sample1TestCase(){
 	this.include("mx.containers::Panel",
 				 "mx.containers::TitleWindow",
 				 "mx.controls::DataGrid",
-				 "mx.collections::ListCollectionView");
+				 "mx.collections::ListCollectionView",
+				 "mx.events::ListEvent");
 }
 Sample1TestCase.prototype = new FlexDoor(Sample1TestCase);
 
@@ -77,7 +78,13 @@ Sample1TestCase.prototype.test_2 = function(event) {
 
 Sample1TestCase.prototype.test_3 = function(event) {
 	var dataGrid = $DataGrid.Get(this.dataGrid);
-	dataGrid.selectedItem(2);
+	var rowIndex = 4;
+	var columnIndex = 1;
+	dataGrid.selectedIndex(rowIndex, function(value){
+		//Override Change event to itemClick
+		Assert.assertEquals(rowIndex, value);
+		dataGrid.fireEvent($ListEvent.Create($ListEvent.ITEM_CLICK, rowIndex, columnIndex));
+	});
 
 	var dataProvider = $ListCollectionView.Get(dataGrid.dataProvider());
 	Assert.assertEquals(dataProvider.source.length, 5);

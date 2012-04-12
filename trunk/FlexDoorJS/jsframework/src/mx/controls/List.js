@@ -22,18 +22,33 @@ function mx_controls_List(classType, extendType)
 	/* extendType - mx.controls::List */
 	UIComponent.call(this, classType, extendType);
 
-	this.selectedIndex = function(value){
-		var index = this.property("selectedIndex", value);
-		return this.fireEvent($ListEvent.Create($ListEvent.CHANGE, value, 0), value, index);
+	this.indexToItemRenderer = function(index){
+		return this.execute("indexToItemRenderer", index);
 	};
 
-	this.selectedItem = function(value){
-		var item = this.property("selectedItem", value);
-		return this.fireEvent($ListEvent.Create($ListEvent.CHANGE, value, 0), value, item);
+	this.itemToItemRenderer = function(item){
+		return this.execute("itemToItemRenderer", item);
 	};
 
-	this.dataProvider = function(value){
-		return this.property("dataProvider", value);
+	this.indicesToItemRenderer = function(row, col){
+		return this.execute("mx_internal::indicesToItemRenderer", row, col);
+	};
+
+	this.selectedIndex = function(){  /* getter and setter */
+		return this.property("selectedIndex", arguments, function(value){
+			this.fireEvent($ListEvent.Create($ListEvent.CHANGE, value, 0, this.indexToItemRenderer(value)));
+		});
+	};
+
+	this.selectedItem = function(){  /* getter and setter */
+		return this.property("selectedItem", arguments, function(value){
+			var rowIndex = this.selectedIndex();
+			this.fireEvent($ListEvent.Create($ListEvent.CHANGE, rowIndex, 0, this.indexToItemRenderer(rowIndex)));
+		});
+	};
+
+	this.dataProvider = function(){ /* getter and setter */
+		return this.property("dataProvider", arguments);
 	};
 }
 

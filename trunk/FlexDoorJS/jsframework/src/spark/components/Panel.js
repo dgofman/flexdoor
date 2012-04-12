@@ -22,8 +22,8 @@ function spark_components_Panel(classType, extendType)
 	/* extendType - spark.components::Panel */
 	UIComponent.call(this, classType, extendType);
 
-	this.title = function(value){
-		return this.property("title", value);
+	this.title = function(){ /* getter and setter */
+		return this.property("title", arguments);
 	};
 }
 

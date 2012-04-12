@@ -50,8 +50,8 @@ function mx_collections_ListCollectionView(classType, extendType)
 		return this.execute("getItemIndex", item);
 	};
 
-	this.filterFunction = function(value){
-		return this.property("filterFunction", this.createFunction(value));
+	this.filterFunction = function(){ /* getter and setter */
+		return this.property("filterFunction", this.createFunction.call(this, arguments));
 	};
 
 	this.setSearchFunction = function(func){

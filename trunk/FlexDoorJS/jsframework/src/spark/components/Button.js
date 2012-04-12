@@ -22,8 +22,8 @@ function spark_components_Button(classType, extendType)
 	/* extendType - spark.components::Button */
 	UIComponent.call(this, classType, extendType);
 
-	this.label = function(value){
-		return this.property("label", value);
+	this.label = function(){ /* getter and setter */
+		return this.property("label", arguments);
 	};
 
 	this.click = function(type){

@@ -28,17 +28,12 @@ function UIComponent(classType, extendType)
 		return extendType;
 	};
 
-	this.visible = function(value){
-		return this.property("visible", value);
+	this.visible = function(){ /* getter and setter */
+		return this.property("visible", arguments);
 	};
 
-	this.includeInLayout = function(value){
-		return this.property("includeInLayout", value);
-	};
-
-	this.fireEvent = function(event, value, returnValue){
-		if(value !== undefined) System.fireEvent(this, event);
-		return returnValue;
+	this.includeInLayout = function(){ /* getter and setter */
+		return this.property("includeInLayout", arguments);
 	};
 }
 
