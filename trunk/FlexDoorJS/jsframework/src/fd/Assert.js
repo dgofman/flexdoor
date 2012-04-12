@@ -66,3 +66,5 @@ Assert.fail = function(message) {
 		System.error(message);
 	}
 };
+
+fd_Assert = function(){}

@@ -1581,3 +1581,4 @@ $.ui.plugin.add("draggable", "zIndex", {
 });
 
 })(jQuery);
+ jQueryUI = function(){};

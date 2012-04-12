@@ -35,3 +35,5 @@ UITextField.Get = function(o){
 	ref = UIComponent.Get(o, UITextField);
 	return ref;
 };
+
+mx_core_UITextField = function(){}

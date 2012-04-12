@@ -141,3 +141,5 @@ EventDispatcher.prototype.dispatchEvent = function(event){
 EventDispatcher.prototype.serialize = function(object){
 	return System.serialize(object);
 };
+
+fd_EventDispatcher = function(){}

@@ -34,3 +34,5 @@ Container.Get = function(o){
 	ref = UIComponent.Get(o, Container);
 	return ref;
 };
+
+mx_core_Container = function(){}

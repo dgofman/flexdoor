@@ -54,3 +54,5 @@ TestEvent.prototype.set = function(params) {
 	for(var name in params)
 		this[name] = params[name];
 };
+
+fd_TestEvent = function(){}

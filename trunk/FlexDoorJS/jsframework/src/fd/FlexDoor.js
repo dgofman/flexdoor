@@ -310,10 +310,8 @@ FlexDoor.include = function(cls, src, callback) {
 		if(callback != undefined)
 			FlexDoor.LOAD_FILES[cls] = [callback];
 
-		var obj, elm;
 		var isOpera = typeof(opera) != "undefined" && opera.toString() == "[object Opera]";
 		var isCss = (src.substring(src.length - 4) == '.css');
-		var isXULChrome = true;
 
 		if(src.indexOf('.js') != -1 || src.indexOf('.css') != -1){
 			src = FlexDoor.LIB_PATH + src;
@@ -321,52 +319,19 @@ FlexDoor.include = function(cls, src, callback) {
 			src = FlexDoor.LIB_PATH + src.replace(/\./g, '/') + ".js";
 		}
 
-		try {
-			// check if this is a standard HTML page or a different document (e.g. XUL)
-			// if that is undefined, then catch() will be executed
-			var dummy = document.body.innerHTML;
-			isXULChrome = false;
-		} catch(e) {}
-
-
-		if(!isXULChrome) {
-			elm = document.getElementsByTagName('head').item(0);
-		}else{
-			//top/root XUL elements are: window, dialog, overlay, wizard, prefwindow, page, wizard
-			if ((elm = document.getElementsByTagName('window')[0]) || 
-				(elm = document.getElementsByTagName('page')[0]) || 
-				(elm = document.getElementsByTagName('dialog')[0]) || 
-				(elm = document.getElementsByTagName('overlay')[0]) || 
-				(elm = document.getElementsByTagName('wizard')[0])) {
-				elm = document.getElementsByTagName('prefwindow')[0];
-			}
-		}
-
+		var elm = document.getElementsByTagName('head').item(0);
 		if(elm == undefined)
 			throw new Error("Cannot get instance of HTML element");
 
-		if(!isXULChrome) {
-			obj = document.createElement(isCss ? 'link' : 'script');
-			obj.type = isCss ? 'text/css' : 'text/javascript';
-			if(isCss){
-				obj.href = src;
-				obj.rel = 'stylesheet';
-			}else{
-				obj.src = src;
-				obj.defer = true;
-			}
-		} else {
-			obj = document.createElementNS('http://www.w3.org/1999/xhtml', isCss ? 'html:link' : 'html:script');
-			obj.setAttribute('type', isCss ? 'text/css' : 'text/javascript');
-			if(isCss){
-				obj.setAttribute('href', src);
-				obj.setAttribute('rel', 'stylesheet');
-			}else{
-				obj.setAttribute('src', src);
-				obj.setAttribute('defer', 'true');
-			}
+		var obj = document.createElement(isCss ? 'link' : 'script');
+		obj.type = isCss ? 'text/css' : 'text/javascript';
+		if(isCss){
+			obj.href = src;
+			obj.rel = 'stylesheet';
+		}else{
+			obj.src = src;
 		}
-		
+
 		if(isCss){
 			delete FlexDoor.LOAD_FILES[cls];
 			if(callback != undefined)
@@ -374,17 +339,29 @@ FlexDoor.include = function(cls, src, callback) {
 		}else{
 			var onJsLoaded = function(){
 				var cls = arguments.callee.prototype.cls;
-				var callbacks = FlexDoor.LOAD_FILES[cls];
-				delete FlexDoor.LOAD_FILES[cls];
-				if(callbacks != undefined){
-					if(window["System"])
-						System.log("Loaded class: " + cls + ". Total callback functions: " + callbacks.length);
+				if(window[cls] != undefined){
+					var obj = arguments.callee.prototype.obj;
+					var callbacks = FlexDoor.LOAD_FILES[cls];
+					delete FlexDoor.LOAD_FILES[cls];
+					if(callbacks != undefined){
+						if(window["System"])
+							System.log("Loaded class: " + cls + ". Total callback functions: " + callbacks.length);
+	
+						if (obj.attachEvent && !isOpera) {
+							obj.detachEvent("onreadystatechange", onJsLoaded);
+						} else {
+							obj.removeEventListener("load", onJsLoaded, false);
+						}
 
-					for(var i = 0; i < callbacks.length; i++)
-						callbacks[i]();
+						for(var i = 0; i < callbacks.length; i++)
+							callbacks[i]();
+					}
+				}else{
+					setTimeout(onJsLoaded, 50);
 				}
 			};
 			onJsLoaded.prototype.cls = cls;
+			onJsLoaded.prototype.obj = obj;
 	
 			if (obj.attachEvent && !isOpera) {
 				obj.attachEvent("onreadystatechange", onJsLoaded);
@@ -417,65 +394,26 @@ FlexDoor.run = function(){
 };
 
 //Loading depended libraries
-function mainFlexDoor(){
-	FlexDoor.include("qunit-css", "qunit.css");
-	
-	FlexDoor.includeAll(this, [
-	"fd::System",
-	"fd::Assert",
-	"fd::TestEvent",
-	"fd::Function",
-	"fd::EventDispatcher",
-	"flash.events::Event"], 
-	function(){
+
+FlexDoor.include("jQuery", "jquery/jquery-latest.js", function(){
+	$(document).ready(function(){
 		FlexDoor.includeAll(this, [
-			"mx.core::UIComponent",
-			"mx.core::Container",
-			"mx.core::Application"],
+			"fd::System",
+			"fd::Assert",
+			"fd::TestEvent",
+			"fd::Function",
+			"fd::EventDispatcher",
+			"flash.events::Event",], 
 			function(){
-				FlexDoor.run();
+				FlexDoor.includeAll(this, [
+					"mx.core::UIComponent",
+					"mx.core::Container",
+					"mx.core::Application"],
+					function(){
+						FlexDoor.run();
+					}
+				);
 			}
 		);
-	}
-);}
-
-if (document.readyState == "complete") {
-	setTimeout(mainFlexDoor, 1);
-}else{
-	if (document.addEventListener) {
-		var DOMContentLoaded = function() {
-			document.removeEventListener("DOMContentLoaded", DOMContentLoaded, false);
-			mainFlexDoor();
-		};
-		document.addEventListener("DOMContentLoaded", DOMContentLoaded, false);
-		window.addEventListener("load", mainFlexDoor, false);
-	} else if (document.attachEvent) {
-		var DOMContentLoaded = function() {
-			if (document.readyState == "complete") {
-				document.detachEvent( "onreadystatechange", DOMContentLoaded);
-				mainFlexDoor();
-			}
-		};
-		document.attachEvent( "onreadystatechange", DOMContentLoaded);
-		window.attachEvent("onload", mainFlexDoor);
-	
-		var toplevel = false;
-		try {
-			toplevel = window.frameElement == null;
-		} catch(e) {}
-		if(document.documentElement.doScroll && toplevel){
-			function doScrollCheck(){
-				try {
-					// If IE is used, use the trick by Diego Perini
-					// http://javascript.nwbox.com/IEContentLoaded/
-					document.documentElement.doScroll("left");
-				} catch(e) {
-					setTimeout(doScrollCheck, 1);
-					return;
-				}
-				mainFlexDoor();
-			}
-			doScrollCheck();
-		}
-	}
-}
+	});
+});

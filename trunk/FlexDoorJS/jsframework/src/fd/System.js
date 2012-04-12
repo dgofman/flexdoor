@@ -258,12 +258,13 @@ System.startTestCase = function(index){
 
 System.loadQUnit = function(){
 	var index = 0;
-	function loadHandler(){
-		if(++index == 2)
+	function assetsLoadHandler(){
+		if(++index == 3)
 			System.doTestLoader();
 	};
-	FlexDoor.include("jquery-ui", "jquery/jquery.ui.js", loadHandler);
-	FlexDoor.include("qunit-js", "qunit.js", loadHandler);
+	FlexDoor.include("qunit-css", "qunit.css", assetsLoadHandler);
+	FlexDoor.include("QUnit", "qunit.js", assetsLoadHandler);
+	FlexDoor.include("jQueryUI", "jquery/jquery.ui.js", assetsLoadHandler);
 };
 
 System.doTestLoader = function(){
@@ -276,14 +277,13 @@ System.doTestLoader = function(){
 							"<h2 id='qunit-userAgent'></h2>" +
 							"<ol id='qunit-tests'></ol></div>"));
 
-	$("#draggable").draggable();
-	$("#draggable").show();
+	QUnit.load();
 
-	$('#runTest').click( function() {
+	$("#draggable").show();
+	$("#draggable").draggable();
+
+	$("#runTest").click( function() {
 		System.startTestCase(0);
 	});
-	
-	if(QUnit.config.autostart == undefined){
-		QUnit.load();
-	}
 };
+fd_System = function(){}

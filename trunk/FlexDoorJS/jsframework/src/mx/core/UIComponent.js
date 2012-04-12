@@ -54,3 +54,5 @@ UIComponent.Get = function(o, classType){
 		throw new Error("TypeError: Error #102: Type Coercion failed: cannot convert " + o.toString() + " to " + classType.FLEX_TYPE);
 	}
 };
+
+mx_core_UIComponent = function(){}
