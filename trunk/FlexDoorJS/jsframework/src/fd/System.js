@@ -259,12 +259,17 @@ System.startTestCase = function(index){
 System.loadQUnit = function(){
 	var index = 0;
 	function assetsLoadHandler(){
-		if(++index == 3)
+		if(++index == 2)
 			System.doTestLoader();
 	};
-	FlexDoor.include("qunit-css", "qunit.css", assetsLoadHandler);
 	FlexDoor.include("QUnit", "qunit.js", assetsLoadHandler);
 	FlexDoor.include("jQueryUI", "jquery/jquery.ui.js", assetsLoadHandler);
+
+	if (document.createStyleSheet){
+		document.createStyleSheet(FlexDoor.LIB_PATH + '/qunit.css'); 
+	}else{
+		$('head').append('<link rel="stylesheet" href="' + FlexDoor.LIB_PATH + '/qunit.css" type="text/css"/>');
+	}
 };
 
 System.doTestLoader = function(){

@@ -311,9 +311,8 @@ FlexDoor.include = function(cls, src, callback) {
 			FlexDoor.LOAD_FILES[cls] = [callback];
 
 		var isOpera = typeof(opera) != "undefined" && opera.toString() == "[object Opera]";
-		var isCss = (src.substring(src.length - 4) == '.css');
 
-		if(src.indexOf('.js') != -1 || src.indexOf('.css') != -1){
+		if(src.indexOf('.js') != -1){
 			src = FlexDoor.LIB_PATH + src;
 		}else{
 			src = FlexDoor.LIB_PATH + src.replace(/\./g, '/') + ".js";
@@ -323,51 +322,40 @@ FlexDoor.include = function(cls, src, callback) {
 		if(elm == undefined)
 			throw new Error("Cannot get instance of HTML element");
 
-		var obj = document.createElement(isCss ? 'link' : 'script');
-		obj.type = isCss ? 'text/css' : 'text/javascript';
-		if(isCss){
-			obj.href = src;
-			obj.rel = 'stylesheet';
-		}else{
-			obj.src = src;
-		}
+		var obj = document.createElement('script');
+		obj.type = 'text/javascript';
+		obj.src = src;
 
-		if(isCss){
-			delete FlexDoor.LOAD_FILES[cls];
-			if(callback != undefined)
-				callback();
-		}else{
-			var onJsLoaded = function(){
-				var cls = arguments.callee.prototype.cls;
-				if(window[cls] != undefined){
-					var obj = arguments.callee.prototype.obj;
-					var callbacks = FlexDoor.LOAD_FILES[cls];
-					delete FlexDoor.LOAD_FILES[cls];
-					if(callbacks != undefined){
-						if(window["System"])
-							System.log("Loaded class: " + cls + ". Total callback functions: " + callbacks.length);
-	
-						if (obj.attachEvent && !isOpera) {
-							obj.detachEvent("onreadystatechange", onJsLoaded);
-						} else {
-							obj.removeEventListener("load", onJsLoaded, false);
-						}
+		var onJsLoaded = function(){
+			var cls = arguments.callee.prototype.cls;
+			if(window[cls] != undefined){
+				var obj = arguments.callee.prototype.obj;
+				var callbacks = FlexDoor.LOAD_FILES[cls];
+				delete FlexDoor.LOAD_FILES[cls];
+				if(callbacks != undefined){
+					if(window["System"])
+						System.log("Loaded class: " + cls + ". Total callback functions: " + callbacks.length);
 
-						for(var i = 0; i < callbacks.length; i++)
-							callbacks[i]();
+					if (obj.attachEvent && !isOpera) {
+						obj.detachEvent("onreadystatechange", onJsLoaded);
+					} else {
+						obj.removeEventListener("load", onJsLoaded, false);
 					}
-				}else{
-					setTimeout(onJsLoaded, 50);
+
+					for(var i = 0; i < callbacks.length; i++)
+						callbacks[i]();
 				}
-			};
-			onJsLoaded.prototype.cls = cls;
-			onJsLoaded.prototype.obj = obj;
-	
-			if (obj.attachEvent && !isOpera) {
-				obj.attachEvent("onreadystatechange", onJsLoaded);
-			} else {
-				obj.addEventListener("load", onJsLoaded, false);
+			}else{
+				setTimeout(onJsLoaded, 50);
 			}
+		};
+		onJsLoaded.prototype.cls = cls;
+		onJsLoaded.prototype.obj = obj;
+
+		if (obj.attachEvent && !isOpera) {
+			obj.attachEvent("onreadystatechange", onJsLoaded);
+		} else {
+			obj.addEventListener("load", onJsLoaded, false);
 		}
 
 		elm.appendChild(obj);
