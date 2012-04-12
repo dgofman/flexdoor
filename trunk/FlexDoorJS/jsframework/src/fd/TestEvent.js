@@ -55,4 +55,4 @@ TestEvent.prototype.set = function(params) {
 		this[name] = params[name];
 };
 
-fd_TestEvent = function(){}
+fd_TestEvent = function(){};

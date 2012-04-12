@@ -36,4 +36,4 @@ UITextField.Get = function(o){
 	return ref;
 };
 
-mx_core_UITextField = function(){}
+mx_core_UITextField = function(){};

@@ -142,4 +142,4 @@ EventDispatcher.prototype.serialize = function(object){
 	return System.serialize(object);
 };
 
-fd_EventDispatcher = function(){}
+fd_EventDispatcher = function(){};

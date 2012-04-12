@@ -55,4 +55,4 @@ UIComponent.Get = function(o, classType){
 	}
 };
 
-mx_core_UIComponent = function(){}
+mx_core_UIComponent = function(){};

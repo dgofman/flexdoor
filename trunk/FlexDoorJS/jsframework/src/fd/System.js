@@ -293,4 +293,4 @@ System.doTestLoader = function(){
 		System.startTestCase(0);
 	});
 };
-fd_System = function(){}
+fd_System = function(){};

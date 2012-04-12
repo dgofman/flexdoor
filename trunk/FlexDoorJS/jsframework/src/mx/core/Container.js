@@ -35,4 +35,4 @@ Container.Get = function(o){
 	return ref;
 };
 
-mx_core_Container = function(){}
+mx_core_Container = function(){};

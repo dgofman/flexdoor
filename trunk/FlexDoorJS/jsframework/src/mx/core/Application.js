@@ -45,4 +45,4 @@ Application.Get = function(o){
 	return ref;
 };
 
-mx_core_Application = function(){}
+mx_core_Application = function(){};
