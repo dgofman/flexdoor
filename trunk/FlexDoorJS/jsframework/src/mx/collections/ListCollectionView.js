@@ -51,7 +51,8 @@ function mx_collections_ListCollectionView(classType, extendType)
 	};
 
 	this.filterFunction = function(){ /* getter and setter */
-		return this.property("filterFunction", this.createFunction.call(this, arguments));
+		return this.property("filterFunction", 
+				arguments.length ? [this.createFunction.apply(this, arguments)] : null);
 	};
 
 	this.setSearchFunction = function(func){

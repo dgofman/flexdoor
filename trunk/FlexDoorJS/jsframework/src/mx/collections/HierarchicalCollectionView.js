@@ -23,7 +23,8 @@ function mx_collections_HierarchicalCollectionView(classType, extendType)
 	UIComponent.call(this, classType, extendType);
 
 	this.filterFunction = function(){ /* getter and setter */
-		return this.property("filterFunction", this.createFunction.call(this, arguments));
+		return this.property("filterFunction", 
+				arguments.length ? [this.createFunction.apply(this, arguments)] : null);
 	};
 
 	this.refresh = function(){

@@ -178,7 +178,7 @@ System.setSearchFunction = function(collection, func){
 	collection.refresh();
 
 	asFunction.destroy();
-	if( filterFunc != null)
+	if(filterFunc != null)
 		filterFunc.destroy();
 };
 
@@ -192,8 +192,8 @@ System.serialize = function(object){
 		return {type:"FUNCTION_TYPE", refId:object.refId};
 	}else if( object instanceof EventDispatcher ||
 		object instanceof flash_events_Event || 
-		(typeof(object) == "object" && !isNaN(object.refId) && 
-				object.extendTypes instanceof Array)){
+		(object != undefined && typeof(object) == "object" && 
+			!isNaN(object.refId) && object.extendTypes instanceof Array)){
 		return {type:"CLASS_TYPE", refId:object.refId};
 	}else{
 		return object;
@@ -284,9 +284,9 @@ System.loadQUnit = function(){
 };
 
 System.doTestLoader = function(){
-	$(document.body).append($("<div id='draggable' style='width: 600px; height: 450px; padding: 0.5em; position:absolute; top:0;right:0;display:none;'>" +
+	$(document.body).append($("<div id='draggable' style='width: 600px; padding: 0.5em; position:absolute; top:0;right:0;display:none;'>" +
 							"<h1 id='qunit-header'>Test Runner</h1>" + 
-							"<h2 id='qunit-banner'></h2>" +
+							"<h5 id='qunit-banner'></h5>" +
 							"<div id='qunit-testrunner-toolbar'></div>" + 
 							"<div align='center' style='background-color:#eee'>" + 
 							"<input id='runTest' type='button' value='Run Tests'/></div>" + 

@@ -109,7 +109,7 @@ EventDispatcher.prototype.createFunctionByName = function(classType, functionNam
 
 EventDispatcher.prototype.createFunction = function(){
 	var listener = undefined;
-	if(arguments.length > 0 && arguments[0] instanceof Function)
+	if(arguments.length > 0)
 		listener = arguments[0];
 
 	if(listener instanceof Function){
