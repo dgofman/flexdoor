@@ -266,9 +266,9 @@ System.loadQUnit = function(){
 	FlexDoor.include("jQueryUI", "jquery/jquery.ui.js", assetsLoadHandler);
 
 	if (document.createStyleSheet){
-		document.createStyleSheet(FlexDoor.LIB_PATH + '/qunit.css'); 
+		document.createStyleSheet('http://code.jquery.com/qunit/qunit-git.css'); 
 	}else{
-		$('head').append('<link rel="stylesheet" href="' + FlexDoor.LIB_PATH + '/qunit.css" type="text/css"/>');
+		$('head').append('<link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-git.css" type="text/css"/>');
 	}
 };
 
