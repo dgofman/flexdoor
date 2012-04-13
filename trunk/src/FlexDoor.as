@@ -166,7 +166,7 @@ package
 					var request:URLRequest = new URLRequest(_src);
 					var variables:URLVariables = new URLVariables();
 					for(var name:String in loaderInfo.parameters){
-						if(name != "__src__" && name != "__frameRate__")
+						if(name != "__src__")
 							variables[name] = loaderInfo.parameters[name];
 					}
 					request.data = variables;
