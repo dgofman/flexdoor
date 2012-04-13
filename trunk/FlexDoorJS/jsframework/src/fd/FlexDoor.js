@@ -370,8 +370,9 @@ FlexDoor.include = function(cls, src, callback) {
 	}
 };
 
-FlexDoor.dispatchEvent = function(eventType){
+FlexDoor.dispatchEvent = function(eventType, param){
 	if(eventType == "initialized"){
+		FlexDoor.VERSION = param;
 		FlexDoor.run();
 	}
 };

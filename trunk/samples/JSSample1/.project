@@ -18,7 +18,7 @@
 		<link>
 			<name>jsframework_src</name>
 			<type>2</type>
-			<location>C:/eclipse/workspace/flexdoor_3.x/FlexDoorJS/jsframework/src</location>
+			<locationURI>FLEXDOOR/FlexDoorJS/jsframework/src</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

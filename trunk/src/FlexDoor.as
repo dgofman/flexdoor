@@ -37,14 +37,6 @@ package
 	import flash.system.Security;
 	import flash.system.SecurityDomain;
 	import flash.utils.Timer;
-	import flash.utils.flash_proxy;
-	
-	import mx.core.mx_internal;
-	import mx.utils.object_proxy;
-
-	use namespace mx_internal;
-	use namespace object_proxy;
-	use namespace flash_proxy;
 
 	import mx.events.FlexEvent;
 	import flash.utils.setTimeout;
@@ -59,7 +51,12 @@ package
 	import flash.display.DisplayObject;
 	import flash.events.EventDispatcher;
 	import flash.utils.ByteArray;
-	import mx.utils.ObjectUtil;
+
+	import flash.utils.flash_proxy;
+	import mx.core.mx_internal;
+
+	use namespace flash_proxy;
+	use namespace mx_internal;
 
 	[Mixin]
 	[SWF(backgroundColor="#FFFFFF")]
@@ -73,11 +70,13 @@ package
 		private var _timer:Timer;
 		private var _jsFunction:*;
 
+		private static var isRuntimeLoader:Boolean = false; 
+		
 		public static const VERSION:String     = "3.0";
 		public static const INITIALIZED:String = "initialized";
 		public static const ERROR:String       = "error";
 
-		public function FlexDoor(application:*){
+		public function FlexDoor(application:*=null){
 			Security.allowDomain("*");
 			Security.allowInsecureDomain("*");
 			_refMap = new Dictionary();
@@ -85,12 +84,14 @@ package
 				_application = application;
 				ready();
 			}else{
+				isRuntimeLoader = true;
 				runtimeFlexDoorLoader();
 			}
 		}
 
-		public static function init(systemManager:Object):void {
-			systemManager.addEventListener(FlexEvent.APPLICATION_COMPLETE, onApplicationComplete);
+		public static function init(systemManager:EventDispatcher):void {
+			if(isRuntimeLoader == false)
+				systemManager.addEventListener(FlexEvent.APPLICATION_COMPLETE, onApplicationComplete);
 		}
 
 		private static function onApplicationComplete(event:FlexEvent):void{
@@ -134,14 +135,14 @@ package
 				ExternalInterface.addCallback("addEventListener", js_addEventListener);
 				ExternalInterface.addCallback("removeEventListener", js_removeEventListener);
 				ExternalInterface.addCallback("dispatchEvent", js_dispatchEvent);
-				dispatchJsEvent(INITIALIZED);
+				dispatchJsEvent(INITIALIZED, VERSION);
 			}
 			dispatchEvent(new DataEvent(INITIALIZED, false, false, _application.name));
 		}
 
-		private function dispatchJsEvent(eventType:String):void{
+		private function dispatchJsEvent(eventType:String, param:*=null):void{
 			var doLater:Function = function():void{
-				ExternalInterface.call("parent.FlexDoor.dispatchEvent", eventType);
+				ExternalInterface.call("parent.FlexDoor.dispatchEvent", eventType, param);
 			};
 			setTimeout(doLater, 500);
 		}
@@ -197,8 +198,6 @@ package
 				_timer.stop();
 				_application = Object(_loader.content).application;
 				onResize();
-				var frameRate:Number  = loaderInfo.parameters["__frameRate__"];
-				stage.frameRate = isNaN(frameRate) ? _application.stage.frameRate : frameRate;
 				ready();
 			}
 		}
@@ -333,11 +332,9 @@ package
 
 		protected function getFunction(target:*, pair:Array):Function{
 			if(pair.length == 2){
-				switch(pair[0]){ //namespace such as mx_internal
+				switch(pair[0]){
 					case "mx_internal":
 						return target.mx_internal::[pair[1]];
-					case "object_proxy":
-						return target.object_proxy::[pair[1]];
 					case "flash_proxy":
 						return target.flash_proxy::[pair[1]];
 				}
@@ -501,23 +498,51 @@ package
 			return out;
 		}
 		
-		private function createProxyObject(ref:*):*{
+		private function createProxyObject(ref:*, includeNamespaces:Boolean=false):*{
 			if(ref is DisplayObject)
 				return DisplayObject(ref).toString();
-			if(typeof(ref) != "object")
+			if(ref == null || typeof(ref) != "object")
 				return ref;
-	
-			var properties:Array = ObjectUtil.getClassInfo(ref).properties;
+
+			var value:*;
 			var out:Object = {};
-			for(var p:uint = 0; p < properties.length; p++){
-				var qn:QName = properties[p];
-				var value:* = ref[qn.localName];
-				if(value is Array){
-					out[qn.localName] = [];
-					for(var i:uint = 0; i < value.length; i++)
-						out[qn.localName][i] = createProxyObject(value[i]);
+			var classInfo:XML = describeType(ref);
+			var isDict:Boolean  = (classInfo.@name.toString() == "flash.utils::Dictionary");
+			var dynamic:Boolean = (classInfo.@isDynamic.toString() == "true");
+			if(isDict || dynamic){
+				for(var key:* in ref){
+					if(key != "mx_internal_uid"){
+						value = ref[key];
+						if(value is Array){
+							out[key] = [];
+							for(var i:uint = 0; i < value.length; i++)
+								out[key][i] = createProxyObject(value[i]);
+						}else{
+							out[key] = createProxyObject(value);
+						}
+					}
+				}
+			}else{
+				var properties:XMLList;
+				if (typeof(ref) == "xml"){
+					properties = ref.attributes();
 				}else{
-					out[qn.localName] = createProxyObject(value);
+					properties = classInfo..accessor.(@access != "writeonly") + classInfo..variable;
+				}
+
+				for(var p:uint = 0; p < properties.length(); p++){
+					var item:XML = properties[p];
+					var uri:String = item.@uri.toString();
+					if(uri.length == 0 || includeNamespaces){ //ignore http://www.adobe.com/2006/flex/mx/internal
+						value = ref[item.@name];
+						if(value is Array){
+							out[item.@name] = [];
+							for(var j:uint = 0; j < value.length; j++)
+								out[item.@name][j] = createProxyObject(value[j]);
+						}else{
+							out[item.@name] = createProxyObject(value);
+						}
+					}
 				}
 			}
 			return out;

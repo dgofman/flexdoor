@@ -294,7 +294,7 @@ System.loadQUnit = function(){
 
 System.doTestLoader = function(){
 	$(document.body).append($("<div id='draggable' style='width: 600px; padding: 0.5em; position:absolute; top:0;right:0;display:none;'>" +
-							"<h1 id='qunit-header'>Test Runner</h1>" + 
+							"<h1 id='qunit-header'>FlexDoor v" + FlexDoor.VERSION + "</h1>" +
 							"<h5 id='qunit-banner'></h5>" +
 							"<div id='qunit-testrunner-toolbar'></div>" + 
 							"<div align='center' style='background-color:#eee'>" + 
