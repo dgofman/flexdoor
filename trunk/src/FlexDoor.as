@@ -117,6 +117,7 @@ package
 		}
 
 		protected function ready():void{
+			new FlexDoorUtil(this, _application);
 			if(ExternalInterface.available){
 				ExternalInterface.addCallback("refIds", js_refIds);
 				ExternalInterface.addCallback("releaseIds", js_releaseIds);
@@ -257,7 +258,7 @@ package
 				}
 				return serialize(o, includeRef);
 			}catch(e:Error){ 
-				return serialize(e);
+				return js_childByName(refId, id, includeRef);
 			}
 		}
 

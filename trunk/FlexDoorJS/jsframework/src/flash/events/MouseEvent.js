@@ -37,8 +37,8 @@ flash_events_MouseEvent.Get = function(o){
 
 function $MouseEvent() {}
 $MouseEvent.Get = flash_events_MouseEvent.Get;
-$MouseEvent.Create = function(type, bubbles, cancelable, localX, localY, 
-								ctrlKey, altKey, shiftKey, buttonDown, relatedObject, delta){
+$MouseEvent.Create = function(type, bubbles, cancelable, buttonDown, relatedObject,
+									localX, localY, ctrlKey, altKey, shiftKey, delta){
 	if(bubbles == undefined) bubbles = true;
 	if(ctrlKey == undefined) ctrlKey = false;
 	if(altKey == undefined) altKey = false;
