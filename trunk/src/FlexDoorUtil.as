@@ -6,7 +6,10 @@ package
 	import flash.events.TimerEvent;
 	import flash.text.TextField;
 	import flash.utils.Timer;
+	import flash.utils.clearInterval;
 	import flash.utils.describeType;
+	import flash.utils.getQualifiedClassName;
+	import flash.utils.setInterval;
 	import flash.utils.setTimeout;
 	
 	import mx.core.mx_internal;
@@ -32,13 +35,60 @@ package
 		private var _loader:Loader;
 		private var _content:*;
 
-		private var _eventsMap:Object;
+		private var _queueMap:Object;
+		private var _queueList:Array;
+		private var _queueInterval:Number;
+
+		private var _excludeEvents:Object = {
+			"flash.events::Event_alphaChanged":true,
+			"flash.events::Event_childrenChanged":true,
+			"flash.events::Event_contentChange":true,
+			"flash.events::Event_dataProviderChanged":true,
+			"flash.events::Event_directionChanged":true,
+			"flash.events::Event_editableChanged":true,
+			"flash.events::Event_enabledChanged":true,
+			"flash.events::Event_explicitHeightChanged":true,
+			"flash.events::Event_explicitWidthChanged":true,
+			"flash.events::Event_explicitMinHeightChanged":true,
+			"flash.events::Event_explicitMinWidthChanged":true,
+			"flash.events::Event_htmlTextChanged":true,
+			"flash.events::Event_restrictChanged":true,
+			"flash.events::Event_skinChanged":true,
+			"flash.events::Event_tabFocusEnabledChange":true,
+			"flash.events::Event_toolTipChanged":true,
+			"flash.events::Event_horizontalScrollPolicyChanged":true,
+			"flash.events::Event_validateDisplayListComplete":true,
+			"flash.events::Event_validatePropertiesComplete":true,
+			"flash.events::Event_verticalScrollPolicyChanged":true,
+			"flash.events::Event_validateSizeComplete":true,
+			"flash.events::Event_viewChanged":true,
+			"mx.events::FlexEvent_dataChange":true,
+			"mx.events::FlexEvent_creationComplete":true,
+			"mx.events::FlexEvent_contentCreationComplete":true,
+			"mx.events::FlexEvent_hide":true,
+			"mx.events::FlexEvent_initialize":true,
+			"mx.events::FlexEvent_preinitialize":true,
+			"mx.events::FlexEvent_show":true,
+			"mx.events::ToolTipEvent_toolTipCreate":true,
+			"mx.events::ToolTipEvent_toolTipHide":true,
+			"mx.events::ToolTipEvent_toolTipEnd":true,
+			"mx.events::ToolTipEvent_toolTipShow":true,
+			"mx.events::ToolTipEvent_toolTipShown":true,
+			"mx.events::ToolTipEvent_toolTipStart":true,
+			"mx.events::PropertyChangeEvent_propertyChange":true,
+			"mx.events::FlexEvent_updateComplete":true,
+			"mx.events::FlexEvent_valueCommit":true,
+			"spark.events::IndexChangeEvent_caretChange":true,
+			"spark.events::ElementExistenceEvent":true,
+			"spark.events::SkinPartEvent":true
+		};
 
 		public function FlexDoorUtil(flexDoor:FlexDoor, application:*){
 			_flexDoor = flexDoor;
 			_application = application;
 
-			_eventsMap = {};
+			_queueMap = {};
+			_queueList = [];
 
 			_loader = new Loader(); 
 			_loader.loadBytes(new _flexdoorSWF()); 
@@ -71,22 +121,39 @@ package
 
 		public function stopSpy():void{
 			_uiComponent.mx_internal::dispatchEventHook = _dispatchEventHook;
+			clearInterval(_queueInterval);
 		}
 
 		public function runSpy():void{
-			_uiComponent.mx_internal::dispatchEventHook = function(event:Event, uicomponent:*):void{
-				if(_content == null) return;
-				var eventType:XML = describeType(event);
-				var uniqKey:String = eventType.@name.toString() + '_' + event.type + '_' + uicomponent.uid;
-				if(_eventsMap[uniqKey] != null) return;
-				_eventsMap[uniqKey] = true; //do not add the same event types
+			if(_content != null){
+				_uiComponent.mx_internal::dispatchEventHook = function(event:Event, uicomponent:*):void{
+					var eventKey:String = getQualifiedClassName(event) + '_' + event.type;
+					if(_excludeEvents[eventKey] == true) return;
+					var uniqKey:String =  eventKey + '_' + uicomponent.toString();
+					if(_queueMap[uniqKey] == null){
+						_queueList.unshift({event:event, uicomponent:uicomponent});
+						_queueMap[uniqKey] = true; //do not add the same event types
+					}
+				}
+				clearInterval(_queueInterval);
+				_queueInterval = setInterval(readQueue, 100);
+			}
+		}
 
-				_uiComponent.mx_internal::dispatchEventHook = null;
-				setTimeout(runSpy, 100); //enable dispatchEventHook after 100 milliseconds
 
+		private function readQueue():void{
+			if(_queueList.length > 0){
+				var queue:Object = _queueList.pop();
+				var event:Event = queue.event;
+				var uicomponent:* = queue.uicomponent;
+				var uniqKey:String = getQualifiedClassName(event) + '_' + event.type + '_' + uicomponent.toString();
+				trace(">>>>>>>>>>>>>>  " + _queueList.length + "+"+ uniqKey);
+				delete _queueMap[uniqKey];
+			
 				var components:Array = [];
 				var includes:Object = {};
 				var uniqNames:Object = {};
+				var eventType:XML = describeType(event);
 				includes[eventType.@name.toString()] = 0;
 
 				function getInfo(c:*):String{
@@ -218,7 +285,8 @@ package
 					break;
 				case "clear":
 				case "close":
-					_eventsMap = {};
+					_queueMap = {};
+					_queueList = [];
 					break;
 			}
 		}
