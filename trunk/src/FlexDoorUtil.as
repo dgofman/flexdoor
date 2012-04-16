@@ -54,6 +54,7 @@ package
 			"flash.events::Event_htmlTextChanged":true,
 			"flash.events::Event_restrictChanged":true,
 			"flash.events::Event_skinChanged":true,
+			"flash.events::Event_sourceChanged":true,
 			"flash.events::Event_tabFocusEnabledChange":true,
 			"flash.events::Event_toolTipChanged":true,
 			"flash.events::Event_horizontalScrollPolicyChanged":true,
@@ -62,9 +63,12 @@ package
 			"flash.events::Event_verticalScrollPolicyChanged":true,
 			"flash.events::Event_validateSizeComplete":true,
 			"flash.events::Event_viewChanged":true,
+			"mx.events::CollectionEvent_collectionChange":true,
 			"mx.events::FlexEvent_dataChange":true,
 			"mx.events::FlexEvent_creationComplete":true,
 			"mx.events::FlexEvent_contentCreationComplete":true,
+			"mx.events::EffectEvent_effectStart":true,
+			"mx.events::EffectEvent_effectEnd":true,
 			"mx.events::FlexEvent_hide":true,
 			"mx.events::FlexEvent_initialize":true,
 			"mx.events::FlexEvent_preinitialize":true,
@@ -79,8 +83,8 @@ package
 			"mx.events::FlexEvent_updateComplete":true,
 			"mx.events::FlexEvent_valueCommit":true,
 			"spark.events::IndexChangeEvent_caretChange":true,
-			"spark.events::ElementExistenceEvent":true,
-			"spark.events::SkinPartEvent":true
+			"spark.events::ElementExistenceEvent_elementAdd":true,
+			"spark.events::SkinPartEvent_partAdded":true
 		};
 
 		public function FlexDoorUtil(flexDoor:FlexDoor, application:*){
@@ -147,7 +151,6 @@ package
 				var event:Event = queue.event;
 				var uicomponent:* = queue.uicomponent;
 				var uniqKey:String = getQualifiedClassName(event) + '_' + event.type + '_' + uicomponent.toString();
-				trace(">>>>>>>>>>>>>>  " + _queueList.length + "+"+ uniqKey);
 				delete _queueMap[uniqKey];
 			
 				var components:Array = [];
@@ -156,7 +159,7 @@ package
 				var eventType:XML = describeType(event);
 				includes[eventType.@name.toString()] = 0;
 
-				function getInfo(c:*):String{
+				function getInfo(c:*, childRef:*=null, childId:String=null):String{
 					if(c != _application && c != _application.systemManager){
 						var type:XML = describeType(c);
 						var extendsClass:XMLList = <></>;
@@ -174,12 +177,25 @@ package
 									uniqNames[variableName] += 1;
 									variableName += '$' + uniqNames[variableName]; //attach index for repeating variable names
 								}
-								var parentName:String = getInfo(c.parent);
+								var parent:* = c.parent;
+								if(c.id != null){
+									//Try to find a parent reference by id
+									while(parent != null){
+										if( parent.hasOwnProperty(c.id) &&
+											parent[c.id] == c){
+												break;
+										}
+										parent = parent.parent;
+									}
+								}
+								if(parent == null)
+									parent = c.parent;
+								var parentName:String = getInfo(parent);
 								if(parentName == null){ //probably is systemManager child
 									components.push('var ' + variableName + ' = this.app.getPopupWindow("' + type.@name.toString() + '");');
 								}else{
 									try{
-										if(c.id != null && c.parent[c.id]){
+										if(c.id != null && parent[c.id]){
 											components.push('var ' + variableName + ' = ' + alias + '.Get(' + parentName + '.find("' + c.id + '"));');
 											return variableName;
 										}
