@@ -99,9 +99,7 @@ package
 			_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onComplete);
 			application.systemManager.addChild(_loader);
 
-			try{
-				_uiComponent = _flexDoor.js_class("mx.core::UIComponent", false) as Class;
-			}catch(e:Error){}
+			_uiComponent = _flexDoor.getClassByName("mx.core::UIComponent");
 			if(_uiComponent == null)
 				throw new Error("UIComponent is undefined");
 
@@ -169,7 +167,8 @@ package
 							if(pckgName == "mx.controls::ToolTip") return null;
 							var alias:String = _classMap[pckgName];
 							if(alias != null){
-								includes[pckgName] = alias;
+								if(alias != "") //skip mx.core namespace 
+									includes[pckgName] = alias;
 								var variableName:String = (c.id != null ? c.id : c.name);
 								if(uniqNames[variableName] == null){
 									uniqNames[variableName] = 0;
@@ -277,7 +276,7 @@ package
 					event.target.addEventListener(TimerEvent.TIMER, handleTimer);
 					event.target.stop();
 
-					var stage:Stage = _application.stage;
+					var stage:Stage = _loader.stage;
 					_content.x = (stage.stageWidth - _content.width) / 2;
 					_content.y = (stage.stageHeight - _content.height) / 2;
 					_content.addEventListener("close", spyEventHandler);

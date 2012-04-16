@@ -56,16 +56,16 @@ package
 	[SWF(backgroundColor="#FFFFFF")]
 	public class FlexDoor extends Sprite
 	{
-		private var _application:*;
-		private var _loader:Loader;
+		protected var _application:*;
+		protected var _loader:Loader;
 
-		private var _refMap:Dictionary;
-		private var _src:String;
-		private var _timer:Timer;
-		private var _jsFunction:*;
-		private var _fdUtil:FlexDoorUtil;
+		protected var _refMap:Dictionary;
+		protected var _src:String;
+		protected var _timer:Timer;
+		protected var _jsFunction:*;
+		protected var _fdUtil:FlexDoorUtil;
 
-		private static var isRuntimeLoader:Boolean = false; 
+		protected static var isRuntimeLoader:Boolean = false; 
 		
 		public static const VERSION:String     = "3.0";
 		public static const INITIALIZED:String = "initialized";
@@ -89,12 +89,18 @@ package
 				systemManager.addEventListener(FlexEvent.APPLICATION_COMPLETE, onApplicationComplete);
 		}
 
-		private static function onApplicationComplete(event:FlexEvent):void{
+		public function getClassByName(classType:String):Class{
+			if(_loader != null)
+				return _loader.contentLoaderInfo.applicationDomain.getDefinition(classType) as Class;
+			return getDefinitionByName(classType) as Class;
+		}
+
+		protected static function onApplicationComplete(event:FlexEvent):void{
 			event.currentTarget.removeEventListener(FlexEvent.APPLICATION_COMPLETE, onApplicationComplete);
 			new FlexDoor(event.currentTarget.application);
 		}
 
-		private function runtimeFlexDoorLoader():void {
+		protected function runtimeFlexDoorLoader():void {
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
 			stage.quality = StageQuality.BEST;
@@ -137,7 +143,7 @@ package
 			dispatchEvent(new DataEvent(INITIALIZED, false, false, _application.name));
 		}
 
-		private function dispatchJsEvent(eventType:String, param:*=null):void{
+		protected function dispatchJsEvent(eventType:String, param:*=null):void{
 			var doLater:Function = function():void{
 				ExternalInterface.call("parent.FlexDoor.dispatchEvent", eventType, param);
 			};
@@ -276,7 +282,7 @@ package
 			return serialize(child, includeRef);
 		}
 
-		private function findChildByClassType(target:*, numName:String, funName:String,
+		protected function findChildByClassType(target:*, numName:String, funName:String,
 											  classType:String, index:uint, visibleOnly:Boolean):*{
 			if( target.hasOwnProperty(numName) && 
 				target.hasOwnProperty(funName) && 
@@ -504,7 +510,7 @@ package
 			return out;
 		}
 		
-		private function createProxyObject(ref:*, includeNamespaces:Boolean=false):*{
+		protected function createProxyObject(ref:*, includeNamespaces:Boolean=false):*{
 			if(ref is DisplayObject)
 				return DisplayObject(ref).toString();
 			if(ref == null || typeof(ref) != "object")
