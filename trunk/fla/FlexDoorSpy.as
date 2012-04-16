@@ -31,9 +31,10 @@
 			close_top_btn.addEventListener(MouseEvent.CLICK, closeWindow);
 			close_btn.addEventListener(MouseEvent.CLICK, closeWindow);
 			clear_btn.addEventListener(MouseEvent.CLICK, clearAll);
+			start_stop_btn.addEventListener(MouseEvent.CLICK, startStopRecord);
 
 			clear_btn.useHandCursor = close_top_btn.useHandCursor = 
-				close_btn.useHandCursor = advanced_btn.useHandCursor = true;
+				close_btn.useHandCursor = start_stop_btn.useHandCursor = true;
 
 			_eventsDataProvider = new DataProvider();
 			events_lst.labelField = "event";
@@ -112,12 +113,20 @@
 
 		private function closeWindow(event:MouseEvent):void{
 			visible = false;
+			start_stop_btn.label = "Stop";
+			dispatchEvent(new Event("close"));
 		}
 
 		private function clearAll(event:MouseEvent):void{
 			_componentsDataProvider.removeAll();
 			_eventsDataProvider.removeAll();
 			details_txt.text = "";
+			dispatchEvent(new Event("clear"));
+		}
+
+		private function startStopRecord(event:MouseEvent):void{
+			dispatchEvent(new Event(start_stop_btn.label.toLowerCase()));
+			start_stop_btn.label = (start_stop_btn.label == "Start" ? "Stop" : "Start");
 		}
 
 		private function dragEventHandler(event:MouseEvent):void{

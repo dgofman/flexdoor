@@ -7,7 +7,7 @@ package
 	import flash.text.TextField;
 	import flash.utils.Timer;
 	import flash.utils.describeType;
-	import flash.utils.getDefinitionByName;
+	import flash.utils.setTimeout;
 	
 	import mx.core.mx_internal;
 
@@ -32,9 +32,13 @@ package
 		private var _loader:Loader;
 		private var _content:*;
 
+		private var _eventsMap:Object;
+
 		public function FlexDoorUtil(flexDoor:FlexDoor, application:*){
 			_flexDoor = flexDoor;
 			_application = application;
+
+			_eventsMap = {};
 
 			_loader = new Loader(); 
 			_loader.loadBytes(new _flexdoorSWF()); 
@@ -42,10 +46,10 @@ package
 			application.systemManager.addChild(_loader);
 
 			try{
-				_uiComponent = getDefinitionByName("mx.core::UIComponent") as Class;
+				_uiComponent = _flexDoor.js_class("mx.core::UIComponent", false) as Class;
 			}catch(e:Error){}
 			if(_uiComponent == null)
-				return;
+				throw new Error("UIComponent is undefined");
 
 			_dispatchEventHook = _uiComponent.mx_internal::dispatchEventHook;
 
@@ -72,9 +76,17 @@ package
 		public function runSpy():void{
 			_uiComponent.mx_internal::dispatchEventHook = function(event:Event, uicomponent:*):void{
 				if(_content == null) return;
-				var components:Array = [];
 				var eventType:XML = describeType(event);
+				var uniqKey:String = eventType.@name.toString() + '_' + event.type + '_' + uicomponent.uid;
+				if(_eventsMap[uniqKey] != null) return;
+				_eventsMap[uniqKey] = true; //do not add the same event types
+
+				_uiComponent.mx_internal::dispatchEventHook = null;
+				setTimeout(runSpy, 100); //enable dispatchEventHook after 100 milliseconds
+
+				var components:Array = [];
 				var includes:Object = {};
+				var uniqNames:Object = {};
 				includes[eventType.@name.toString()] = 0;
 
 				function getInfo(c:*):String{
@@ -87,18 +99,36 @@ package
 							if(pckgName == "mx.controls::ToolTip") return null;
 							var alias:String = _classMap[pckgName];
 							if(alias != null){
-								var variableName:String = c.name;
-								if(includes[pckgName] == null){
-									includes[pckgName] = 0;
+								includes[pckgName] = alias;
+								var variableName:String = (c.id != null ? c.id : c.name);
+								if(uniqNames[variableName] == null){
+									uniqNames[variableName] = 0;
 								}else{
-									includes[pckgName] += 1;
-									variableName += '$' + includes[pckgName]; //attach index for repeating variable names
+									uniqNames[variableName] += 1;
+									variableName += '$' + uniqNames[variableName]; //attach index for repeating variable names
 								}
 								var parentName:String = getInfo(c.parent);
 								if(parentName == null){ //probably is systemManager child
 									components.push('var ' + variableName + ' = this.app.getPopupWindow("' + type.@name.toString() + '");');
 								}else{
-									components.push('var ' + variableName + ' = ' + alias + '.Get(' + parentName + '.find("' + c.name + '"));');
+									try{
+										if(c.id != null && c.parent[c.id]){
+											components.push('var ' + variableName + ' = ' + alias + '.Get(' + parentName + '.find("' + c.id + '"));');
+											return variableName;
+										}
+									}catch(e:Error){};
+
+									var classType:String = type.@base.toString();
+									var visibleCount:int = findIndexByClassType(c, "numElements", "getElementAt", classType);
+									if(visibleCount == -1)
+										visibleCount = findIndexByClassType(c, "numChildren", "getChildAt", classType);
+
+									if(visibleCount != -1){
+										components.push('var ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByType("' + classType + '", ' + visibleCount + '));');
+										return variableName;
+									}
+
+									components.push('var ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByName("' + c.name + '"));');
 								}
 								return variableName;
 							}
@@ -114,7 +144,7 @@ package
 					var code:String = null;
 					for(var pckg:String in includes){
 						if(code == null){
-							code = 'this.include(\n';
+							code = '//' + uicomponent.toString() + '\n\nthis.include(\n';
 						}else{
 							code += ',\n';
 						}
@@ -129,6 +159,32 @@ package
 			};
 		}
 
+		private function findIndexByClassType(target:*, numName:String, funName:String, classType:String):int{
+			if( target.parent.hasOwnProperty(numName) && 
+				target.parent.hasOwnProperty(funName) && 
+				target.parent[funName] is Function){
+				var visibleCount:uint = 0;
+				var length:uint = target.parent[numName];
+				var func:Function = target.parent[funName];
+
+				for(var i:uint = 0; i < length; i++){
+					var child:* = func(i);
+					if(child.visible != true)
+						continue;
+					if(child == target){
+						return visibleCount;
+					}else{
+						var childType:XML = describeType(child);
+						if( childType.@base.toString() == classType || 
+							childType.@name.toString() == classType){
+							visibleCount++;
+						}
+					}
+				}
+			}
+			return -1;
+		}
+
 		private function onComplete(event:Event):void{
 			event.target.removeEventListener(Event.COMPLETE, onComplete);
 
@@ -141,11 +197,30 @@ package
 					var stage:Stage = _application.stage;
 					_content.x = (stage.stageWidth - _content.width) / 2;
 					_content.y = (stage.stageHeight - _content.height) / 2;
+					_content.addEventListener("close", spyEventHandler);
+					_content.addEventListener("clear", spyEventHandler);
+					_content.addEventListener("start", spyEventHandler);
+					_content.addEventListener("stop", spyEventHandler);
 				}
 			};
 			var timer:Timer = new Timer(100);
 			timer.addEventListener(TimerEvent.TIMER, handleTimer);
 			timer.start();
+		}
+
+		private function spyEventHandler(event:Event):void{
+			switch(event.type){
+				case "start":
+					runSpy();
+					break;
+				case "stop":
+					stopSpy();
+					break;
+				case "clear":
+				case "close":
+					_eventsMap = {};
+					break;
+			}
 		}
 
 		public function showContent():void{

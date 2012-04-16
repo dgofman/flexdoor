@@ -19,6 +19,8 @@
 
 package
 {
+	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
 	import flash.display.Loader;
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
@@ -27,6 +29,7 @@ package
 	import flash.display.StageScaleMode;
 	import flash.events.DataEvent;
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.events.SecurityErrorEvent;
 	import flash.events.TimerEvent;
 	import flash.external.ExternalInterface;
@@ -36,24 +39,15 @@ package
 	import flash.system.LoaderContext;
 	import flash.system.Security;
 	import flash.system.SecurityDomain;
-	import flash.utils.Timer;
-
-	import mx.events.FlexEvent;
-	import flash.utils.setTimeout;
-	import flash.xml.XMLDocument;
-	import flash.utils.getDefinitionByName;
-	import flash.utils.describeType;
-
-	import flash.xml.XMLNode;
-	import flash.utils.getQualifiedClassName;
 	import flash.utils.Dictionary;
-	import flash.display.DisplayObjectContainer;
-	import flash.display.DisplayObject;
-	import flash.events.EventDispatcher;
-	import flash.utils.ByteArray;
-
+	import flash.utils.Timer;
+	import flash.utils.describeType;
 	import flash.utils.flash_proxy;
+	import flash.utils.getDefinitionByName;
+	import flash.utils.setTimeout;
+	
 	import mx.core.mx_internal;
+	import mx.events.FlexEvent;
 
 	use namespace flash_proxy;
 	use namespace mx_internal;
@@ -276,28 +270,32 @@ package
 
 		protected function js_childByType(refId:Number, classType:String, index:uint, visibleOnly:Boolean, includeRef:Boolean=true):Object{
 			var target:* = _refMap[refId];
-			var visibleCount:uint = 0;
-			var length:uint;
-			var func:Function;
-			if( target.hasOwnProperty("numElements") && 
-				target.hasOwnProperty("getElementAt") && 
-				target.getElementAt is Function){
-				length = target.numElements;
-				func = target.getElementAt;
-			}else{
-				length = target.numChildren;
-				func = target.getChildAt;
-			}
-			for(var i:uint = 0; i < length; i++){
-				var child:DisplayObject = func(i);
-				if(visibleOnly == true && child.visible != true)
-					continue;
-				var type:XML = describeType(child);
-				if( type.@base.toString() == classType || 
-					type.@name.toString() == classType){
-					if(visibleCount == index)
-						return serialize(child, includeRef);
-					visibleCount++;
+			var child:* = findChildByClassType(target, "numElements", "getElementAt", classType, index, visibleOnly);
+			if(child == null)
+				child = findChildByClassType(target, "numChildren", "getChildAt", classType, index, visibleOnly);
+			return serialize(child, includeRef);
+		}
+
+		private function findChildByClassType(target:*, numName:String, funName:String,
+											  classType:String, index:uint, visibleOnly:Boolean):*{
+			if( target.hasOwnProperty(numName) && 
+				target.hasOwnProperty(funName) && 
+				target[funName] is Function){
+				var visibleCount:uint = 0;
+				var length:uint = target[numName];
+				var func:Function = target[funName];
+
+				for(var i:uint = 0; i < length; i++){
+					var child:* = func(i);
+					if(visibleOnly == true && child.visible != true)
+						continue;
+					var type:XML = describeType(child);
+					if( type.@base.toString() == classType || 
+						type.@name.toString() == classType){
+						if(visibleCount == index)
+							return child;
+						visibleCount++;
+					}
 				}
 			}
 			return null;
@@ -350,7 +348,7 @@ package
 			return target[pair[0]];
 		}
 
-		protected function js_class(className:String, isSerialize:Boolean=true):Object{
+		public function js_class(className:String, isSerialize:Boolean=true):Object{
 			var classRef:Class;
 			try{
 				classRef = getDefinitionByName(className) as Class;
