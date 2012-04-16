@@ -276,6 +276,16 @@ System.startTestCase = function(index){
 		new FlexDoor.TEST_CASES[index]();
 };
 
+System.openSpy = function(index){
+	if(FlexDoor.TEST_CASES.length > index){
+		FlexDoor.SPY_TOOL = true;
+		new FlexDoor.TEST_CASES[index]();
+		flash = Application.application.flash;
+		flash.openSpy();
+	}
+};
+
+
 System.loadQUnit = function(){
 	var index = 0;
 	function assetsLoadHandler(){
@@ -298,7 +308,8 @@ System.doTestLoader = function(){
 							"<h5 id='qunit-banner'></h5>" +
 							"<div id='qunit-testrunner-toolbar'></div>" + 
 							"<div align='center' style='background-color:#eee'>" + 
-							"<input id='runTest' type='button' value='Run Tests'/></div>" + 
+							"<input id='runTest' type='button' value='Run Tests'/>&nbsp;" +
+							"<input id='openSpy' type='button' value='Open Spy'/></div>" + 
 							"<h2 id='qunit-userAgent'></h2>" +
 							"<ol id='qunit-tests'></ol></div>"));
 
@@ -309,6 +320,9 @@ System.doTestLoader = function(){
 
 	$("#runTest").click( function() {
 		System.startTestCase(0);
+	});
+	$("#openSpy").click( function() {
+		System.openSpy(0);
 	});
 };
 fd_System = function(){};

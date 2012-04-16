@@ -102,6 +102,10 @@ FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
 };
 
 FlexDoor.prototype.include = function() {
+	if(FlexDoor.SPY_TOOL == true){
+		FlexDoor.SPY_TOOL = false;
+		return;
+	}
 	var testCase = this;
 	var refIds = null;
 	var testCaseType = FlexDoor.TEST_CASES[System.testCaseIndex];
@@ -292,6 +296,7 @@ FlexDoor.TIME_INTERVAL;
 FlexDoor.INIT_PHASE = 0;
 FlexDoor.TEST_DELAY_INTERVAL = 100;
 FlexDoor.AUTO_START = false;
+FlexDoor.SPY_TOOL = false;
 
 if(window.location.search.indexOf("autoStart=true") != -1)
 	FlexDoor.AUTO_START = true;

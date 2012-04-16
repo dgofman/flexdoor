@@ -24,6 +24,8 @@ package
 		private var _application:*;
 
 		private var _classMap:Object;
+		private var _uiComponent:Class;
+		private var _dispatchEventHook:Function;
 
 		[Embed(source="../fla/flexdoor.swf", mimeType="application/octet-stream")]
 		private var _flexdoorSWF:Class;
@@ -39,12 +41,13 @@ package
 			_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onComplete);
 			application.systemManager.addChild(_loader);
 
-			var uiComponent:Class = null;
 			try{
-				uiComponent = getDefinitionByName("mx.core::UIComponent") as Class;
+				_uiComponent = getDefinitionByName("mx.core::UIComponent") as Class;
 			}catch(e:Error){}
-			if(uiComponent == null)
+			if(_uiComponent == null)
 				return;
+
+			_dispatchEventHook = _uiComponent.mx_internal::dispatchEventHook;
 
 			_classMap = {}
 			for(var i:uint = 0; i < JSClasses.list.length; i++){
@@ -60,8 +63,14 @@ package
 					}
 				}
 			}
+		}
 
-			uiComponent.mx_internal::dispatchEventHook = function(event:Event, uicomponent:*):void{
+		public function stopSpy():void{
+			_uiComponent.mx_internal::dispatchEventHook = _dispatchEventHook;
+		}
+
+		public function runSpy():void{
+			_uiComponent.mx_internal::dispatchEventHook = function(event:Event, uicomponent:*):void{
 				if(_content == null) return;
 				var components:Array = [];
 				var eventType:XML = describeType(event);
@@ -137,6 +146,10 @@ package
 			var timer:Timer = new Timer(100);
 			timer.addEventListener(TimerEvent.TIMER, handleTimer);
 			timer.start();
+		}
+
+		public function showContent():void{
+			_content.visible = true;
 		}
 	}
 }

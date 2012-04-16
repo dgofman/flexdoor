@@ -69,6 +69,7 @@ package
 		private var _src:String;
 		private var _timer:Timer;
 		private var _jsFunction:*;
+		private var _fdUtil:FlexDoorUtil;
 
 		private static var isRuntimeLoader:Boolean = false; 
 		
@@ -117,8 +118,9 @@ package
 		}
 
 		protected function ready():void{
-			new FlexDoorUtil(this, _application);
+			_fdUtil = new FlexDoorUtil(this, _application);
 			if(ExternalInterface.available){
+				ExternalInterface.addCallback("openSpy", js_openSpy);
 				ExternalInterface.addCallback("refIds", js_refIds);
 				ExternalInterface.addCallback("releaseIds", js_releaseIds);
 				ExternalInterface.addCallback("application", js_application);
@@ -201,6 +203,11 @@ package
 				onResize();
 				ready();
 			}
+		}
+
+		protected function js_openSpy():void{
+			_fdUtil.showContent();
+			_fdUtil.runSpy();
 		}
 
 		protected function js_refIds():Array{

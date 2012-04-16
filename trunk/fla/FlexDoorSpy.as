@@ -16,6 +16,7 @@
 
 		public function FlexDoorSpy(){
 			super();
+			this.visible = false;
 
 			tooltip_lbl.autoSize = "left";
 			tooltip_lbl.border = true;
