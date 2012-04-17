@@ -309,7 +309,7 @@ System.doTestLoader = function(){
 							"<div id='qunit-testrunner-toolbar'></div>" + 
 							"<div align='center' style='background-color:#eee'>" + 
 							"<input id='runTest' type='button' value='Run Tests'/>&nbsp;" +
-							"<input id='openSpy' type='button' value='Open Spy'/></div>" + 
+							"<input id='openSpy' type='button' value='Inspect Tool'/></div>" + 
 							"<h2 id='qunit-userAgent'></h2>" +
 							"<ol id='qunit-tests'></ol></div>"));
 

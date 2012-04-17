@@ -365,10 +365,13 @@ package
 						_content.closeWindow();
 						break;
 					case 'E':
-						_content.spyEventsHandler();
+						_content.spyEvents();
 						break;
 					case 'O':
-						_content.spyObjectsHandler();
+						_content.spyObjects();
+						break;
+					case 'D':
+						_content.saveAdvancedSettings();
 						break;
 				}
 			}
@@ -376,6 +379,7 @@ package
 
 		public function showContent():void{
 			_content.visible = true;
+			_content.openBasic();
 		}
 	}
 }
