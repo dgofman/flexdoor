@@ -214,7 +214,7 @@ FlexDoor.prototype.include = function() {
 
 			if(tests.length > 0){
 				if(testCaseType.prototype.setUpBeforeClass != undefined){
-					testCase["setUpBeforeClass"].call(testCase, "setUpBeforeClass");
+					testCase["setUpBeforeClass"].call(testCase, testEvent);
 					refIds = System.refIds();
 				}
 				runTest();
