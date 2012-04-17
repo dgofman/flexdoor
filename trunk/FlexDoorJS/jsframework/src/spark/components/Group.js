@@ -38,3 +38,4 @@ spark_components_Group.Get = function(o){
 
 function $$Group() {}
 $$Group.Get = spark_components_Group.Get;
+$$Group.Is = function(target) { return target instanceof spark_components_Group; };

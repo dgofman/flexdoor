@@ -48,3 +48,4 @@ spark_components_Button.Get = function(o){
 
 function $$Button() {}
 $$Button.Get = spark_components_Button.Get;
+$$Button.Is = function(target) { return target instanceof spark_components_Button; };

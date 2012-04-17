@@ -39,3 +39,4 @@ mx_controls_advancedDataGridClasses_AdvancedDataGridGroupItemRenderer.Get = func
 
 function $AdvancedDataGridGroupItemRenderer() {}
 $AdvancedDataGridGroupItemRenderer.Get = mx_controls_advancedDataGridClasses_AdvancedDataGridGroupItemRenderer.Get;
+$AdvancedDataGridGroupItemRenderer.Is = function(target) { return target instanceof mx_controls_advancedDataGridClasses_AdvancedDataGridGroupItemRenderer; };

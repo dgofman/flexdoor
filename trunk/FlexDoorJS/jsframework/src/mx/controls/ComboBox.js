@@ -76,3 +76,4 @@ mx_controls_ComboBox.Get = function(o){
 
 function $ComboBox() {}
 $ComboBox.Get = mx_controls_ComboBox.Get;
+$ComboBox.Is = function(target) { return target instanceof mx_controls_ComboBox; };

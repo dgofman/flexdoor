@@ -38,3 +38,4 @@ mx_controls_TextInput.Get = function(o){
 
 function $TextInput() {}
 $TextInput.Get = mx_controls_TextInput.Get;
+$TextInput.Is = function(target) { return target instanceof mx_controls_TextInput; };

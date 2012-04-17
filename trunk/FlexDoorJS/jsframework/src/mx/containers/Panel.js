@@ -42,3 +42,4 @@ mx_containers_Panel.Get = function(o){
 
 function $Panel() {}
 $Panel.Get = mx_containers_Panel.Get;
+$Panel.Is = function(target) { return target instanceof mx_containers_Panel; };

@@ -45,3 +45,4 @@ mx_controls_AdvancedDataGrid.Get = function(o){
 
 function $AdvancedDataGrid() {}
 $AdvancedDataGrid.Get = mx_controls_AdvancedDataGrid.Get;
+$AdvancedDataGrid.Is = function(target) { return target instanceof mx_controls_AdvancedDataGrid; };

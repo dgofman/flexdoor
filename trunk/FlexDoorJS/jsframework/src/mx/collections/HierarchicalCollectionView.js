@@ -56,3 +56,4 @@ mx_collections_HierarchicalCollectionView.Get = function(o){
 
 function $HierarchicalCollectionView() {}
 $HierarchicalCollectionView.Get = mx_collections_HierarchicalCollectionView.Get;
+$HierarchicalCollectionView.Is = function(target) { return target instanceof mx_collections_HierarchicalCollectionView; };

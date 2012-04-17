@@ -40,3 +40,4 @@ mx_controls_Label.Get = function(o){
 
 function $Label() {}
 $Label.Get = mx_controls_Label.Get;
+$Label.Is = function(target) { return target instanceof mx_controls_Label; };

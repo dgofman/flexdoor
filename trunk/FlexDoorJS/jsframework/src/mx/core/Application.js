@@ -44,5 +44,6 @@ Application.Get = function(o){
 	ref = UIComponent.Get(o, Application);
 	return ref;
 };
+Application.Is = function(target) { return target instanceof Application; };
 
 mx_core_Application = function(){};

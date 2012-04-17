@@ -38,3 +38,4 @@ mx_containers_TitleWindow.Get = function(o){
 
 function $TitleWindow() {}
 $TitleWindow.Get = mx_containers_TitleWindow.Get;
+$TitleWindow.Is = function(target) { return target instanceof mx_containers_TitleWindow; };

@@ -42,3 +42,4 @@ mx_controls_dataGridClasses_DataGridItemRenderer.Get = function(o){
 
 function $DataGridItemRenderer() {}
 $DataGridItemRenderer.Get = mx_controls_dataGridClasses_DataGridItemRenderer.Get;
+$DataGridItemRenderer.Is = function(target) { return target instanceof mx_controls_dataGridClasses_DataGridItemRenderer; };

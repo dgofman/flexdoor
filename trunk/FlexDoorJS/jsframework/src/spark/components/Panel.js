@@ -42,3 +42,4 @@ spark_components_Panel.Get = function(o){
 
 function $$Panel() {}
 $$Panel.Get = spark_components_Panel.Get;
+$$Panel.Is = function(target) { return target instanceof spark_components_Panel; };

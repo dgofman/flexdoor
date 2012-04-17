@@ -34,3 +34,4 @@ mx_controls_Image.Get = function(o){
 
 function $Image() {}
 $Image.Get = mx_controls_Image.Get;
+$Image.Is = function(target) { return target instanceof mx_controls_Image; };

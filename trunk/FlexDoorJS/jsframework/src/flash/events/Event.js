@@ -44,6 +44,7 @@ flash_events_Event.Get = function(o){
 
 function $Event() {}
 $Event.Get = flash_events_Event.Get;
+$Event.Is = function(target) { return target instanceof flash_events_Event; };
 $Event.Params = function(type, bubbles, cancelable){
 	if(bubbles == undefined) bubbles = false;
 	if(cancelable == undefined) cancelable = false;

@@ -76,3 +76,4 @@ mx_collections_ListCollectionView.Get = function(o){
 
 function $ListCollectionView() {}
 $ListCollectionView.Get = mx_collections_ListCollectionView.Get;
+$ListCollectionView.Is = function(target) { return target instanceof mx_collections_ListCollectionView; };

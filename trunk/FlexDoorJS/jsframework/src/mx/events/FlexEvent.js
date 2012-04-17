@@ -41,6 +41,7 @@ mx_events_FlexEvent.Get = function(o){
 
 function $FlexEvent() {}
 $FlexEvent.Get = mx_events_FlexEvent.Get;
+$FlexEvent.Is = function(target) { return target instanceof mx_events_FlexEvent; };
 $FlexEvent.Create = function(type, bubbles, cancelable){
 	return System.create("mx.events::FlexEvent", 
 			$Event.Params(type, bubbles, cancelable));

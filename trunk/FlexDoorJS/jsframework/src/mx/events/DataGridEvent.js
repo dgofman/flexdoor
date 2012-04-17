@@ -45,6 +45,7 @@ mx_events_DataGridEvent.Get = function(o){
 
 function $DataGridEvent() {}
 $DataGridEvent.Get = mx_events_DataGridEvent.Get;
+$DataGridEvent.Is = function(target) { return target instanceof mx_events_DataGridEvent; };
 $DataGridEvent.Create = function(type, rowIndex, columnIndex, reason, dataField, itemRenderer, localX, bubbles, cancelable){
 	if(columnIndex == undefined) columnIndex = -1;
 	if(rowIndex == undefined) rowIndex = -1;

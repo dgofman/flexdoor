@@ -42,3 +42,4 @@ mx_controls_CheckBox.Get = function(o){
 
 function $CheckBox() {}
 $CheckBox.Get = mx_controls_CheckBox.Get;
+$CheckBox.Is = function(target) { return target instanceof mx_controls_CheckBox; };

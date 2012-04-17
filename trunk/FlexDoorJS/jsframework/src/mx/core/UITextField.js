@@ -36,5 +36,6 @@ UITextField.Get = function(o){
 	ref = UIComponent.Get(o, UITextField);
 	return ref;
 };
+UITextField.Is = function(target) { return target instanceof UITextField; };
 
 mx_core_UITextField = function(){};

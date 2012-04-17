@@ -45,6 +45,7 @@ mx_events_ListEvent.Get = function(o){
 
 function $ListEvent() {}
 $ListEvent.Get = mx_events_ListEvent.Get;
+$ListEvent.Is = function(target) { return target instanceof mx_events_ListEvent; };
 $ListEvent.Create = function(type, rowIndex, columnIndex, itemRenderer, reason, bubbles, cancelable){
 	if(columnIndex == undefined) columnIndex = -1;
 	if(rowIndex == undefined) rowIndex = -1;

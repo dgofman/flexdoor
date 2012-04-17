@@ -56,3 +56,4 @@ mx_controls_Alert.Get = function(o){
 
 function $Alert() {}
 $Alert.Get = mx_controls_Alert.Get;
+$Alert.Is = function(target) { return target instanceof mx_controls_Alert; };

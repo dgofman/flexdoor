@@ -66,3 +66,4 @@ mx_controls_List.Get = function(o){
 
 function $List() {}
 $List.Get = mx_controls_List.Get;
+$List.Is = function(target) { return target instanceof mx_controls_List; };

@@ -58,3 +58,4 @@ mx_controls_DataGrid.Get = function(o){
 
 function $DataGrid() {}
 $DataGrid.Get = mx_controls_DataGrid.Get;
+$DataGrid.Is = function(target) { return target instanceof mx_controls_DataGrid; };

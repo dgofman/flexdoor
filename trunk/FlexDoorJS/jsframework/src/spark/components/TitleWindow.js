@@ -38,3 +38,4 @@ spark_components_TitleWindow.Get = function(o){
 
 function $$TitleWindow() {}
 $$TitleWindow.Get = spark_components_TitleWindow.Get;
+$$TitleWindow.Is = function(target) { return target instanceof spark_components_TitleWindow; };
