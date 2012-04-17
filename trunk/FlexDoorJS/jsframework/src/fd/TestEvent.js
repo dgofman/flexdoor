@@ -46,6 +46,7 @@ TestEvent.prototype.changeFunction = function(functionName) {
 		if(this.tests[i] == functionName){
 			this.functionName = functionName;
 			this.order = i;
+			this.nextOrder = i + 1;
 			break;
 		}
 	}
