@@ -125,8 +125,6 @@ FlexDoor.prototype.include = function() {
 
 			var runTest = function(){
 				if(testEvent.order < tests.length){
-					testEvent.functionName = tests[testEvent.order];
-
 					if(FlexDoor.AUTO_START == true){
 						setTimeout(startTestCaseListener, testEvent.delay);
 					}else{
