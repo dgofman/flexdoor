@@ -136,7 +136,7 @@ FlexDoor.prototype.include = function() {
 					}
 				}else{
 					if(testCaseType.prototype.tearDownAfterClass != undefined){
-						testCase["tearDownAfterClass"].call(testCase, "tearDownAfterClass");
+						testCase["tearDownAfterClass"].call(testCase, testEvent);
 						System.releaseIds();
 					}
 					//Run Next TestCase
@@ -150,7 +150,7 @@ FlexDoor.prototype.include = function() {
 				//Execute Test
 				try{
 					if(testCaseType.prototype.setUp != undefined)
-						testCase["setUp"].call(testCase, "setUp");
+						testCase["setUp"].call(testCase, testEvent);
 					testCase[testEvent.functionName].call(testCase, testEvent);
 
 					//Set timeout interval
@@ -205,7 +205,7 @@ FlexDoor.prototype.include = function() {
 				}
 
 				if(testCaseType.prototype.tearDown != undefined)
-					testCase["tearDown"].call(testCase, "tearDown");
+					testCase["tearDown"].call(testCase, nextTestEvent);
 
 				//Run Next Test
 				testEvent = nextTestEvent;
