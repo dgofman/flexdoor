@@ -121,7 +121,7 @@ FlexDoor.prototype.include = function() {
 			}
 
 			//Initialize for first function the event argument
-			var testEvent = new TestEvent(0);
+			var testEvent = new TestEvent(tests, 0);
 
 			var runTest = function(){
 				if(testEvent.order < tests.length){
@@ -182,7 +182,7 @@ FlexDoor.prototype.include = function() {
 			var finalizeFunction = function(releaseRefId){
 				testCase.removeEventListener(testEvent.type, finalizeFunction);
 
-				var nextTestEvent = new TestEvent(testEvent.nextOrder);
+				var nextTestEvent = new TestEvent(tests, testEvent.nextOrder);
 				nextTestEvent.delay = testEvent.delay;
 				nextTestEvent.items = testEvent.items;
 

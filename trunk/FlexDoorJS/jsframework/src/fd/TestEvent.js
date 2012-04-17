@@ -17,8 +17,9 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function TestEvent(order) 
+function TestEvent(tests, order) 
 {
+	this.tests = tests;
 	this.order = order;
 	this.nextOrder = order + 1;
 	this.delay = FlexDoor.TEST_DELAY_INTERVAL;
@@ -38,6 +39,16 @@ TestEvent.Get = function(o){
 	var ref = this;
 	ref = UIComponent.Get(o, TestEvent);
 	return ref;
+};
+
+TestEvent.prototype.changeFunction = function(functionName) {
+	for(var i = 0; i < this.tests.length; i++){
+		if(this.tests[i] == functionName){
+			this.functionName = functionName;
+			this.order = i;
+			break;
+		}
+	}
 };
 
 TestEvent.prototype.addItems = function(items) {
