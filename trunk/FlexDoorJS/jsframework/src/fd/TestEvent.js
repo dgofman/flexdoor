@@ -24,7 +24,7 @@ function TestEvent(tests, order)
 	this.nextOrder = order + 1;
 	this.delay = FlexDoor.TEST_DELAY_INTERVAL;
 	this.items = null;
-	this.functionName = null;
+	this.functionName = tests[order];
 	this.timeout = TestEvent.TIMEOUT;
 	this.type = TestEvent.NEXT_TYPE;
 }
