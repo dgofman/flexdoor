@@ -407,7 +407,8 @@ FlexDoor.include("jQuery", "jquery/jquery-latest.js", function(){
 				FlexDoor.includeAll(this, [
 					"mx.core::UIComponent",
 					"mx.core::Container",
-					"mx.core::Application"],
+					"mx.core::Application",
+					"mx.core::UITextField"],
 					function(){
 						FlexDoor.run();
 					}
