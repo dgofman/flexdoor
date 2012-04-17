@@ -8,11 +8,12 @@ function Sample1TestCase(){
 }
 Sample1TestCase.prototype = new FlexDoor(Sample1TestCase);
 
-Sample1TestCase.prototype.setUpBeforeClass = function(){
+Sample1TestCase.prototype.setUpBeforeClass = function(event){
 	this.view = $TitleWindow.Get(this.app.find("sampleView"));
+	TestEvent.Get(event).changeFunction("test_1"); //skip first test - test_alert
 };
 
-Sample1TestCase.prototype.tearDownAfterClass = function(){
+Sample1TestCase.prototype.tearDownAfterClass = function(event){
 	this.view = null;
 };
 
@@ -20,7 +21,7 @@ Sample1TestCase.prototype.tearDownAfterClass = function(){
  * Any setup before executing "every" test in this
  * class should be done in this method.
  */
-Sample1TestCase.prototype.setUp = function(){
+Sample1TestCase.prototype.setUp = function(event){
 	this.dataGrid = this.view.find("dataGrid");
 };
 
@@ -28,8 +29,12 @@ Sample1TestCase.prototype.setUp = function(){
  * Any cleanup after executing "every" test in this
  * class should be done in this method.
  */
-Sample1TestCase.prototype.tearDown = function(){
+Sample1TestCase.prototype.tearDown = function(event){
 	this.dataGrid = null;
+};
+
+Sample1TestCase.prototype.test_alert = function(event) {
+	alert("IGNORE THIS TEST");
 };
 
 Sample1TestCase.prototype.test_1 = function(event) {

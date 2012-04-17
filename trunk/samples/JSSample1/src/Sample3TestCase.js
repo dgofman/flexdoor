@@ -6,19 +6,19 @@ function Sample3TestCase(){
 }
 Sample3TestCase.prototype = new FlexDoor(Sample3TestCase);
 
-Sample3TestCase.prototype.setUpBeforeClass = function(){
+Sample3TestCase.prototype.setUpBeforeClass = function(event){
 	this.view = $TitleWindow.Get(this.app.find("sampleView"));
 };
 
-Sample3TestCase.prototype.tearDownAfterClass = function(){
+Sample3TestCase.prototype.tearDownAfterClass = function(event){
 	this.view = null;
 };
 
-Sample3TestCase.prototype.setUp = function(){
+Sample3TestCase.prototype.setUp = function(event){
 	this.dataGrid = this.view.find("dataGrid");
 };
 
-Sample3TestCase.prototype.tearDown = function(){
+Sample3TestCase.prototype.tearDown = function(event){
 	this.dataGrid = null;
 };
 

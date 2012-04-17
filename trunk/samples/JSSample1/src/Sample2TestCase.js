@@ -9,11 +9,11 @@ function Sample2TestCase(){
 }
 Sample2TestCase.prototype = new FlexDoor(Sample2TestCase);
 
-Sample2TestCase.prototype.setUpBeforeClass = function(){
+Sample2TestCase.prototype.setUpBeforeClass = function(event){
 	this.view = $TitleWindow.Get(this.app.find("sampleView"));
 };
 
-Sample2TestCase.prototype.tearDownAfterClass = function(){
+Sample2TestCase.prototype.tearDownAfterClass = function(event){
 	this.view = null;
 };
 
