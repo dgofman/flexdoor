@@ -31,10 +31,12 @@
 			close_top_btn.addEventListener(MouseEvent.CLICK, closeWindow);
 			close_btn.addEventListener(MouseEvent.CLICK, closeWindow);
 			clear_btn.addEventListener(MouseEvent.CLICK, clearAll);
-			start_stop_btn.addEventListener(MouseEvent.CLICK, startStopRecord);
+			advanced_btn.addEventListener(MouseEvent.CLICK, openAdvanced);
+			spy_events_ckb.addEventListener(MouseEvent.CLICK, spyEventsHandler);
+			spy_objects_ckb.addEventListener(MouseEvent.CLICK, spyObjectsHandler);
 
 			clear_btn.useHandCursor = close_top_btn.useHandCursor = 
-				close_btn.useHandCursor = start_stop_btn.useHandCursor = true;
+							close_btn.useHandCursor = advanced_btn.useHandCursor = true;
 
 			_eventsDataProvider = new DataProvider();
 			events_lst.labelField = "event";
@@ -62,6 +64,9 @@
 			components_lst.addEventListener(Event.CHANGE, function(event:Event):void{
 				details_txt.text = event.target.selectedItem.code;
 			});
+			components_lst.addEventListener(ListEvent.ITEM_CLICK, function(event:ListEvent):void{
+				events_lst.selectedIndex = -1;
+			});
 		}
 		
 		public function addNewEvent(item){
@@ -72,8 +77,11 @@
 
 		public function addComponent(item){
 			components_lst.verticalScrollPosition = 0;
-			if(moveItemTop(item.uid) == false)
+			if(moveItemTop(item.uid) == false){
 				_componentsDataProvider.addItemAt(item, 0);
+				components_lst.selectedIndex = 0;
+				components_lst.dispatchEvent(new Event(Event.CHANGE));
+			}
 		}
 
 		private function showTooltip(event:ListEvent):void{
@@ -111,22 +119,34 @@
 			return false;
 		}
 
-		private function closeWindow(event:MouseEvent):void{
+		public function closeWindow(event:MouseEvent=null):void{
 			visible = false;
-			start_stop_btn.label = "Stop";
+			spy_objects_ckb.selected = true;
+			spy_events_ckb.selected = false;
 			dispatchEvent(new Event("close"));
 		}
 
-		private function clearAll(event:MouseEvent):void{
+		public function clearAll(event:MouseEvent=null):void{
 			_componentsDataProvider.removeAll();
 			_eventsDataProvider.removeAll();
 			details_txt.text = "";
 			dispatchEvent(new Event("clear"));
 		}
 
-		private function startStopRecord(event:MouseEvent):void{
-			dispatchEvent(new Event(start_stop_btn.label.toLowerCase()));
-			start_stop_btn.label = (start_stop_btn.label == "Start" ? "Stop" : "Start");
+		public function spyEventsHandler(event:MouseEvent=null):void{
+			if(event == null)
+				spy_events_ckb.selected = !spy_events_ckb.selected; 
+			dispatchEvent(new Event(spy_events_ckb.selected ? "startSpyEvents" : "stopSpyEvents"));
+		}
+
+		public function spyObjectsHandler(event:MouseEvent=null):void{
+			if(event == null)
+				spy_objects_ckb.selected = !spy_objects_ckb.selected; 
+			dispatchEvent(new Event(spy_objects_ckb.selected ? "startSpyObjects" : "stopSpyObjects"));
+		}
+
+		public function openAdvanced(event:MouseEvent=null):void{
+			
 		}
 
 		private function dragEventHandler(event:MouseEvent):void{

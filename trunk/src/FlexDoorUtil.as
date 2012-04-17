@@ -3,6 +3,8 @@ package
 	import flash.display.Loader;
 	import flash.display.Stage;
 	import flash.events.Event;
+	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
 	import flash.text.TextField;
 	import flash.utils.Timer;
@@ -29,11 +31,13 @@ package
 		private var _classMap:Object;
 		private var _uiComponent:Class;
 		private var _dispatchEventHook:Function;
+		private var _lastSpyComponent:*;
 
 		[Embed(source="../fla/flexdoor.swf", mimeType="application/octet-stream")]
 		private var _flexdoorSWF:Class;
 		private var _loader:Loader;
 		private var _content:*;
+		private var _stage:Stage;
 
 		private var _queueMap:Object;
 		private var _queueList:Array;
@@ -121,12 +125,33 @@ package
 			}
 		}
 
-		public function stopSpy():void{
+		private function clear():void{
+			_lastSpyComponent = null;
+			_queueMap = {};
+			_queueList = [];
+		}
+
+		private function mouseMoveEventHandler(event:MouseEvent):void{
+			if(_lastSpyComponent != event.target){
+				_lastSpyComponent = event.target;
+				getComponentInfo(_lastSpyComponent, [], {});
+			}
+		}
+
+		public function spyObjects(enable:Boolean):void{
+			if(_stage != null){
+				_stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveEventHandler);
+				if(enable == true)
+					_stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMoveEventHandler);
+			}
+		}
+
+		public function stopSpyEvents():void{
 			_uiComponent.mx_internal::dispatchEventHook = _dispatchEventHook;
 			clearInterval(_queueInterval);
 		}
 
-		public function runSpy():void{
+		public function startSpyEvents():void{
 			if(_content != null){
 				_uiComponent.mx_internal::dispatchEventHook = function(event:Event, uicomponent:*):void{
 					var eventKey:String = getQualifiedClassName(event) + '_' + event.type;
@@ -153,92 +178,101 @@ package
 			
 				var components:Array = [];
 				var includes:Object = {};
-				var uniqNames:Object = {};
 				var eventType:XML = describeType(event);
 				includes[eventType.@name.toString()] = 0;
 
-				function getInfo(c:*, childRef:*=null, childId:String=null):String{
-					if(c != _application && c != _application.systemManager){
-						var type:XML = describeType(c);
-						var extendsClass:XMLList = <></>;
-						extendsClass += new XML('<extendsClass type="' + type.@name.toString() + '"/>') + type.extendsClass;
-						for(var i:uint = 0; i < extendsClass.length(); i++){
-							var pckgName:String = extendsClass[i].@type.toString();
-							if(pckgName == "mx.controls::ToolTip") return null;
-							var alias:String = _classMap[pckgName];
-							if(alias != null){
-								if(alias != "") //skip mx.core namespace 
-									includes[pckgName] = alias;
-								var variableName:String = (c.id != null ? c.id : c.name);
-								if(uniqNames[variableName] == null){
-									uniqNames[variableName] = 0;
-								}else{
-									uniqNames[variableName] += 1;
-									variableName += '$' + uniqNames[variableName]; //attach index for repeating variable names
-								}
-								var parent:* = c.parent;
-								if(c.id != null){
-									//Try to find a parent reference by id
-									while(parent != null){
-										if( parent.hasOwnProperty(c.id) &&
-											parent[c.id] == c){
-												break;
-										}
-										parent = parent.parent;
-									}
-								}
-								if(parent == null)
-									parent = c.parent;
-								var parentName:String = getInfo(parent);
-								if(parentName == null){ //probably is systemManager child
-									components.push('var ' + variableName + ' = this.app.getPopupWindow("' + type.@name.toString() + '");');
-								}else{
-									try{
-										if(c.id != null && parent[c.id]){
-											components.push('var ' + variableName + ' = ' + alias + '.Get(' + parentName + '.find("' + c.id + '"));');
-											return variableName;
-										}
-									}catch(e:Error){};
-
-									var classType:String = type.@base.toString();
-									var visibleCount:int = findIndexByClassType(c, "numElements", "getElementAt", classType);
-									if(visibleCount == -1)
-										visibleCount = findIndexByClassType(c, "numChildren", "getChildAt", classType);
-
-									if(visibleCount != -1){
-										components.push('var ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByType("' + classType + '", ' + visibleCount + '));');
-										return variableName;
-									}
-
-									components.push('var ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByName("' + c.name + '"));');
-								}
-								return variableName;
-							}
-						}
-					}else if(c == _application){
-						return 'this.app';
-					}
-					return null;
-				};
-				getInfo(uicomponent);
+				getComponentInfo(uicomponent, components, includes);
 
 				if(components.length > 0){
-					var code:String = null;
-					for(var pckg:String in includes){
-						if(code == null){
-							code = '//' + uicomponent.toString() + '\n\nthis.include(\n';
-						}else{
-							code += ',\n';
-						}
-						code += '"' + pckg + '"';
-					}
-					code += ');\n\n' + components.join('\n');
-
 					var uid:String = (uicomponent.hasOwnProperty("uid") ? uicomponent.uid : uicomponent.toString());
-					_content.addComponent({name:uicomponent.name, uid:uid, code:code});
 					_content.addNewEvent({event:JSClasses.eventInfo(event), uid:uid});
 				}
 			};
+		}
+
+		private function getComponentInfo(uicomponent:*, components:Array, includes:Object):void{
+			var uniqNames:Object = {};
+
+			function getInfo(c:*, childRef:*=null, childId:String=null):String{
+				if(c != _application && c != _application.systemManager){
+					var type:XML = describeType(c);
+					var extendsClass:XMLList = <></>;
+					extendsClass += new XML('<extendsClass type="' + type.@name.toString() + '"/>') + type.extendsClass;
+					for(var i:uint = 0; i < extendsClass.length(); i++){
+						var pckgName:String = extendsClass[i].@type.toString();
+						if(pckgName == "mx.controls::ToolTip") return null;
+						var alias:String = _classMap[pckgName];
+						if(alias != null){
+							if(pckgName.indexOf("mx.core::") != 0) //skip mx.core namespace 
+								includes[pckgName] = alias;
+							var variableName:String = (c.hasOwnProperty('id') && c.id != null ? c.id : c.name);
+							if(uniqNames[variableName] == null){
+								uniqNames[variableName] = 0;
+							}else{
+								uniqNames[variableName] += 1;
+								variableName += '$' + uniqNames[variableName]; //attach index for repeating variable names
+							}
+							var parent:* = c.parent;
+							if(c.hasOwnProperty('id') && c.id != null){
+								//Try to find a parent reference by id
+								while(parent != null){
+									if( parent.hasOwnProperty(c.id) &&
+										parent[c.id] == c){
+										break;
+									}
+									parent = parent.parent;
+								}
+							}
+							if(parent == null)
+								parent = c.parent;
+							var parentName:String = getInfo(parent);
+							if(parentName == null){ //probably is systemManager child
+								components.push('var ' + variableName + ' = this.app.getPopupWindow("' + type.@name.toString() + '");');
+							}else{
+								try{
+									if(c.id != null && parent[c.id]){
+										components.push('var ' + variableName + ' = ' + alias + '.Get(' + parentName + '.find("' + c.id + '"));');
+										return variableName;
+									}
+								}catch(e:Error){};
+								
+								var classType:String = type.@base.toString();
+								var visibleCount:int = findIndexByClassType(c, "numElements", "getElementAt", classType);
+								if(visibleCount == -1)
+									visibleCount = findIndexByClassType(c, "numChildren", "getChildAt", classType);
+								
+								if(visibleCount != -1){
+									components.push('var ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByType("' + classType + '", ' + visibleCount + '));');
+									return variableName;
+								}
+								
+								components.push('var ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByName("' + c.name + '"));');
+							}
+							return variableName;
+						}
+					}
+				}else if(c == _application){
+					return 'this.app';
+				}
+				return null;
+			};
+			getInfo(uicomponent);
+
+			if(components.length > 0){
+				var code:String = null;
+				for(var pckg:String in includes){
+					if(code == null){
+						code = '//' + uicomponent.toString() + '\n\nthis.include(\n';
+					}else{
+						code += ',\n';
+					}
+					code += '"' + pckg + '"';
+				}
+				code += ');\n\n' + components.join('\n');
+				
+				var uid:String = (uicomponent.hasOwnProperty("uid") ? uicomponent.uid : uicomponent.toString());
+				_content.addComponent({name:uicomponent.name, uid:uid, code:code});
+			}
 		}
 
 		private function findIndexByClassType(target:*, numName:String, funName:String, classType:String):int{
@@ -276,13 +310,16 @@ package
 					event.target.addEventListener(TimerEvent.TIMER, handleTimer);
 					event.target.stop();
 
-					var stage:Stage = _loader.stage;
-					_content.x = (stage.stageWidth - _content.width) / 2;
-					_content.y = (stage.stageHeight - _content.height) / 2;
+					_stage = _loader.stage;
+					_stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDownEventHanlder);
+					_content.x = (_stage.stageWidth - _content.width) / 2;
+					_content.y = (_stage.stageHeight - _content.height) / 2;
 					_content.addEventListener("close", spyEventHandler);
 					_content.addEventListener("clear", spyEventHandler);
-					_content.addEventListener("start", spyEventHandler);
-					_content.addEventListener("stop", spyEventHandler);
+					_content.addEventListener("startSpyEvents", spyEventHandler);
+					_content.addEventListener("stopSpyEvents", spyEventHandler);
+					_content.addEventListener("startSpyObjects", spyEventHandler);
+					_content.addEventListener("stopSpyObjects", spyEventHandler);
 				}
 			};
 			var timer:Timer = new Timer(100);
@@ -292,17 +329,48 @@ package
 
 		private function spyEventHandler(event:Event):void{
 			switch(event.type){
-				case "start":
-					runSpy();
+				case "startSpyEvents":
+					startSpyEvents();
 					break;
-				case "stop":
-					stopSpy();
+				case "stopSpyEvents":
+					stopSpyEvents();
+					break;
+				case "startSpyObjects":
+					spyObjects(true);
+					break;
+				case "stopSpyObjects":
+					spyObjects(false);
 					break;
 				case "clear":
-				case "close":
-					_queueMap = {};
-					_queueList = [];
+					clear();
 					break;
+				case "close":
+					clear();
+					stopSpyEvents();
+					spyObjects(false);
+					break;
+			}
+		}
+
+		private function onKeyDownEventHanlder(event:KeyboardEvent):void{
+			if(event.ctrlKey){
+				switch(String.fromCharCode(event.charCode).toUpperCase()){
+					case 'A':
+						_content.openAdvanced();
+						break;
+					case 'C':
+						_content.clearAll();
+						break;
+					case 'L':
+						_content.closeWindow();
+						break;
+					case 'E':
+						_content.spyEventsHandler();
+						break;
+					case 'O':
+						_content.spyObjectsHandler();
+						break;
+				}
 			}
 		}
 

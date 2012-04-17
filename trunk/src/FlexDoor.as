@@ -207,7 +207,7 @@ package
 
 		protected function js_openSpy():void{
 			_fdUtil.showContent();
-			_fdUtil.runSpy();
+			_fdUtil.spyObjects(true);
 		}
 
 		protected function js_refIds():Array{
