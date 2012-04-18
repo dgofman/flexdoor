@@ -43,6 +43,8 @@ FlexDoor.prototype.removeEventListener = function(type, callback){
 		for (var i = listeners.length - 1; i >= 0; --i){
 			if (listeners[i] == callback || listeners[i].func == callback) {
 				listeners.splice(i, 1);
+				if(listeners.length == 0)
+					delete this.events[type];
 				return true;
 			}
 		}
