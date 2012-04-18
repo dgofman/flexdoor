@@ -28,7 +28,7 @@ FlexDoorUtils.prototype.attachCollectionChangeEvent = FlexDoorUtils.attachCollec
  * Required include: mx.collections::ListCollectionView
  * 
  *  Returns the index of the item if it is in the list such that 
- *      item[key1][key2] == value or item[key] == value or item = value. 
+ *	  item[key1][key2] == value or item[key] == value or item = value. 
  *
  *  @param collection - A ListCollectionView object.
  *  
@@ -117,4 +117,28 @@ FlexDoorUtils.attachCollectionChangeEvent = function(testCase, grid, callBack, a
 		}
 	};
 	target.addEventListener($CollectionEvent.COLLECTION_CHANGE, changeHandler, this);
+};
+
+
+FlexDoorUtils.compareObjects = function(source, target, errorList, exclude){
+	var eMap = {};
+	if(exclude instanceof Array){
+		for(var i = 0; i < exclude.length; i++)
+			eMap[exclude[i]] = true;
+	}
+	for(var name in source){
+		if(name == undefined || eMap[name] == true)
+			continue;
+		var value1 = source[name];
+		var value2 = target[name];
+		if( value1 != undefined && value2 != undefined &&
+			typeof(value1) == "object" && 
+			typeof(value2) == "object"){
+			compareObjects(value1, value2, errorList, exclude);
+		}else{
+			if(String(value1) != String(value2)){
+				errorList.push({name:name, source:value1, target:value2});
+			}
+		}
+	}	
 };
