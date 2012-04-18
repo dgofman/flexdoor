@@ -26,9 +26,10 @@ function TestEvent(tests, order)
 	this.items = null;
 	this.functionName = tests[order];
 	this.timeout = TestEvent.TIMEOUT;
-	this.type = TestEvent.NEXT_TYPE;
+	this.type = TestEvent.SYNC_CALL;
 }
-TestEvent.NEXT_TYPE = "NextTypeEvent";
+TestEvent.SYNC_CALL  = "SYNC_CALL";
+TestEvent.ASYNC_CALL = "ASYNC_CALL";
 TestEvent.TIMEOUT = 120000; //Two minutes
 
 TestEvent.prototype.toString = function() {
@@ -41,7 +42,7 @@ TestEvent.Get = function(o){
 	return ref;
 };
 
-TestEvent.prototype.changeFunction = function(functionName) {
+TestEvent.prototype.callFunction = function(functionName) {
 	for(var i = 0; i < this.tests.length; i++){
 		if(this.tests[i] == functionName){
 			this.functionName = functionName;
@@ -64,7 +65,7 @@ TestEvent.prototype.getItem = function(name) {
 
 TestEvent.prototype.setEventType = function(type) {
 	this.type = type;
-	if(type != TestEvent.NEXT_TYPE)
+	if(type != TestEvent.SYNC_CALL)
 		this.addAsyncEventListener(type);
 };
 

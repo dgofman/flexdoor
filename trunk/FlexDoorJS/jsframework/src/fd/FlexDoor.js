@@ -78,6 +78,10 @@ FlexDoor.prototype.waitFor = function(func, delay, timeout){
 	System.waitFor(this, func, delay, timeout, System.getParams(arguments, 2));
 };
 
+FlexDoor.prototype.callNextTest = function(){
+	this.dispatchEvent(TestEvent.ASYNC_CALL);
+};
+
 FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
 {
 	var flash =  System.getFlash(flashPlayerId);
@@ -122,21 +126,21 @@ FlexDoor.prototype.include = function() {
 					tests.push(name);
 			}
 
-			//Initialize for first function the event argument
-			var testEvent = new TestEvent(tests, 0);
-
-			var runTest = function(){
+			var runTest = function(testEvent){
 				if(testEvent.order < tests.length){
+					var callStartTestCaseListener = function(){
+						startTestCaseListener(testEvent);
+					};
 					if(FlexDoor.AUTO_START == true){
-						setTimeout(startTestCaseListener, testEvent.delay);
+						setTimeout(callStartTestCaseListener, testEvent.delay);
 					}else{
 						setTimeout(function(){
-								test(testEvent.functionName, startTestCaseListener);
+								test(testEvent.functionName, callStartTestCaseListener);
 						}, testEvent.delay);
 					}
 				}else{
 					if(testCaseType.prototype.tearDownAfterClass != undefined){
-						testCase["tearDownAfterClass"].call(testCase, testEvent);
+						testCase["tearDownAfterClass"].call(testCase);
 						System.releaseIds();
 					}
 					//Run Next TestCase
@@ -144,7 +148,7 @@ FlexDoor.prototype.include = function() {
 				}
 			};
 
-			var startTestCaseListener = function(){
+			var startTestCaseListener = function(testEvent){
 				var releaseRefId = [].concat(refIds); //clone exisitng ids
 
 				//Execute Test
@@ -154,7 +158,7 @@ FlexDoor.prototype.include = function() {
 
 					testEvent.addAsyncEventListener = function(eventType){
 						//call finalizeFunction after dispatchEvent
-						testCase.addEventListener(eventType, finalizeFunction, releaseRefId);
+						testCase.addEventListener(eventType, finalizeFunction, testEvent, releaseRefId);
 					};
 					testCase[testEvent.functionName].call(testCase, testEvent);
 
@@ -163,11 +167,12 @@ FlexDoor.prototype.include = function() {
 						testEvent.timeout = testEvent.delay + 100;
 
 					//call finalizeFunction by timeout
-					testCase.interval = setInterval(System.delegate(testCase, finalizeFunction), testEvent.timeout);
+					clearInterval(testCase.interval);
+					testCase.interval = setInterval(System.delegate(testCase, finalizeFunction, testEvent), testEvent.timeout);
 
 					//execute finalizeFunction by exist from a test
-					if(testEvent.type == TestEvent.NEXT_TYPE){
-						finalizeFunction(releaseRefId);
+					if(testEvent.type == TestEvent.SYNC_CALL){
+						finalizeFunction(testEvent, releaseRefId);
 					}
 				}catch(e){
 					if(e.fileName != undefined && e.lineNumber != undefined){
@@ -181,11 +186,11 @@ FlexDoor.prototype.include = function() {
 					if(window["QUnit"] && QUnit.config.notrycatch)
 						debugger;
 
-					finalizeFunction(releaseRefId);
+					finalizeFunction(testEvent, releaseRefId);
 				}
 			};
 
-			var finalizeFunction = function(releaseRefId){
+			var finalizeFunction = function(testEvent, releaseRefId){
 				testCase.removeEventListener(testEvent.type, finalizeFunction);
 
 				var nextTestEvent = new TestEvent(tests, testEvent.nextOrder);
@@ -214,16 +219,16 @@ FlexDoor.prototype.include = function() {
 					testCase["tearDown"].call(testCase, nextTestEvent);
 
 				//Run Next Test
-				testEvent = nextTestEvent;
-				runTest();
+				runTest(nextTestEvent);
 			};
 
 			if(tests.length > 0){
+				var testEvent = new TestEvent(tests, 0);
 				if(testCaseType.prototype.setUpBeforeClass != undefined){
 					testCase["setUpBeforeClass"].call(testCase, testEvent);
 					refIds = System.refIds();
 				}
-				runTest();
+				runTest(testEvent);
 			}
 		};
 	};
