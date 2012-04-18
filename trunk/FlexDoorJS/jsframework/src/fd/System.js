@@ -272,8 +272,12 @@ System.trace = function(message, level) {
 
 System.startTestCase = function(index){
 	System.testCaseIndex = index;
-	if(FlexDoor.TEST_CASES.length > index)
+	if(FlexDoor.TEST_CASES.length > index){
 		new FlexDoor.TEST_CASES[index]();
+	}else{
+		module("DONE");
+		test("Finished at: " +new Date().toLocaleString(), function(){});
+	}
 };
 
 System.openSpy = function(index){

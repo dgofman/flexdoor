@@ -35,6 +35,10 @@ function UIComponent(classType, extendType)
 	this.includeInLayout = function(){ /* getter and setter */
 		return this.property("includeInLayout", arguments);
 	};
+	
+	this.uid = function(){
+		return this.getter("uid");
+	};
 }
 
 UIComponent.prototype = new EventDispatcher();

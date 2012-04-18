@@ -24,10 +24,13 @@ Assert.CLASS_NAME = "Assert";
 
 //Static Functions
 Assert.assertEquals = function(actual, expected, message) {
+	var error = (actual != expected);
+
 	if(FlexDoor.AUTO_START != true){
+		if(error && window["QUnit"] && QUnit.config.notrycatch)
+			debugger;
 		equal(actual, expected, message);
 	}else{
-		var error = (actual != expected);
 		System.trace(
 				(message != undefined ? message : (error ? "failed" : "okay")) +
 				" - Expected: " + expected +
@@ -48,6 +51,8 @@ Assert.assertType = function(uiComponent, expectedType, message) {
 };
 
 Assert.fail = function(message) {
+	if(window["QUnit"] && QUnit.config.notrycatch)
+		debugger;
 	if(FlexDoor.AUTO_START != true){
 		ok(false, message);
 	}else{

@@ -56,9 +56,11 @@ FlexDoorUtils.findIndexInListCollectionView = function(collection, key, value){
 };
 
 /**
- * Required include: mx.events::DataGridEvent
+ * Required include: mx.events::DataGridEvent or mx.events::AdvancedDataGridEvent
  * 
  *  Create an itemEditor instance in the grid editable column.
+ *
+ *  Note: is asynchronous function set TestCase type to TestEvent.ASYNCHRONOUS
  * 
  *  @param testCase - A Test Case instance extended from a FlexDoor class.
  *  
@@ -73,12 +75,16 @@ FlexDoorUtils.findIndexInListCollectionView = function(collection, key, value){
  *  @param postEventCallBack - The call back function executed after ITEM_EDIT_END event (Optional)
  */
 FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, columnIndex, preEventCallBack, postEventCallBack){
-	testCase.fireEvent(grid, $DataGridEvent.Create($DataGridEvent.ITEM_EDIT_BEGINNING, rowIndex, columnIndex));
-
 	var columns = grid.columns();
 	Assert.assertTrue(columns != null);
 	Assert.assertTrue(columns.length > columnIndex);
 	var dataField = columns[columnIndex].ref.dataField;
+
+	if(grid.extendTypes.indexOf("mx.controls::AdvancedDataGrid") != -1){
+		testCase.fireEvent(grid, $AdvancedDataGridEvent.Create($AdvancedDataGridEvent.ITEM_EDIT_BEGINNING, rowIndex, columnIndex, dataField));
+	}else{
+		testCase.fireEvent(grid, $DataGridEvent.Create($DataGridEvent.ITEM_EDIT_BEGINNING, rowIndex, columnIndex, dataField));
+	}
 
 	testCase.waitFor(function(){
 		var itemEditor = grid.itemEditorInstance();
@@ -87,8 +93,15 @@ FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, column
 			return false;
 
 		preEventCallBack.apply(testCase, [itemEditor]);//call test function
-		testCase.fireEvent(grid, $DataGridEvent.Create($DataGridEvent.ITEM_EDIT_END, rowIndex, columnIndex, 
-				DataGridEventReason.OTHER, dataField, itemRenderer));
+
+		if(grid.extendTypes.indexOf("mx.controls::AdvancedDataGrid") != -1){
+			testCase.fireEvent(grid, $AdvancedDataGridEvent.Create($AdvancedDataGridEvent.ITEM_EDIT_END, rowIndex, columnIndex, dataField, 
+																					AdvancedDataGridEventReason.OTHER, itemRenderer));
+		}else{
+			testCase.fireEvent(grid, $DataGridEvent.Create($DataGridEvent.ITEM_EDIT_END, rowIndex, columnIndex, dataField, 
+															  						DataGridEventReason.OTHER, itemRenderer));
+		}
+
 		if(postEventCallBack != undefined)
 			postEventCallBack.apply(testCase);
 		return true;
@@ -100,6 +113,8 @@ FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, column
  * 
  * Attach the COLLECTION_CHANGE event type for dataProvider or grid objects
  * 
+ *  Note: is asynchronous function set TestCase type to TestEvent.ASYNCHRONOUS
+ *  
  *  @param testCase - A Test Case instance extended from a FlexDoor class.
  *  
  *  @param grid - DataGrid or AdvancedDataGrid reference.

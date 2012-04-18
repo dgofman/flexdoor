@@ -184,10 +184,6 @@ FlexDoor.prototype.include = function() {
 						Assert.fail(e.message);
 						System.error(e.message);
 					}
-
-					if(window["QUnit"] && QUnit.config.notrycatch)
-						debugger;
-
 					finalizeFunction(testEvent, releaseRefId);
 				}
 			};
@@ -218,6 +214,7 @@ FlexDoor.prototype.include = function() {
 					Assert.assertTrue(true, "ok succeeds");
 				}else{
 					Assert.fail("Test timed out: " + testEvent.functionName);
+					System.warn("Test timed out: " + testEvent.functionName);
 				}
 
 				if(testCaseType.prototype.tearDown != undefined)
