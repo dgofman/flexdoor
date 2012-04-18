@@ -71,7 +71,7 @@ TestEvent.prototype.setEventType = function(type) {
 TestEvent.prototype.set = function(params) {
 	for(var name in params)
 		this[name] = params[name];
-	this.setEventType(type);
+	this.setEventType(this.type);
 };
 
 fd_TestEvent = function(){};
