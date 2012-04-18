@@ -62,9 +62,16 @@ TestEvent.prototype.getItem = function(name) {
 	return null;
 };
 
+TestEvent.prototype.setEventType = function(type) {
+	this.type = type;
+	if(type != TestEvent.NEXT_TYPE)
+		this.addAsyncEventListener(type);
+};
+
 TestEvent.prototype.set = function(params) {
 	for(var name in params)
 		this[name] = params[name];
+	this.setEventType(type);
 };
 
 fd_TestEvent = function(){};

@@ -151,17 +151,23 @@ FlexDoor.prototype.include = function() {
 				try{
 					if(testCaseType.prototype.setUp != undefined)
 						testCase["setUp"].call(testCase, testEvent);
+
+					testEvent.addAsyncEventListener = function(eventType){
+						//call finalizeFunction after dispatchEvent
+						testCase.addEventListener(eventType, finalizeFunction, releaseRefId);
+					};
 					testCase[testEvent.functionName].call(testCase, testEvent);
 
 					//Set timeout interval
 					if(testEvent.timeout <= testEvent.delay + 100)
 						testEvent.timeout = testEvent.delay + 100;
+
+					//call finalizeFunction by timeout
 					testCase.interval = setInterval(System.delegate(testCase, finalizeFunction), testEvent.timeout);
 
+					//execute finalizeFunction by exist from a test
 					if(testEvent.type == TestEvent.NEXT_TYPE){
 						finalizeFunction(releaseRefId);
-					}else{
-						testCase.addEventListener(testEvent.type, finalizeFunction, releaseRefId);
 					}
 				}catch(e){
 					if(e.fileName != undefined && e.lineNumber != undefined){
