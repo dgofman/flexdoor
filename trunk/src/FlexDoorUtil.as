@@ -44,51 +44,7 @@ package
 		private var _queueInterval:Number;
 
 		private var _excludeEvents:Object = {
-			"flash.events::Event_alphaChanged":true,
-			"flash.events::Event_childrenChanged":true,
-			"flash.events::Event_contentChange":true,
-			"flash.events::Event_dataProviderChanged":true,
-			"flash.events::Event_directionChanged":true,
-			"flash.events::Event_editableChanged":true,
-			"flash.events::Event_enabledChanged":true,
-			"flash.events::Event_explicitHeightChanged":true,
-			"flash.events::Event_explicitWidthChanged":true,
-			"flash.events::Event_explicitMinHeightChanged":true,
-			"flash.events::Event_explicitMinWidthChanged":true,
-			"flash.events::Event_htmlTextChanged":true,
-			"flash.events::Event_restrictChanged":true,
-			"flash.events::Event_skinChanged":true,
-			"flash.events::Event_sourceChanged":true,
-			"flash.events::Event_tabFocusEnabledChange":true,
-			"flash.events::Event_toolTipChanged":true,
-			"flash.events::Event_horizontalScrollPolicyChanged":true,
-			"flash.events::Event_validateDisplayListComplete":true,
-			"flash.events::Event_validatePropertiesComplete":true,
-			"flash.events::Event_verticalScrollPolicyChanged":true,
-			"flash.events::Event_validateSizeComplete":true,
-			"flash.events::Event_viewChanged":true,
-			"mx.events::CollectionEvent_collectionChange":true,
-			"mx.events::FlexEvent_dataChange":true,
-			"mx.events::FlexEvent_creationComplete":true,
-			"mx.events::FlexEvent_contentCreationComplete":true,
-			"mx.events::EffectEvent_effectStart":true,
-			"mx.events::EffectEvent_effectEnd":true,
-			"mx.events::FlexEvent_hide":true,
-			"mx.events::FlexEvent_initialize":true,
-			"mx.events::FlexEvent_preinitialize":true,
-			"mx.events::FlexEvent_show":true,
-			"mx.events::ToolTipEvent_toolTipCreate":true,
-			"mx.events::ToolTipEvent_toolTipHide":true,
-			"mx.events::ToolTipEvent_toolTipEnd":true,
-			"mx.events::ToolTipEvent_toolTipShow":true,
-			"mx.events::ToolTipEvent_toolTipShown":true,
-			"mx.events::ToolTipEvent_toolTipStart":true,
-			"mx.events::PropertyChangeEvent_propertyChange":true,
-			"mx.events::FlexEvent_updateComplete":true,
-			"mx.events::FlexEvent_valueCommit":true,
-			"spark.events::IndexChangeEvent_caretChange":true,
-			"spark.events::ElementExistenceEvent_elementAdd":true,
-			"spark.events::SkinPartEvent_partAdded":true
+			
 		};
 
 		public function FlexDoorUtil(flexDoor:FlexDoor, application:*){
@@ -353,7 +309,7 @@ package
 		}
 
 		private function onKeyDownEventHanlder(event:KeyboardEvent):void{
-			if(event.ctrlKey){
+			if(event.ctrlKey && event.altKey){
 				switch(String.fromCharCode(event.charCode).toUpperCase()){
 					case 'A':
 						_content.openAdvanced();
@@ -370,7 +326,7 @@ package
 					case 'O':
 						_content.spyObjects();
 						break;
-					case 'D':
+					case 'S':
 						_content.saveAdvancedSettings();
 						break;
 				}
@@ -378,8 +334,7 @@ package
 		}
 
 		public function showContent():void{
-			_content.visible = true;
-			_content.openBasic();
+			_content.open();
 		}
 	}
 }
