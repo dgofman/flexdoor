@@ -119,7 +119,17 @@ FlexDoorUtils.attachCollectionChangeEvent = function(testCase, grid, callBack, a
 	target.addEventListener($CollectionEvent.COLLECTION_CHANGE, changeHandler, this);
 };
 
-
+/**
+ * The method used to compare items of Objects represents as Hashmap
+ * 
+ *  @param source - The first items.
+ *  
+ *  @param target - The seconds items.
+ *  
+ *  @param errorList - List of invalid results. 
+ *  
+ *  @param exclude - List of the ignore keys
+ */
 FlexDoorUtils.compareObjects = function(source, target, errorList, exclude){
 	var eMap = {};
 	if(exclude instanceof Array){
