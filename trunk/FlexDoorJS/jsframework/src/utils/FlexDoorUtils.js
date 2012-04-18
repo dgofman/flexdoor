@@ -144,7 +144,7 @@ FlexDoorUtils.compareObjects = function(source, target, errorList, exclude){
 		if( value1 != undefined && value2 != undefined &&
 			typeof(value1) == "object" && 
 			typeof(value2) == "object"){
-			compareObjects(value1, value2, errorList, exclude);
+			FlexDoorUtils.compareObjects(value1, value2, errorList, exclude);
 		}else{
 			if(String(value1) != String(value2)){
 				errorList.push({name:name, source:value1, target:value2});
