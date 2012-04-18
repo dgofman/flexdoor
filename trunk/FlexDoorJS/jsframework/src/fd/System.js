@@ -37,10 +37,9 @@ System.getFlash = function(flashPlayerId){
 	}
 };
 
-System.delegate = function(target, func){
-	var args = System.getParams(arguments, 2);
+System.delegate = function(target, func, arrayParams){
 	var f = function() { 
-		return func.apply(target, args);
+		return func.apply(target, arrayParams);
 	};
 	f.func = func;
 	return f;

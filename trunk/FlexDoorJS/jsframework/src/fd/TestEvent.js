@@ -26,10 +26,10 @@ function TestEvent(tests, order)
 	this.items = null;
 	this.functionName = tests[order];
 	this.timeout = TestEvent.TIMEOUT;
-	this.type = TestEvent.SYNC_CALL;
+	this.type = TestEvent.SYNCHRONOUS;
 }
-TestEvent.SYNC_CALL  = "SYNC_CALL";
-TestEvent.ASYNC_CALL = "ASYNC_CALL";
+TestEvent.SYNCHRONOUS  = "synchronous";
+TestEvent.ASYNCHRONOUS = "asynchronous"; 
 TestEvent.TIMEOUT = 120000; //Two minutes
 
 TestEvent.prototype.toString = function() {
@@ -65,7 +65,7 @@ TestEvent.prototype.getItem = function(name) {
 
 TestEvent.prototype.setEventType = function(type) {
 	this.type = type;
-	if(type != TestEvent.SYNC_CALL)
+	if(type != TestEvent.SYNCHRONOUS)
 		this.addAsyncEventListener(type);
 };
 

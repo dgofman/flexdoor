@@ -68,11 +68,11 @@ FlexDoorUtils.findIndexInListCollectionView = function(collection, key, value){
  *
  *  @param colIndex - The 0-based index of the column, including columns scrolled off the left.
  *  
- *  @param callBack - The call back function executed as soon as editInstance is initialized. 
+ *  @param preEventCallBack - The call back function executed as soon as editInstance is initialized. 
  *  
- *  @param eventType - Asynchronous test case an event types (Optional)
+ *  @param postEventCallBack - The call back function executed after ITEM_EDIT_END event (Optional)
  */
-FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, columnIndex, callBack, eventType){
+FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, columnIndex, preEventCallBack, postEventCallBack){
 	testCase.fireEvent(grid, $DataGridEvent.Create($DataGridEvent.ITEM_EDIT_BEGINNING, rowIndex, columnIndex));
 
 	var columns = grid.columns();
@@ -86,11 +86,11 @@ FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, column
 		if(itemEditor == null || itemRenderer == null)
 			return false;
 
-		callBack.apply(testCase, [itemEditor]);//call test function
+		preEventCallBack.apply(testCase, [itemEditor]);//call test function
 		testCase.fireEvent(grid, $DataGridEvent.Create($DataGridEvent.ITEM_EDIT_END, rowIndex, columnIndex, 
 				DataGridEventReason.OTHER, dataField, itemRenderer));
-		if(eventType != undefined)
-			testCase.dispatchEvent(eventType);
+		if(postEventCallBack != undefined)
+			postEventCallBack.apply(testCase);
 		return true;
 	}, 100, 10000);
 };

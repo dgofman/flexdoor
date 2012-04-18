@@ -79,7 +79,7 @@ FlexDoor.prototype.waitFor = function(func, delay, timeout){
 };
 
 FlexDoor.prototype.callNextTest = function(){
-	this.dispatchEvent(TestEvent.ASYNC_CALL);
+	this.dispatchEvent(TestEvent.ASYNCHRONOUS);
 };
 
 FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
@@ -158,6 +158,8 @@ FlexDoor.prototype.include = function() {
 
 					testEvent.addAsyncEventListener = function(eventType){
 						//call finalizeFunction after dispatchEvent
+						if(window["QUnit"] && QUnit.config)
+							QUnit.config.blocking = true;
 						testCase.addEventListener(eventType, finalizeFunction, testEvent, releaseRefId);
 					};
 					testCase[testEvent.functionName].call(testCase, testEvent);
@@ -168,10 +170,10 @@ FlexDoor.prototype.include = function() {
 
 					//call finalizeFunction by timeout
 					clearInterval(testCase.interval);
-					testCase.interval = setInterval(System.delegate(testCase, finalizeFunction, testEvent), testEvent.timeout);
+					testCase.interval = setInterval(testCase.delegate(finalizeFunction, testEvent), testEvent.timeout);
 
 					//execute finalizeFunction by exist from a test
-					if(testEvent.type == TestEvent.SYNC_CALL){
+					if(testEvent.type == TestEvent.SYNCHRONOUS){
 						finalizeFunction(testEvent, releaseRefId);
 					}
 				}catch(e){
@@ -193,6 +195,9 @@ FlexDoor.prototype.include = function() {
 			var finalizeFunction = function(testEvent, releaseRefId){
 				testCase.removeEventListener(testEvent.type, finalizeFunction);
 
+				if(window["QUnit"] && QUnit.config)
+					QUnit.config.blocking = false;
+
 				var nextTestEvent = new TestEvent(tests, testEvent.nextOrder);
 				nextTestEvent.delay = testEvent.delay;
 				nextTestEvent.items = testEvent.items;
@@ -212,7 +217,7 @@ FlexDoor.prototype.include = function() {
 
 					Assert.assertTrue(true, "ok succeeds");
 				}else{
-					System.warn("Test timed out: " + testEvent.functionName);
+					Assert.fail("Test timed out: " + testEvent.functionName);
 				}
 
 				if(testCaseType.prototype.tearDown != undefined)
