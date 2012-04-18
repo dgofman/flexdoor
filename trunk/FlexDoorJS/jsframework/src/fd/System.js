@@ -282,6 +282,7 @@ System.openSpy = function(index){
 		new FlexDoor.TEST_CASES[index]();
 		flash = Application.application.flash;
 		flash.openSpy();
+		flash.focus();
 	}
 };
 
