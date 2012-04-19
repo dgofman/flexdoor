@@ -79,27 +79,29 @@ FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, column
 	Assert.assertTrue(columns != null);
 	Assert.assertTrue(columns.length > columnIndex);
 	var dataField = columns[columnIndex].ref.dataField;
-
+	var itemRenderer = grid.indicesToItemRenderer(rowIndex, columnIndex);
+	
 	if(grid.extendTypes.indexOf("mx.controls::AdvancedDataGrid") != -1){
-		testCase.fireEvent(grid, $AdvancedDataGridEvent.Create($AdvancedDataGridEvent.ITEM_EDIT_BEGINNING, rowIndex, columnIndex, dataField));
+		testCase.fireEvent(grid, $AdvancedDataGridEvent.Create($AdvancedDataGridEvent.ITEM_EDIT_BEGINNING, rowIndex, columnIndex, 
+																				dataField, null, itemRenderer));
 	}else{
-		testCase.fireEvent(grid, $DataGridEvent.Create($DataGridEvent.ITEM_EDIT_BEGINNING, rowIndex, columnIndex, dataField));
+		testCase.fireEvent(grid, $DataGridEvent.Create($DataGridEvent.ITEM_EDIT_BEGINNING, rowIndex, columnIndex,
+																				dataField, null, itemRenderer));
 	}
 
 	testCase.waitFor(function(){
 		var itemEditor = grid.itemEditorInstance();
-		var itemRenderer = grid.indicesToItemRenderer(rowIndex, columnIndex);
-		if(itemEditor == null || itemRenderer == null)
+		if(itemEditor == null)
 			return false;
 
 		preEventCallBack.apply(testCase, [itemEditor]);//call test function
 
 		if(grid.extendTypes.indexOf("mx.controls::AdvancedDataGrid") != -1){
-			testCase.fireEvent(grid, $AdvancedDataGridEvent.Create($AdvancedDataGridEvent.ITEM_EDIT_END, rowIndex, columnIndex, dataField, 
-																					AdvancedDataGridEventReason.OTHER, itemRenderer));
+			testCase.fireEvent(grid, $AdvancedDataGridEvent.Create($AdvancedDataGridEvent.ITEM_EDIT_END, rowIndex, columnIndex, 
+																		dataField, AdvancedDataGridEventReason.OTHER, itemRenderer));
 		}else{
-			testCase.fireEvent(grid, $DataGridEvent.Create($DataGridEvent.ITEM_EDIT_END, rowIndex, columnIndex, dataField, 
-															  						DataGridEventReason.OTHER, itemRenderer));
+			testCase.fireEvent(grid, $DataGridEvent.Create($DataGridEvent.ITEM_EDIT_END, rowIndex, columnIndex, 
+																		dataField, DataGridEventReason.OTHER, itemRenderer));
 		}
 
 		if(postEventCallBack != undefined)
