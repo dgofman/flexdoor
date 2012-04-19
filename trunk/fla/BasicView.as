@@ -13,7 +13,6 @@
 		private var _fdSpy:FlexDoorSpy;
 		private var _eventsDataProvider:DataProvider;
 		private var _componentsDataProvider:DataProvider;
-		private var _tooltipDelayInterval:Number;
 
 		public function BasicView(){
 			super();
@@ -22,20 +21,18 @@
 		public function init(fdSpy:FlexDoorSpy){
 			_fdSpy = fdSpy;
 
-			clear_btn.addEventListener(MouseEvent.CLICK, clearAll);
-			spy_events_ckb.addEventListener(MouseEvent.CLICK, spyEventsHandler);
-			spy_objects_ckb.addEventListener(MouseEvent.CLICK, spyObjectsHandler);
-			close_btn.addEventListener(MouseEvent.CLICK, _fdSpy.closeWindow);
-			advanced_btn.addEventListener(MouseEvent.CLICK, _fdSpy.openAdvanced);
-
-			close_btn.useHandCursor = clear_btn.useHandCursor = advanced_btn.useHandCursor = true;
+			_fdSpy.initButton(clear_btn, clearAll, "Clear  Ctrl+Alt+C");
+			_fdSpy.initButton(spy_events_ckb, spyEventsHandler, "Inspect Events  Ctrl+Alt+E");
+			_fdSpy.initButton(spy_objects_ckb, spyObjectsHandler, "Inspect Objects  Ctrl+Alt+O");
+			_fdSpy.initButton(close_btn, _fdSpy.closeWindow, "Close  Ctrl+Alt+L");
+			_fdSpy.initButton(advanced_btn, _fdSpy.openAdvanced, "Advanced  Ctrl+Alt+A");
 
 			_eventsDataProvider = new DataProvider();
 			events_lst.labelField = "event";
 			events_lst.dataProvider = _eventsDataProvider;
 			events_lst.setStyle("cellRenderer", EventsListCellRenderer);
-			events_lst.addEventListener(ListEvent.ITEM_ROLL_OVER, showTooltip);
-			events_lst.addEventListener(ListEvent.ITEM_ROLL_OUT, showTooltip);
+			events_lst.addEventListener(ListEvent.ITEM_ROLL_OVER, showListTooltip);
+			events_lst.addEventListener(ListEvent.ITEM_ROLL_OUT, showListTooltip);
 			events_lst.addEventListener(ListEvent.ITEM_CLICK, function(event:ListEvent):void{
 				for(var i:Number = 0; i < _componentsDataProvider.length; i++){
 					var data:Object = _componentsDataProvider.getItemAt(i);
@@ -51,8 +48,8 @@
 			_componentsDataProvider = new DataProvider();
 			components_lst.labelField = "name";
 			components_lst.dataProvider = _componentsDataProvider;
-			components_lst.addEventListener(ListEvent.ITEM_ROLL_OVER, showTooltip);
-			components_lst.addEventListener(ListEvent.ITEM_ROLL_OUT, showTooltip);
+			components_lst.addEventListener(ListEvent.ITEM_ROLL_OVER, showListTooltip);
+			components_lst.addEventListener(ListEvent.ITEM_ROLL_OUT, showListTooltip);
 			components_lst.addEventListener(Event.CHANGE, function(event:Event):void{
 				details_txt.text = event.target.selectedItem.code;
 			});
@@ -76,23 +73,23 @@
 			}
 		}
 
-		private function showTooltip(event:ListEvent):void{
-			clearInterval(_tooltipDelayInterval);
+		private function showListTooltip(event:ListEvent):void{
+			clearInterval(_fdSpy.tooltipDelayInterval);
 			if(event.type == ListEvent.ITEM_ROLL_OVER){
-				_tooltipDelayInterval = setInterval(function():void{
-					mouseMoveHandler();
+				_fdSpy.tooltipDelayInterval = setInterval(function():void{
+					mouseMoveListHandler();
 					_fdSpy.tooltip_lbl.text = " " + event.item[event.target.labelField] + " ";
 					_fdSpy.tooltip_lbl.visible = true;
-					stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+					stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMoveListHandler);
 				}, 500);
 			}else{
 				_fdSpy.tooltip_lbl.visible = false;
-				stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+				stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveListHandler);
 			}
 		}
 
-		private function mouseMoveHandler(event:MouseEvent=null):void{
-			clearInterval(_tooltipDelayInterval);
+		private function mouseMoveListHandler(event:MouseEvent=null):void{
+			clearInterval(_fdSpy.tooltipDelayInterval);
 			_fdSpy.tooltip_lbl.x = mouseX + 15;
 			_fdSpy.tooltip_lbl.y = mouseY + 15;
 		}
