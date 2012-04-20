@@ -10,11 +10,12 @@
 	{
 		public var basicView:BasicView;
 		public var advancedView:AdvancedView;
+		public var testcases:TestCasesView;
 		public var tooltipDelayInterval:Number;
 
 		public function FlexDoorSpy(){
 			super();
-			//this.visible = false;
+			this.visible = false;
 			openBasic();
 			init();
 		}
@@ -22,6 +23,7 @@
 		protected function init():void{
 			basicView.init(this);
 			advancedView.init(this);
+			testcases.init(this);
 
 			tooltip_lbl.autoSize = "left";
 			tooltip_lbl.border = true;
@@ -76,13 +78,21 @@
 		}
 
 		public function openBasic(event:MouseEvent=null):void{
+			testcases.visible = false;
 			advancedView.visible = false;
 			basicView.visible = true;
 		}
 
 		public function openAdvanced(event:MouseEvent=null):void{
+			testcases.visible = false;
 			basicView.visible = false;
 			advancedView.visible = true;
+		}
+
+		public function openTestCases(event:MouseEvent=null):void{
+			basicView.visible = false;
+			advancedView.visible = false;
+			testcases.visible = true;
 		}
 
 		public function closeWindow(event:MouseEvent=null):void{
