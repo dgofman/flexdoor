@@ -5,23 +5,30 @@
 	import flash.display.Sprite;
 	import flash.utils.clearInterval;
 	import flash.utils.setInterval;
+	import flash.external.ExternalInterface;
 
-	public class FlexDoorSpy extends Sprite
+	public class FlexDoorHelper extends Sprite
 	{
-		public var basicView:BasicView;
+		public var inspectorView:InspectorView;
 		public var advancedView:AdvancedView;
 		public var testcases:TestCasesView;
 		public var tooltipDelayInterval:Number;
 
-		public function FlexDoorSpy(){
+		private var _isInitialized:Boolean;
+
+		public static const VERSION:String = "3.0";
+
+		public function FlexDoorHelper(){
 			super();
-			this.visible = false;
-			openBasic();
+			_isInitialized = false;
+			openTestCases();
+			if(loaderInfo.url == null || loaderInfo.url.indexOf("file:///") == -1)
+				this.visible = false;
 			init();
 		}
 
 		protected function init():void{
-			basicView.init(this);
+			inspectorView.init(this);
 			advancedView.init(this);
 			testcases.init(this);
 
@@ -48,9 +55,11 @@
 			}
 		}
 
-		public function open():void{
-			openBasic();
-			this.visible = true;
+		public function initialized():void{
+			if(_isInitialized == false){
+				_isInitialized = true;
+				ExternalInterface.call("parent.FlexDoor.dispatchEvent", "initialized", VERSION);
+			}
 		}
 
 		public function saveAdvancedSettings():void{
@@ -58,47 +67,50 @@
 		}
 
 		public function clearAll():void{
-			basicView.clearAll();
+			inspectorView.clearAll();
 		}
 
 		public function spyEvents():void{
-			basicView.spyEventsHandler();
+			inspectorView.spyEventsHandler();
 		}
 
 		public function spyObjects():void{
-			basicView.spyObjectsHandler();
+			inspectorView.spyObjectsHandler();
 		}
 
 		public function addNewEvent(item){
-			basicView.addNewEvent(item);
+			inspectorView.addNewEvent(item);
 		}
 
 		public function addComponent(item){
-			basicView.addComponent(item);
+			inspectorView.addComponent(item);
 		}
 
-		public function openBasic(event:MouseEvent=null):void{
+		public function openInspector(event:MouseEvent=null):void{
 			testcases.visible = false;
 			advancedView.visible = false;
-			basicView.visible = true;
+			inspectorView.visible = true;
+			this.visible = true;
 		}
 
 		public function openAdvanced(event:MouseEvent=null):void{
 			testcases.visible = false;
-			basicView.visible = false;
+			inspectorView.visible = false;
 			advancedView.visible = true;
+			this.visible = true;
 		}
 
 		public function openTestCases(event:MouseEvent=null):void{
-			basicView.visible = false;
+			inspectorView.visible = false;
 			advancedView.visible = false;
 			testcases.visible = true;
+			this.visible = true;
 		}
 
 		public function closeWindow(event:MouseEvent=null):void{
 			visible = false;
-			basicView.spy_objects_ckb.selected = true;
-			basicView.spy_events_ckb.selected = false;
+			inspectorView.spy_objects_ckb.selected = true;
+			inspectorView.spy_events_ckb.selected = false;
 			advancedView.reset();
 			dispatchEvent(new Event("close"));
 		}

@@ -10,7 +10,7 @@
 
 	public class AdvancedView extends MovieClip
 	{
-		private var _fdSpy:FlexDoorSpy;
+		private var _helper:FlexDoorHelper;
 		private var _so:SharedObject;
 		private var _excludeEvents:DataProvider;
 		private var _includeEvents:DataProvider;
@@ -114,11 +114,11 @@
 			events_dg.columns = [dgc1, dgc2, dgc3];
 		}
 
-		public function init(fdSpy:FlexDoorSpy){
-			_fdSpy = fdSpy;
+		public function init(helper:FlexDoorHelper){
+			_helper = helper;
 
-			_fdSpy.initButton(adv_close_btn, _fdSpy.closeWindow, "Close  Ctrl+Alt+L");
-			_fdSpy.initButton(adv_save_btn, saveSettings, "Save  Ctrl+Alt+S");
+			_helper.initButton(adv_close_btn, _helper.closeWindow, "Close  Ctrl+Alt+L");
+			_helper.initButton(adv_save_btn, saveSettings, "Save  Ctrl+Alt+S");
 
 			event_class_txt.addEventListener(FocusEvent.FOCUS_IN, onFocusEventHandler);
 			event_class_txt.addEventListener(FocusEvent.FOCUS_OUT, onFocusEventHandler);
@@ -149,7 +149,7 @@
 		}
 
 		public function saveSettings(event:MouseEvent=null):void{
-			_fdSpy.openBasic();
+			_helper.openInspector();
 			reset();
 		}
 		

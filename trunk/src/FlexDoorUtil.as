@@ -27,14 +27,13 @@ package
 		private var _topChildIndex:Number;
 		private var _delayInterval:Number;
 		private var _application:*;
+		private var _openTestCaseLoader:Boolean;
 
 		private var _classMap:Object;
 		private var _uiComponent:Class;
 		private var _dispatchEventHook:Function;
 		private var _lastSpyComponent:*;
 
-		[Embed(source="../fla/flexdoor.swf", mimeType="application/octet-stream")]
-		private var _flexdoorSWF:Class;
 		private var _loader:Loader;
 		private var _content:*;
 		private var _stage:Stage;
@@ -43,13 +42,18 @@ package
 		private var _queueList:Array;
 		private var _queueInterval:Number;
 
+		
+		[Embed(source="../fla/flexdoor.swf", mimeType="application/octet-stream")]
+		private var _flexdoorSWF:Class;
+
 		private var _excludeEvents:Object = {
 			
 		};
 
-		public function FlexDoorUtil(flexDoor:FlexDoor, application:*){
+		public function FlexDoorUtil(flexDoor:FlexDoor, application:*, openTestCaseLoader:Boolean){
 			_flexDoor = flexDoor;
 			_application = application;
+			_openTestCaseLoader = openTestCaseLoader;
 
 			_queueMap = {};
 			_queueList = [];
@@ -276,6 +280,12 @@ package
 					_content.addEventListener("stopSpyEvents", spyEventHandler);
 					_content.addEventListener("startSpyObjects", spyEventHandler);
 					_content.addEventListener("stopSpyObjects", spyEventHandler);
+
+					if(_openTestCaseLoader == true){
+						_content.openTestCases();
+					}else{
+						_content.initialized();
+					}
 				}
 			};
 			var timer:Timer = new Timer(100);
@@ -329,12 +339,15 @@ package
 					case 'S':
 						_content.saveAdvancedSettings();
 						break;
+					case 'T':
+						_content.openTestCases();
+						break;
 				}
 			}
 		}
 
-		public function showContent():void{
-			_content.open();
+		public function openInspector():void{
+			_content.openInspector();
 		}
 	}
 }

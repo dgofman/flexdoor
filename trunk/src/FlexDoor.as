@@ -65,11 +65,7 @@ package
 		protected var _jsFunction:*;
 		protected var _fdUtil:FlexDoorUtil;
 
-		protected static var isRuntimeLoader:Boolean = false; 
-		
-		public static const VERSION:String     = "3.0";
-		public static const INITIALIZED:String = "initialized";
-		public static const ERROR:String       = "error";
+		protected static var isRuntimeLoader:Boolean = false;
 
 		public function FlexDoor(application:*=null){
 			Security.allowDomain("*");
@@ -118,9 +114,8 @@ package
 		}
 
 		protected function ready():void{
-			_fdUtil = new FlexDoorUtil(this, _application);
 			if(ExternalInterface.available){
-				ExternalInterface.addCallback("openSpy", js_openSpy);
+				ExternalInterface.addCallback("openHelper", js_openHelper);
 				ExternalInterface.addCallback("refIds", js_refIds);
 				ExternalInterface.addCallback("releaseIds", js_releaseIds);
 				ExternalInterface.addCallback("application", js_application);
@@ -138,16 +133,25 @@ package
 				ExternalInterface.addCallback("addEventListener", js_addEventListener);
 				ExternalInterface.addCallback("removeEventListener", js_removeEventListener);
 				ExternalInterface.addCallback("dispatchEvent", js_dispatchEvent);
-				dispatchJsEvent(INITIALIZED, VERSION);
+
+				var isFlexDoor:Boolean = ExternalInterface.call("eval", "parent['FlexDoor'] instanceof Function");
+				if(isFlexDoor == false){
+					//addJavaScript("https://flexdoor.googlecode.com/svn/trunk/FlexDoorJS/jsframework/src/fd/FlexDoor.js");
+					//addJavaScript("https://flexdoor.googlecode.com/svn/trunk/FlexDoorJS/jsframework/src/utils/FlexDoorUtils.js");
+					addJavaScript("http://localhost:8090/dtclient/promocp/fd/FlexDoor.js");
+					addJavaScript("http://localhost:8090/dtclient/promocp/utils/FlexDoorUtils.js");
+					_fdUtil = new FlexDoorUtil(this, _application, true);
+				}
+				_fdUtil = new FlexDoorUtil(this, _application, isFlexDoor == false);
 			}
-			dispatchEvent(new DataEvent(INITIALIZED, false, false, _application.name));
 		}
 
-		protected function dispatchJsEvent(eventType:String, param:*=null):void{
-			var doLater:Function = function():void{
-				ExternalInterface.call("parent.FlexDoor.dispatchEvent", eventType, param);
-			};
-			setTimeout(doLater, 500);
+		protected function addJavaScript(src:String):void{
+			ExternalInterface.call("new function(){" +
+				"var js = document.createElement('script');" +
+				"js.src = '" + src + "';" + 
+				"document.body.appendChild(js);" +
+				"}()");
 		}
 
 		protected function onResize(event:Event=null):void {
@@ -156,7 +160,7 @@ package
 				_application.height = stage.stageHeight;
 			}
 			if(event != null)
-				dispatchJsEvent(event.type);
+				ExternalInterface.call("parent.FlexDoor.dispatchEvent", Event.RESIZE);
 		}
 
 		protected function loadContent(context:LoaderContext):void{
@@ -205,8 +209,8 @@ package
 			}
 		}
 
-		protected function js_openSpy():void{
-			_fdUtil.showContent();
+		protected function js_openHelper():void{
+			_fdUtil.openInspector();
 			_fdUtil.spyObjects(true);
 		}
 

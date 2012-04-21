@@ -405,6 +405,14 @@ FlexDoor.run = function(){
 	}
 };
 
+FlexDoor.createScript = function(text, tests){
+	var head = document.getElementsByTagName("head");
+	var script = document.createElement("script");
+	script.type = "text/javascript";
+	script.text = text;
+	head[0].appendChild(script);
+};
+
 //Loading depended libraries
 
 FlexDoor.include("jQuery", "jquery/jquery-latest.js", function(){
