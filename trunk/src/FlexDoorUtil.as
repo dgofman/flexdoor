@@ -42,7 +42,6 @@ package
 		private var _queueList:Array;
 		private var _queueInterval:Number;
 
-		
 		[Embed(source="../fla/flexdoor.swf", mimeType="application/octet-stream")]
 		private var _flexdoorSWF:Class;
 
