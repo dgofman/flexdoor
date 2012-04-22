@@ -405,11 +405,15 @@ FlexDoor.run = function(){
 	}
 };
 
-FlexDoor.createScript = function(text, tests){
+FlexDoor.createScript = function(url, text){
 	var head = document.getElementsByTagName("head");
 	var script = document.createElement("script");
 	script.type = "text/javascript";
-	script.text = text;
+	if(text != undefined){
+		script.text = text;
+	}else{
+		script.src = url;
+	}
 	head[0].appendChild(script);
 };
 
