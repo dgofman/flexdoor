@@ -7,7 +7,7 @@
 
 	public class EventsListCellRenderer extends CellRenderer implements ICellRenderer{
 
-		[Embed("copy.swf")]
+		[Embed("../assets/copy.swf")]
 		private const _copySWF:Class;
 
 		public function EventsListCellRenderer(){

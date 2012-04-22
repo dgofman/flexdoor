@@ -36,6 +36,9 @@
 
 			if(_so.data.remoteLocation != null){
 				location_txt.text = _so.data.remoteLocation;
+
+				if(remote_rb.selected)
+					loadTestCases();
 			}else{
 				location_txt.text = "";
 			}
@@ -121,9 +124,6 @@
 			location_txt.addEventListener(FocusEvent.FOCUS_OUT, onFocusEventHandler);
 
 			location_txt.dispatchEvent(new FocusEvent(FocusEvent.FOCUS_OUT));
-			
-			if(remote_rb.selected)
-				loadTestCases();
 		}
 
 		private function radioButtonChangeHandler(event:Event):void{
