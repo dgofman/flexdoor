@@ -42,7 +42,7 @@ package
 		private var _queueList:Array;
 		private var _queueInterval:Number;
 
-		[Embed(source="../fla/flexdoor.swf", mimeType="application/octet-stream")]
+		[Embed(source="../FlexDoorRunner/flexdoor.swf", mimeType="application/octet-stream")]
 		private var _flexdoorSWF:Class;
 
 		private var _excludeEvents:Object = {

@@ -36,9 +36,6 @@
 
 			if(_so.data.remoteLocation != null){
 				location_txt.text = _so.data.remoteLocation;
-
-				if(remote_rb.selected)
-					loadTestCases();
 			}else{
 				location_txt.text = "";
 			}
@@ -267,7 +264,11 @@
 				if(index < _testCases.length){
 					var testcase:Object = _testCases[index];
 					if(_selectedKeys[testcase.name + "::undefined"] != false){
-						if(location_txt.text.indexOf("http") != -1){
+						if(remote_rb.selected){
+							var uri:String = location_txt.text.substring(0, location_txt.text.indexOf("properties.txt"));
+							ExternalInterface.call("parent.FlexDoor.createScript", uri + testcase.name);
+							attachJsScript(index + 1);
+						}else if(location_txt.text.indexOf("http") != -1){
 							var url:String = location_txt.text + "?fileName=" + testcase.name; 
 							exportToJs(url, testcase.script, function(){
 								ExternalInterface.call("parent.FlexDoor.createScript", url);
