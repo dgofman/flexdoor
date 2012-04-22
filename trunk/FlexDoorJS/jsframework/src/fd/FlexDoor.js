@@ -345,8 +345,9 @@ FlexDoor.include = function(cls, src, callback) {
 		if(elm == undefined)
 			throw new Error("Cannot get instance of HTML element");
 
-		var obj = document.createElement('script');
-		obj.type = 'text/javascript';
+		var obj = document.createElement('script');;
+		obj.setAttribute("rel", "javascript");
+		obj.setAttribute("type", "text/javascript");
 		obj.src = src;
 
 		var onJsLoaded = function(){
@@ -408,7 +409,8 @@ FlexDoor.run = function(){
 FlexDoor.createScript = function(url, text){
 	var head = document.getElementsByTagName("head");
 	var script = document.createElement("script");
-	script.type = "text/javascript";
+	script.setAttribute("rel", "javascript");
+	script.setAttribute("type", "text/javascript");
 	if(text != undefined){
 		script.text = text;
 	}else{
