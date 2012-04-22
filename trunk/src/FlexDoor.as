@@ -136,10 +136,10 @@ package
 
 				var isFlexDoor:Boolean = ExternalInterface.call("eval", "parent['FlexDoor'] instanceof Function");
 				if(isFlexDoor == false){
-					//addJavaScript("https://flexdoor.googlecode.com/svn/trunk/FlexDoorJS/jsframework/src/fd/FlexDoor.js");
-					//addJavaScript("https://flexdoor.googlecode.com/svn/trunk/FlexDoorJS/jsframework/src/utils/FlexDoorUtils.js");
-					addJavaScript("http://localhost:8090/dtclient/promocp/fd/FlexDoor.js");
-					addJavaScript("http://localhost:8090/dtclient/promocp/utils/FlexDoorUtils.js");
+					addJavaScript("https://flexdoor.googlecode.com/svn/trunk/FlexDoorJS/jsframework/src/fd/FlexDoor.js");
+					addJavaScript("https://flexdoor.googlecode.com/svn/trunk/FlexDoorJS/jsframework/src/utils/FlexDoorUtils.js");
+					//addJavaScript("http://localhost:8090/dtclient/promocp/fd/FlexDoor.js");
+					//addJavaScript("http://localhost:8090/dtclient/promocp/utils/FlexDoorUtils.js");
 					_fdUtil = new FlexDoorUtil(this, _application, true);
 				}
 				_fdUtil = new FlexDoorUtil(this, _application, isFlexDoor == false);

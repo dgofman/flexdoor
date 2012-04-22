@@ -29,6 +29,8 @@
 		private var _selectedKeys:Object;
 		private var _so:SharedObject;
 
+		private static const EMPTY_COLOR:Number = 0x999999;
+
 		public function TestCasesView(){
 			super();
 
@@ -124,10 +126,15 @@
 		}
 
 		private function radioButtonChangeHandler(event:Event):void{
+			var format = location_txt.getStyle("textFormat") as TextFormat;
+			format.color = EMPTY_COLOR;
+			testcases_dg.dataProvider = new DataProvider();
+			run_testcases_btn.enabled = false;
+
 			if(remote_rb.selected){
 				location_txt.text = "http://domain/properties.txt";
 			}else{
-				location_txt.text = "http://domain/FlexDoorProxyServlet (Optional)";
+				location_txt.text = "http://domain/flexDoorProxy (Optional)";
 			}
 		}
 
@@ -136,10 +143,9 @@
 			if(event.type == FocusEvent.FOCUS_OUT){
 				if(event.currentTarget.text.length == 0){
 					radioButtonChangeHandler(event);
-					format.color = 0x999999;
 				}
 			}else{
-				if(format.color == 0x999999){
+				if(format.color == EMPTY_COLOR){
 					event.currentTarget.text = "";
 					format.color = 0x000000;
 				}
@@ -158,7 +164,8 @@
 					trace("Exception: " + ex.toString());
 				}
 			}else{
-				if(location_txt.text.indexOf("http") != -1 && location_txt.text.indexOf("/properties.txt") != -1){
+				var format = location_txt.getStyle("textFormat") as TextFormat;
+				if(format.color != EMPTY_COLOR && location_txt.text.indexOf("http") != -1 && location_txt.text.indexOf("/properties.txt") != -1){
 					var uri:String = location_txt.text.substring(0, location_txt.text.indexOf("properties.txt"));
 					var request:URLRequest = new URLRequest(); 
 					request.url = location_txt.text;
@@ -255,7 +262,8 @@
 		}
 
 		public function runTestCases(event:MouseEvent=null):void{
-			_so.data.remoteLocation = location_txt.text;
+			var format = location_txt.getStyle("textFormat") as TextFormat;
+			_so.data.remoteLocation = (format.color != EMPTY_COLOR ? location_txt.text : null);
 			_so.data.selectedKeys = _selectedKeys;
 			_so.data.remoteAccess = remote_rb.selected;
 			_so.flush();
@@ -264,11 +272,11 @@
 				if(index < _testCases.length){
 					var testcase:Object = _testCases[index];
 					if(_selectedKeys[testcase.name + "::undefined"] != false){
-						if(remote_rb.selected){
+						if(format.color != EMPTY_COLOR && remote_rb.selected){
 							var uri:String = location_txt.text.substring(0, location_txt.text.indexOf("properties.txt"));
 							ExternalInterface.call("parent.FlexDoor.createScript", uri + testcase.name);
 							attachJsScript(index + 1);
-						}else if(location_txt.text.indexOf("http") != -1){
+						}else if(format.color != EMPTY_COLOR && location_txt.text.indexOf("http") != -1){
 							var url:String = location_txt.text + "?fileName=" + testcase.name; 
 							exportToJs(url, testcase.script, function(){
 								ExternalInterface.call("parent.FlexDoor.createScript", url);
