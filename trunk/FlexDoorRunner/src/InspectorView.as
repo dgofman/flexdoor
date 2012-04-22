@@ -10,7 +10,7 @@
 
 	public class InspectorView extends MovieClip
 	{
-		private var _helper:FlexDoorHelper;
+		private var _runner:FlexDoorRunner;
 		private var _eventsDataProvider:DataProvider;
 		private var _componentsDataProvider:DataProvider;
 
@@ -18,15 +18,15 @@
 			super();
 		}
 
-		public function init(helper:FlexDoorHelper){
-			_helper = helper;
+		public function init(runner:FlexDoorRunner){
+			_runner = runner;
 
-			_helper.initButton(clear_btn, clearAll, "Clear  Ctrl+Alt+C");
-			_helper.initButton(spy_events_ckb, spyEventsHandler, "Inspect Events  Ctrl+Alt+E");
-			_helper.initButton(spy_objects_ckb, spyObjectsHandler, "Inspect Objects  Ctrl+Alt+O");
-			_helper.initButton(close_btn, _helper.closeWindow, "Close  Ctrl+Alt+L");
-			_helper.initButton(advanced_btn, _helper.openAdvanced, "Advanced  Ctrl+Alt+A");
-			_helper.initButton(testCases_btn, _helper.openTestCases, "TestCases  Ctrl+Alt+T");
+			_runner.initButton(clear_btn, clearAll, "Clear  Ctrl+Alt+C");
+			_runner.initButton(spy_events_ckb, spyEventsHandler, "Inspect Events  Ctrl+Alt+E");
+			_runner.initButton(spy_objects_ckb, spyObjectsHandler, "Inspect Objects  Ctrl+Alt+O");
+			_runner.initButton(close_btn, _runner.closeWindow, "Close  Ctrl+Alt+L");
+			_runner.initButton(advanced_btn, _runner.openAdvanced, "Advanced  Ctrl+Alt+A");
+			_runner.initButton(testCases_btn, _runner.openTestCases, "TestCases  Ctrl+Alt+T");
 
 			_eventsDataProvider = new DataProvider();
 			events_lst.labelField = "event";
@@ -75,24 +75,24 @@
 		}
 
 		private function showListTooltip(event:ListEvent):void{
-			clearInterval(_helper.tooltipDelayInterval);
+			clearInterval(_runner.tooltipDelayInterval);
 			if(event.type == ListEvent.ITEM_ROLL_OVER){
-				_helper.tooltipDelayInterval = setInterval(function():void{
+				_runner.tooltipDelayInterval = setInterval(function():void{
 					mouseMoveListHandler();
-					_helper.tooltip_lbl.text = " " + event.item[event.target.labelField] + " ";
-					_helper.tooltip_lbl.visible = true;
+					_runner.tooltip_lbl.text = " " + event.item[event.target.labelField] + " ";
+					_runner.tooltip_lbl.visible = true;
 					stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMoveListHandler);
 				}, 500);
 			}else{
-				_helper.tooltip_lbl.visible = false;
+				_runner.tooltip_lbl.visible = false;
 				stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveListHandler);
 			}
 		}
 
 		private function mouseMoveListHandler(event:MouseEvent=null):void{
-			clearInterval(_helper.tooltipDelayInterval);
-			_helper.tooltip_lbl.x = mouseX + 15;
-			_helper.tooltip_lbl.y = mouseY + 15;
+			clearInterval(_runner.tooltipDelayInterval);
+			_runner.tooltip_lbl.x = mouseX + 15;
+			_runner.tooltip_lbl.y = mouseY + 15;
 		}
 
 		private function moveItemTop(uid:String):Boolean{
@@ -113,19 +113,19 @@
 			_componentsDataProvider.removeAll();
 			_eventsDataProvider.removeAll();
 			details_txt.text = "";
-			_helper.dispatchEvent(new Event("clear"));
+			_runner.dispatchEvent(new Event("clear"));
 		}
 
 		public function spyEventsHandler(event:MouseEvent=null):void{
 			if(event == null)
 				spy_events_ckb.selected = !spy_events_ckb.selected; 
-			_helper.dispatchEvent(new Event(spy_events_ckb.selected ? "startSpyEvents" : "stopSpyEvents"));
+			_runner.dispatchEvent(new Event(spy_events_ckb.selected ? "startSpyEvents" : "stopSpyEvents"));
 		}
 
 		public function spyObjectsHandler(event:MouseEvent=null):void{
 			if(event == null)
 				spy_objects_ckb.selected = !spy_objects_ckb.selected; 
-			_helper.dispatchEvent(new Event(spy_objects_ckb.selected ? "startSpyObjects" : "stopSpyObjects"));
+			_runner.dispatchEvent(new Event(spy_objects_ckb.selected ? "startSpyObjects" : "stopSpyObjects"));
 		}
 	}
 }

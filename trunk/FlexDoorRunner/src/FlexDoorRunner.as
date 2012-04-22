@@ -7,7 +7,7 @@
 	import flash.utils.setInterval;
 	import flash.external.ExternalInterface;
 
-	public class FlexDoorHelper extends Sprite
+	public class FlexDoorRunner extends Sprite
 	{
 		public var inspectorView:InspectorView;
 		public var advancedView:AdvancedView;
@@ -18,7 +18,7 @@
 
 		public static const VERSION:String = "3.0";
 
-		public function FlexDoorHelper(){
+		public function FlexDoorRunner(){
 			super();
 			_isInitialized = false;
 			openTestCases();

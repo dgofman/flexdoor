@@ -22,7 +22,7 @@
 
 	public class TestCasesView extends MovieClip
 	{
-		private var _helper:FlexDoorHelper;
+		private var _runner:FlexDoorRunner;
 		private var _testcasesList:DataProvider;
 		private var _loadFile:FileReferenceList;
 		private var _testCases:Array;
@@ -107,11 +107,11 @@
 			});
 		}
 
-		public function init(helper:FlexDoorHelper){
-			_helper = helper;
+		public function init(runner:FlexDoorRunner){
+			_runner = runner;
 
-			_helper.initButton(load_testcases_btn, loadTestCases, "Load TestCases");
-			_helper.initButton(run_testcases_btn, runTestCases, "Run TestCases");
+			_runner.initButton(load_testcases_btn, loadTestCases, "Load TestCases");
+			_runner.initButton(run_testcases_btn, runTestCases, "Run TestCases");
 			local_rb.addEventListener(Event.CHANGE, radioButtonChangeHandler);
 			remote_rb.addEventListener(Event.CHANGE, radioButtonChangeHandler);
 
@@ -279,7 +279,7 @@
 						}
 					}
 				}else{
-					_helper.initialized();
+					_runner.initialized();
 				}
 			};
 			attachJsScript(0);
