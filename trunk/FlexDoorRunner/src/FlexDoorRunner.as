@@ -20,6 +20,16 @@
 
 		public static const VERSION:String = "3.0";
 
+		[Embed("../assets/filter.swf")] private const _filterSWF:Class;
+		[Embed("../assets/folder.swf")] private const _folderSWF:Class;
+		[Embed("../assets/target.swf")] private const _targetSWF:Class;
+		[Embed("../assets/minimize.swf")] private const _minimizeSWF:Class;
+
+		private var _targetButton:Button;
+		private var _filterButton:Button;
+		private var _folderButton:Button;
+		private var _minimizeButton:Button;
+
 		public function FlexDoorRunner(){
 			super();
 			_so = SharedObject.getLocal("flexdoorRunner");
@@ -42,7 +52,14 @@
 			tooltip_lbl.backgroundColor = 0xF5EE77;
 			tooltip_lbl.visible = false;
 
-			initButton(close_top_btn, closeWindow, null);
+			inspector_btn.setStyle("icon", _targetSWF);
+			initButton(inspector_btn, openInspector, "Inspector  Ctrl+Alt+I");
+			advanced_btn.setStyle("icon", _filterSWF);
+			initButton(advanced_btn, openAdvanced, "Filter  Ctrl+Alt+F");
+			testcases_btn.setStyle("icon", _folderSWF);
+			initButton(testcases_btn, openTestCases, "Loader  Ctrl+Alt+L");
+			minimize_btn.setStyle("icon", _minimizeSWF);
+			initButton(minimize_btn, minimizeWindow, "Minimize  Ctrl+Alt+M");
 
 			bg_mc.addEventListener(MouseEvent.MOUSE_DOWN, dragEventHandler);
 			bg_mc.addEventListener(MouseEvent.MOUSE_UP, dragEventHandler);
@@ -114,19 +131,15 @@
 			this.visible = true;
 		}
 
-		public function closeWindow(event:MouseEvent=null):void{
-			visible = false;
-			inspectorView.spy_objects_ckb.selected = true;
-			inspectorView.spy_events_ckb.selected = false;
-			advancedView.reset();
-			dispatchEvent(new Event("close"));
+		public function minimizeWindow(event:MouseEvent=null):void{
+			dispatchEvent(new Event("minimize"));
 		}
 
 		public function showButtonTooltip(event:MouseEvent):void{
 			clearInterval(tooltipDelayInterval);
 			if(event.type == MouseEvent.ROLL_OVER){
 				tooltipDelayInterval = setInterval(function():void{
-					mouseMoveButtonHandler();
+					mouseMoveButtonHandler(event);
 					tooltip_lbl.text = " " + event.currentTarget.getStyle("toolTip") + " ";
 					tooltip_lbl.visible = true;
 					stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMoveButtonHandler);
@@ -139,8 +152,9 @@
 
 		private function mouseMoveButtonHandler(event:MouseEvent=null):void{
 			clearInterval(tooltipDelayInterval);
-			tooltip_lbl.x = mouseX - tooltip_lbl.width / 2;
-			tooltip_lbl.y = mouseY - 25;
+			var x:Number = Math.max(0, mouseX - tooltip_lbl.width / 2);
+			tooltip_lbl.x = Math.min(x, stage.stageWidth - tooltip_lbl.width);
+			tooltip_lbl.y = mouseY + (event.target.y > 30 ? -25 : 25);
 		}
 
 		private function dragEventHandler(event:MouseEvent):void{

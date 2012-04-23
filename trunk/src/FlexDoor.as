@@ -140,7 +140,6 @@ package
 					addJavaScript("https://flexdoor.googlecode.com/svn/trunk/FlexDoorJS/jsframework/src/utils/FlexDoorUtils.js");
 					//addJavaScript("http://localhost:8090/dtclient/promocp/fd/FlexDoor.js");
 					//addJavaScript("http://localhost:8090/dtclient/promocp/utils/FlexDoorUtils.js");
-					_fdUtil = new FlexDoorUtil(this, _application, true);
 				}
 				_fdUtil = new FlexDoorUtil(this, _application, isFlexDoor == false);
 			}

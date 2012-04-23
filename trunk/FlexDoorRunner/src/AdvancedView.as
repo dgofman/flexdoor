@@ -116,7 +116,6 @@
 				include_events_rb.selected = true;
 			}
 
-			_runner.initButton(adv_close_btn, _runner.closeWindow, "Close  Ctrl+Alt+L");
 			_runner.initButton(adv_save_btn, saveSettings, "Save  Ctrl+Alt+S");
 
 			event_class_txt.addEventListener(FocusEvent.FOCUS_IN, onFocusEventHandler);

@@ -24,9 +24,6 @@
 			_runner.initButton(clear_btn, clearAll, "Clear  Ctrl+Alt+C");
 			_runner.initButton(spy_events_ckb, spyEventsHandler, "Inspect Events  Ctrl+Alt+E");
 			_runner.initButton(spy_objects_ckb, spyObjectsHandler, "Inspect Objects  Ctrl+Alt+O");
-			_runner.initButton(close_btn, _runner.closeWindow, "Close  Ctrl+Alt+L");
-			_runner.initButton(advanced_btn, _runner.openAdvanced, "Advanced  Ctrl+Alt+A");
-			_runner.initButton(testCases_btn, _runner.openTestCases, "TestCases  Ctrl+Alt+T");
 
 			_eventsDataProvider = new DataProvider();
 			events_lst.labelField = "event";
