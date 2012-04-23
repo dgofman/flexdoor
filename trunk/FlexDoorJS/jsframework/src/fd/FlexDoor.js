@@ -397,7 +397,8 @@ FlexDoor.run = function(){
 	}
 };
 
-FlexDoor.createScript = function(id, url, text){
+FlexDoor.createScript = function(url, text){
+	var id = url;
 	var script = FlexDoor.addScriptToHead(id, text);
 	if(text == undefined)
 		script.src =  url + "?" + new Date().getTime();
