@@ -115,7 +115,6 @@ package
 
 		protected function ready():void{
 			if(ExternalInterface.available){
-				ExternalInterface.addCallback("openHelper", js_openHelper);
 				ExternalInterface.addCallback("refIds", js_refIds);
 				ExternalInterface.addCallback("releaseIds", js_releaseIds);
 				ExternalInterface.addCallback("application", js_application);
@@ -208,11 +207,6 @@ package
 				onResize();
 				ready();
 			}
-		}
-
-		protected function js_openHelper():void{
-			_fdUtil.openInspector();
-			_fdUtil.spyObjects(true);
 		}
 
 		protected function js_refIds():Array{

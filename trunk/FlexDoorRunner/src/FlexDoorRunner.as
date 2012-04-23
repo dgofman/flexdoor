@@ -1,29 +1,33 @@
 ﻿package {
 
+	import fl.controls.Button;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-	import flash.display.Sprite;
+	import flash.display.MovieClip;
 	import flash.net.SharedObject;
 	import flash.utils.clearInterval;
 	import flash.utils.setInterval;
 	import flash.external.ExternalInterface;
 
-	public class FlexDoorRunner extends Sprite
+	public class FlexDoorRunner extends MovieClip
 	{
-		public var inspectorView:InspectorView;
-		public var advancedView:AdvancedView;
-		public var testcases:TestCasesView;
+		public static const VERSION:String = "3.0";
+
+		public var views:MovieClip;
 		public var tooltipDelayInterval:Number;
+
+		private var inspectorView:InspectorView;
+		private var advancedView:AdvancedView;
+		private var testcases:TestCasesView;
 
 		private var _isInitialized:Boolean;
 		private var _so:SharedObject;
-
-		public static const VERSION:String = "3.0";
 
 		[Embed("../assets/filter.swf")] private const _filterSWF:Class;
 		[Embed("../assets/folder.swf")] private const _folderSWF:Class;
 		[Embed("../assets/target.swf")] private const _targetSWF:Class;
 		[Embed("../assets/minimize.swf")] private const _minimizeSWF:Class;
+		[Embed("../assets/restore.swf")]  private const _restoreSWF:Class;
 
 		private var _targetButton:Button;
 		private var _filterButton:Button;
@@ -32,9 +36,16 @@
 
 		public function FlexDoorRunner(){
 			super();
+
 			_so = SharedObject.getLocal("flexdoorRunner");
-			_isInitialized = false;
+
+			 inspectorView = views.inspectorView;
+			 advancedView = views.advancedView;
+			 testcases = views.testcases;
+
+			visibleViews(true);
 			openTestCases();
+
 			if(loaderInfo.url == null || loaderInfo.url.indexOf("file:///") == -1)
 				this.visible = false;
 			init();
@@ -52,14 +63,17 @@
 			tooltip_lbl.backgroundColor = 0xF5EE77;
 			tooltip_lbl.visible = false;
 
-			inspector_btn.setStyle("icon", _targetSWF);
-			initButton(inspector_btn, openInspector, "Inspector  Ctrl+Alt+I");
-			advanced_btn.setStyle("icon", _filterSWF);
-			initButton(advanced_btn, openAdvanced, "Filter  Ctrl+Alt+F");
-			testcases_btn.setStyle("icon", _folderSWF);
-			initButton(testcases_btn, openTestCases, "Loader  Ctrl+Alt+L");
-			minimize_btn.setStyle("icon", _minimizeSWF);
-			initButton(minimize_btn, minimizeWindow, "Minimize  Ctrl+Alt+M");
+			views.inspector_btn.setStyle("icon", _targetSWF);
+			initButton(views.inspector_btn, openInspector, "Inspector  Ctrl+Alt+I");
+			views.advanced_btn.setStyle("icon", _filterSWF);
+			initButton(views.advanced_btn, openAdvanced, "Filter  Ctrl+Alt+F");
+			views.testcases_btn.setStyle("icon", _folderSWF);
+			initButton(views.testcases_btn, openTestCases, "Loader  Ctrl+Alt+L");
+			views.minimize_btn.setStyle("icon", _minimizeSWF);
+			initButton(views.minimize_btn, minimizeWindow, "Minimize");
+
+			restore_btn.addEventListener(MouseEvent.CLICK, restoreWindow);
+			restore_btn.visible = false;
 
 			bg_mc.addEventListener(MouseEvent.MOUSE_DOWN, dragEventHandler);
 			bg_mc.addEventListener(MouseEvent.MOUSE_UP, dragEventHandler);
@@ -131,13 +145,27 @@
 			this.visible = true;
 		}
 
-		public function minimizeWindow(event:MouseEvent=null):void{
-			dispatchEvent(new Event("minimize"));
+		private function minimizeWindow(event:MouseEvent=null):void{
+			showButtonTooltip();
+			scaleX = .2;
+			scaleY = .05;
+			visibleViews(false);
 		}
 
-		public function showButtonTooltip(event:MouseEvent):void{
+		private function restoreWindow(event:MouseEvent):void{
+			scaleX = 1;
+			scaleY = 1;
+			visibleViews(true);
+		}
+
+		private function visibleViews(b:Boolean):void{
+			views.visible = b;
+			restore_btn.visible = !b;
+		}
+
+		public function showButtonTooltip(event:MouseEvent=null):void{
 			clearInterval(tooltipDelayInterval);
-			if(event.type == MouseEvent.ROLL_OVER){
+			if(event != null && event.type == MouseEvent.ROLL_OVER){
 				tooltipDelayInterval = setInterval(function():void{
 					mouseMoveButtonHandler(event);
 					tooltip_lbl.text = " " + event.currentTarget.getStyle("toolTip") + " ";
