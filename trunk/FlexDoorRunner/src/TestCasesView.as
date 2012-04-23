@@ -16,9 +16,9 @@
 	import flash.external.ExternalInterface;
 	import fl.events.ListEvent;
 	import flash.events.FocusEvent;
-	import flash.net.SharedObject;
 	import fl.data.DataProvider;
 	import fl.controls.dataGridClasses.DataGridColumn;
+	import flash.net.SharedObject;
 
 	public class TestCasesView extends MovieClip
 	{
@@ -27,29 +27,11 @@
 		private var _loadFile:FileReferenceList;
 		private var _testCases:Array;
 		private var _selectedKeys:Object;
-		private var _so:SharedObject;
 
 		private static const EMPTY_COLOR:Number = 0x999999;
 
 		public function TestCasesView(){
 			super();
-
-			_so = SharedObject.getLocal("flexdoor");
-
-			if(_so.data.remoteLocation != null){
-				location_txt.text = _so.data.remoteLocation;
-			}else{
-				location_txt.text = "";
-			}
-			
-			if(_so.data.selectedKeys != null){
-				_selectedKeys = _so.data.selectedKeys;
-			}else{
-				_selectedKeys = {};
-			}
-			
-			remote_rb.selected = (_so.data.remoteAccess != false);
-			local_rb.selected = !remote_rb.selected;
 
 			var dgc1:DataGridColumn = new DataGridColumn("include");
 			dgc1.headerText = "";
@@ -108,6 +90,22 @@
 
 		public function init(runner:FlexDoorRunner){
 			_runner = runner;
+
+			var so:SharedObject = _runner.so;
+			if(so.data.remoteLocation != null){
+				location_txt.text = so.data.remoteLocation;
+			}else{
+				location_txt.text = "";
+			}
+			
+			if(so.data.selectedKeys != null){
+				_selectedKeys = so.data.selectedKeys;
+			}else{
+				_selectedKeys = {};
+			}
+			
+			local_rb.selected = (so.data.remoteAccess == false);
+			remote_rb.selected = !local_rb.selected;
 
 			_runner.initButton(load_testcases_btn, loadTestCases, "Load TestCases");
 			_runner.initButton(run_testcases_btn, runTestCases, "Run TestCases");
@@ -263,10 +261,11 @@
 
 		public function runTestCases(event:MouseEvent=null):void{
 			var format = location_txt.getStyle("textFormat") as TextFormat;
-			_so.data.remoteLocation = (format.color != EMPTY_COLOR ? location_txt.text : null);
-			_so.data.selectedKeys = _selectedKeys;
-			_so.data.remoteAccess = remote_rb.selected;
-			_so.flush();
+			var so:SharedObject = _runner.so;
+			so.data.remoteLocation = (format.color != EMPTY_COLOR ? location_txt.text : null);
+			so.data.selectedKeys = _selectedKeys;
+			so.data.remoteAccess = remote_rb.selected;
+			so.flush();
 
 			var attachJsScript:Function = function(index:uint):void{
 				if(index < _testCases.length){
@@ -274,16 +273,16 @@
 					if(_selectedKeys[testcase.name + "::undefined"] != false){
 						if(format.color != EMPTY_COLOR && remote_rb.selected){
 							var uri:String = location_txt.text.substring(0, location_txt.text.indexOf("properties.txt"));
-							ExternalInterface.call("parent.FlexDoor.createScript", uri + testcase.name);
+							ExternalInterface.call("parent.FlexDoor.createScript", testcase.name, uri + testcase.name);
 							attachJsScript(index + 1);
 						}else if(format.color != EMPTY_COLOR && location_txt.text.indexOf("http") != -1){
 							var url:String = location_txt.text + "?fileName=" + testcase.name; 
 							exportToJs(url, testcase.script, function(){
-								ExternalInterface.call("parent.FlexDoor.createScript", url);
+								ExternalInterface.call("parent.FlexDoor.createScript", testcase.name, url);
 								attachJsScript(index + 1);
 							});
 						}else{
-							ExternalInterface.call("parent.FlexDoor.createScript", testcase.name, testcase.script);
+							ExternalInterface.call("parent.FlexDoor.createScript", testcase.name, null, testcase.script);
 							attachJsScript(index + 1);
 						}
 					}

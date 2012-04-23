@@ -341,15 +341,7 @@ FlexDoor.include = function(cls, src, callback) {
 			src = FlexDoor.LIB_PATH + src.replace(/\./g, '/') + ".js";
 		}
 
-		var elm = document.getElementsByTagName('head').item(0);
-		if(elm == undefined)
-			throw new Error("Cannot get instance of HTML element");
-
-		var obj = document.createElement('script');;
-		obj.setAttribute("rel", "javascript");
-		obj.setAttribute("type", "text/javascript");
-		obj.src = src;
-
+		var obj = FlexDoor.addScriptToHead();
 		var onJsLoaded = function(){
 			var cls = arguments.callee.prototype.cls;
 			if(window[cls] != undefined){
@@ -381,8 +373,7 @@ FlexDoor.include = function(cls, src, callback) {
 		} else {
 			obj.addEventListener("load", onJsLoaded, false);
 		}
-
-		elm.appendChild(obj);
+		obj.src = src;
 	}else{
 		if(callback != undefined)
 			FlexDoor.LOAD_FILES[cls].push(callback);
@@ -406,17 +397,34 @@ FlexDoor.run = function(){
 	}
 };
 
-FlexDoor.createScript = function(url, text){
-	var head = document.getElementsByTagName("head");
+FlexDoor.createScript = function(id, url, text){
+	var script = FlexDoor.addScriptToHead(id, text);
+	if(text == undefined)
+		script.src =  url + "?" + new Date().getTime();
+};
+
+FlexDoor.addScriptToHead = function(id, text){
+	var head = document.getElementsByTagName('head').item(0);
+	if(head == undefined)
+		throw new Error("Cannot get instance of HTML header");
+
 	var script = document.createElement("script");
-	script.setAttribute("rel", "javascript");
 	script.setAttribute("type", "text/javascript");
-	if(text != undefined){
+	script.id = id;
+	if(text != undefined)
 		script.text = text;
-	}else{
-		script.src = url;
+
+	if(id != undefined){
+		for(var i = 0; i < head.children.length; i++){
+			var elm = head.children[i];
+			if(elm.type == "text/javascript" && elm.id == id){
+				head.replaceChild(script, elm);
+				return script;
+			}
+		}
 	}
-	head[0].appendChild(script);
+	head.appendChild(script);
+	return script;
 };
 
 //Loading depended libraries

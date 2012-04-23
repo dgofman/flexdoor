@@ -3,6 +3,7 @@
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.display.Sprite;
+	import flash.net.SharedObject;
 	import flash.utils.clearInterval;
 	import flash.utils.setInterval;
 	import flash.external.ExternalInterface;
@@ -15,11 +16,13 @@
 		public var tooltipDelayInterval:Number;
 
 		private var _isInitialized:Boolean;
+		private var _so:SharedObject;
 
 		public static const VERSION:String = "3.0";
 
 		public function FlexDoorRunner(){
 			super();
+			_so = SharedObject.getLocal("flexdoorRunner");
 			_isInitialized = false;
 			openTestCases();
 			if(loaderInfo.url == null || loaderInfo.url.indexOf("file:///") == -1)
@@ -60,6 +63,10 @@
 				_isInitialized = true;
 				ExternalInterface.call("parent.FlexDoor.dispatchEvent", "initialized", VERSION);
 			}
+		}
+
+		public function get so():SharedObject{
+			return _so;
 		}
 
 		public function saveAdvancedSettings():void{

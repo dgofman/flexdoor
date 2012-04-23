@@ -148,9 +148,11 @@ package
 
 		protected function addJavaScript(src:String):void{
 			ExternalInterface.call("new function(){" +
-				"var js = document.createElement('script');" +
-				"js.src = '" + src + "';" + 
-				"document.body.appendChild(js);" +
+				"var head = document.getElementsByTagName('head').item(0);" +
+				"var script = document.createElement('script');" +
+				"script.setAttribute('type', 'text/javascript');" +
+				"script.src = '" + src + "';" + 
+				"head.appendChild(script);" +
 				"}()");
 		}
 
