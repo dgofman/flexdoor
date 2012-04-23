@@ -20,7 +20,7 @@
 	import fl.controls.dataGridClasses.DataGridColumn;
 	import flash.net.SharedObject;
 
-	public class TestCasesView extends MovieClip
+	public class ScriptLoaderView extends MovieClip
 	{
 		private var _runner:FlexDoorRunner;
 		private var _testcasesList:DataProvider;
@@ -30,7 +30,7 @@
 
 		private static const EMPTY_COLOR:Number = 0x999999;
 
-		public function TestCasesView(){
+		public function ScriptLoaderView(){
 			super();
 
 			var dgc1:DataGridColumn = new DataGridColumn("include");

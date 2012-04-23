@@ -18,7 +18,7 @@
 
 		private var inspectorView:InspectorView;
 		private var advancedView:AdvancedView;
-		private var testcases:TestCasesView;
+		private var scriptLoaderView:ScriptLoaderView;
 
 		private var _isInitialized:Boolean;
 		private var _so:SharedObject;
@@ -39,9 +39,9 @@
 
 			_so = SharedObject.getLocal("flexdoorRunner");
 
-			 inspectorView = views.inspectorView;
-			 advancedView = views.advancedView;
-			 testcases = views.testcases;
+			inspectorView = views.inspectorView;
+			advancedView = views.advancedView;
+			scriptLoaderView = views.scriptLoaderView;
 
 			visibleViews(true);
 			openTestCases();
@@ -54,7 +54,7 @@
 		protected function init():void{
 			inspectorView.init(this);
 			advancedView.init(this);
-			testcases.init(this);
+			scriptLoaderView.init(this);
 
 			tooltip_lbl.autoSize = "left";
 			tooltip_lbl.border = true;
@@ -125,14 +125,14 @@
 		}
 
 		public function openInspector(event:MouseEvent=null):void{
-			testcases.visible = false;
+			scriptLoaderView.visible = false;
 			advancedView.visible = false;
 			inspectorView.visible = true;
 			this.visible = true;
 		}
 
 		public function openAdvanced(event:MouseEvent=null):void{
-			testcases.visible = false;
+			scriptLoaderView.visible = false;
 			inspectorView.visible = false;
 			advancedView.visible = true;
 			this.visible = true;
@@ -141,7 +141,7 @@
 		public function openTestCases(event:MouseEvent=null):void{
 			inspectorView.visible = false;
 			advancedView.visible = false;
-			testcases.visible = true;
+			scriptLoaderView.visible = true;
 			this.visible = true;
 		}
 
