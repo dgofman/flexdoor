@@ -438,7 +438,7 @@ FlexDoor.include("jQuery", "jquery/jquery-latest.js", function(){
 		"fd::TestEvent",
 		"fd::Function",
 		"fd::EventDispatcher",
-		"flash.events::Event",], 
+		"flash.events::Event"], 
 		function(){
 			FlexDoor.includeAll(this, [
 				"mx.core::UIComponent",
