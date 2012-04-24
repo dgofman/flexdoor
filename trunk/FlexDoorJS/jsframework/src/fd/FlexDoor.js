@@ -432,25 +432,25 @@ FlexDoor.addScriptToHead = function(id, src, text, listener){
 //Loading depended libraries
 
 FlexDoor.include("jQuery", "jquery/jquery-latest.js", function(){
-	$(document).ready(function(){
-		FlexDoor.includeAll(this, [
-			"fd::System",
-			"fd::Assert",
-			"fd::TestEvent",
-			"fd::Function",
-			"fd::EventDispatcher",
-			"flash.events::Event",], 
-			function(){
-				FlexDoor.includeAll(this, [
-					"mx.core::UIComponent",
-					"mx.core::Container",
-					"mx.core::Application",
-					"mx.core::UITextField"],
-					function(){
+	FlexDoor.includeAll(this, [
+		"fd::System",
+		"fd::Assert",
+		"fd::TestEvent",
+		"fd::Function",
+		"fd::EventDispatcher",
+		"flash.events::Event",], 
+		function(){
+			FlexDoor.includeAll(this, [
+				"mx.core::UIComponent",
+				"mx.core::Container",
+				"mx.core::Application",
+				"mx.core::UITextField"],
+				function(){
+					$(document).ready(function(){
 						FlexDoor.run();
-					}
-				);
-			}
-		);
-	});
+					});
+				}
+			);
+		}
+	);
 });
