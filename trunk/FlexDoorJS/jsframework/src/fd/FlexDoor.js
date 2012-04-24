@@ -341,21 +341,20 @@ FlexDoor.include = function(cls, src, callback) {
 			src = FlexDoor.LIB_PATH + src.replace(/\./g, '/') + ".js";
 		}
 
-		var obj = FlexDoor.addScriptToHead();
 		var onJsLoaded = function(){
 			var cls = arguments.callee.prototype.cls;
 			if(window[cls] != undefined){
-				var obj = arguments.callee.prototype.obj;
+				var script = arguments.callee.prototype.script;
 				var callbacks = FlexDoor.LOAD_FILES[cls];
 				delete FlexDoor.LOAD_FILES[cls];
 				if(callbacks != undefined){
 					if(window["System"])
 						System.log("Loaded class: " + cls + ". Total callback functions: " + callbacks.length);
 
-					if (obj.attachEvent && !isOpera) {
-						obj.detachEvent("onreadystatechange", onJsLoaded);
+					if (script.attachEvent && !isOpera) {
+						script.detachEvent("onreadystatechange", onJsLoaded);
 					} else {
-						obj.removeEventListener("load", onJsLoaded, false);
+						script.removeEventListener("load", onJsLoaded, false);
 					}
 
 					for(var i = 0; i < callbacks.length; i++)
@@ -366,14 +365,7 @@ FlexDoor.include = function(cls, src, callback) {
 			}
 		};
 		onJsLoaded.prototype.cls = cls;
-		onJsLoaded.prototype.obj = obj;
-
-		if (obj.attachEvent && !isOpera) {
-			obj.attachEvent("onreadystatechange", onJsLoaded);
-		} else {
-			obj.addEventListener("load", onJsLoaded, false);
-		}
-		obj.src = src;
+		FlexDoor.addScriptToHead(cls, src, null, onJsLoaded);
 	}else{
 		if(callback != undefined)
 			FlexDoor.LOAD_FILES[cls].push(callback);
@@ -398,12 +390,10 @@ FlexDoor.run = function(){
 };
 
 FlexDoor.createScript = function(id, url, text){
-	var script = FlexDoor.addScriptToHead(id, text);
-	if(text == undefined)
-		script.src =  url;
+	FlexDoor.addScriptToHead(id, url, text);
 };
 
-FlexDoor.addScriptToHead = function(id, text){
+FlexDoor.addScriptToHead = function(id, src, text, listener){
 	var head = document.getElementsByTagName('head').item(0);
 	if(head == undefined)
 		throw new Error("Cannot get instance of HTML header");
@@ -411,8 +401,11 @@ FlexDoor.addScriptToHead = function(id, text){
 	var script = document.createElement("script");
 	script.setAttribute("type", "text/javascript");
 	script.id = id;
-	if(text != undefined)
+	if(text == undefined){
+		script.src =  src;
+	}else{
 		script.text = text;
+	}
 
 	if(id != undefined){
 		for(var i = 0; i < head.children.length; i++){
@@ -421,6 +414,15 @@ FlexDoor.addScriptToHead = function(id, text){
 				head.replaceChild(script, elm);
 				return script;
 			}
+		}
+	}
+
+	if(listener instanceof Function){
+		listener.prototype.script = script;
+		if (script.attachEvent && !isOpera) {
+			script.attachEvent("onreadystatechange", listener);
+		} else {
+			script.addEventListener("load", listener, false);
 		}
 	}
 	head.appendChild(script);

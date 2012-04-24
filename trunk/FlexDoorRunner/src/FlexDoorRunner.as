@@ -8,6 +8,7 @@
 	import flash.utils.clearInterval;
 	import flash.utils.setInterval;
 	import flash.external.ExternalInterface;
+	import fl.data.DataProvider;
 
 	public class FlexDoorRunner extends MovieClip
 	{
@@ -98,6 +99,15 @@
 
 		public function get so():SharedObject{
 			return _so;
+		}
+		
+		public function toArray(dp:DataProvider, key:String="label"):Array{
+			var items:Array = [];
+			for(var i:uint = 0; i < dp.length; i++){
+				var item:Object = dp.getItemAt(i);
+				items.push(item[key]);
+			}
+			return items;
 		}
 
 		public function saveAdvancedSettings():void{

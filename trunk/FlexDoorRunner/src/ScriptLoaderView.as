@@ -91,11 +91,19 @@
 		public function init(runner:FlexDoorRunner){
 			_runner = runner;
 
+			var format:TextFormat = new TextFormat();
+			format.size = 11;
+			format.font = "Arial";
+			format.color = EMPTY_COLOR;
+			location_cmb.setStyle("textFormat", format);
+			location_cmb.textField.setStyle("textFormat", format);
+
 			var so:SharedObject = _runner.so;
-			if(so.data.remoteLocation != null){
-				location_txt.text = so.data.remoteLocation;
-			}else{
-				location_txt.text = "";
+			if(so.data.remoteLocation is Array){
+				location_cmb.dataProvider = new DataProvider(so.data.remoteLocation);
+				location_cmb.selectedIndex = so.data.locationIndex;
+				location_cmb.text = so.data.remoteLocation[so.data.locationIndex];
+				format.color = 0x000000;
 			}
 			
 			if(so.data.selectedKeys != null){
@@ -112,39 +120,38 @@
 			local_rb.addEventListener(Event.CHANGE, radioButtonChangeHandler);
 			remote_rb.addEventListener(Event.CHANGE, radioButtonChangeHandler);
 
-			var format:TextFormat = new TextFormat();
-			format.size = 12;
-			format.font = "Arial";
-			location_txt.setStyle("textFormat", format);
+			location_cmb.addEventListener(FocusEvent.FOCUS_IN, onFocusEventHandler);
+			location_cmb.addEventListener(FocusEvent.FOCUS_OUT, onFocusEventHandler);
 
-			location_txt.addEventListener(FocusEvent.FOCUS_IN, onFocusEventHandler);
-			location_txt.addEventListener(FocusEvent.FOCUS_OUT, onFocusEventHandler);
-
-			location_txt.dispatchEvent(new FocusEvent(FocusEvent.FOCUS_OUT));
+			location_cmb.dispatchEvent(new FocusEvent(FocusEvent.FOCUS_OUT));
 		}
+		
 
 		private function radioButtonChangeHandler(event:Event):void{
-			var format = location_txt.getStyle("textFormat") as TextFormat;
+			var format = location_cmb.getStyle("textFormat") as TextFormat;
 			format.color = EMPTY_COLOR;
 			testcases_dg.dataProvider = new DataProvider();
 			run_testcases_btn.enabled = false;
+			location_cmb.selectedIndex = -1;
+			location_cmb.dropdown.dispatchEvent(new Event(Event.CHANGE));
 
 			if(remote_rb.selected){
-				location_txt.text = "http://domain/properties.txt";
+				location_cmb.prompt = "http://domain/properties.txt";
 			}else{
-				location_txt.text = "http://domain/flexDoorProxy (Optional)";
+				location_cmb.prompt = "http://domain/flexDoorProxy (Optional)";
 			}
 		}
 
 		private function onFocusEventHandler(event:FocusEvent):void{
 			var format = event.currentTarget.getStyle("textFormat") as TextFormat;
 			if(event.type == FocusEvent.FOCUS_OUT){
-				if(event.currentTarget.text.length == 0){
+				if(location_cmb.text.length == 0){
 					radioButtonChangeHandler(event);
 				}
 			}else{
 				if(format.color == EMPTY_COLOR){
-					event.currentTarget.text = "";
+					location_cmb.text = "";
+					location_cmb.prompt = "";
 					format.color = 0x000000;
 				}
 			}
@@ -162,11 +169,11 @@
 					trace("Exception: " + ex.toString());
 				}
 			}else{
-				var format = location_txt.getStyle("textFormat") as TextFormat;
-				if(format.color != EMPTY_COLOR && location_txt.text.indexOf("http") != -1 && location_txt.text.indexOf("/properties.txt") != -1){
-					var uri:String = location_txt.text.substring(0, location_txt.text.indexOf("properties.txt"));
+				var format = location_cmb.getStyle("textFormat") as TextFormat;
+				if(format.color != EMPTY_COLOR && location_cmb.value.indexOf("http") != -1 && location_cmb.value.indexOf("/properties.txt") != -1){
+					var uri:String = location_cmb.value.substring(0, location_cmb.value.indexOf("properties.txt"));
 					var request:URLRequest = new URLRequest(); 
-					request.url = location_txt.text;
+					request.url = location_cmb.value;
 					request.method = URLRequestMethod.GET; 
 
 					var urlLoader:URLLoader = new URLLoader();
@@ -260,9 +267,20 @@
 		}
 
 		public function runTestCases(event:MouseEvent=null):void{
-			var format = location_txt.getStyle("textFormat") as TextFormat;
+			var format = location_cmb.getStyle("textFormat") as TextFormat;
 			var so:SharedObject = _runner.so;
-			so.data.remoteLocation = (format.color != EMPTY_COLOR ? location_txt.text : null);
+			if(location_cmb.value.indexOf("http") != -1 && location_cmb.dataProvider is DataProvider){
+				var index:int = location_cmb.dataProvider.getItemIndex(location_cmb.value);
+				if(index == -1){
+					index = 0;
+					location_cmb.dataProvider.addItemAt({label:location_cmb.value}, 0);
+				}
+				so.data.remoteLocation = _runner.toArray(location_cmb.dataProvider, "label");
+				so.data.locationIndex = index;
+			}else{
+				so.data.remoteLocation = null;
+				so.data.locationIndex = -1;
+			}
 			so.data.selectedKeys = _selectedKeys;
 			so.data.remoteAccess = remote_rb.selected;
 			so.flush();
@@ -272,11 +290,11 @@
 					var testcase:Object = _testCases[index];
 					if(_selectedKeys[testcase.name + "::undefined"] != false){
 						if(format.color != EMPTY_COLOR && remote_rb.selected){
-							var uri:String = location_txt.text.substring(0, location_txt.text.indexOf("properties.txt"));
+							var uri:String = location_cmb.value.substring(0, location_cmb.value.indexOf("properties.txt"));
 							ExternalInterface.call("parent.FlexDoor.createScript", testcase.name, uri + testcase.name);
 							attachJsScript(index + 1);
-						}else if(format.color != EMPTY_COLOR && location_txt.text.indexOf("http") != -1){
-							var url:String = location_txt.text + "?fileName=" + testcase.name; 
+						}else if(format.color != EMPTY_COLOR && location_cmb.value.indexOf("http") != -1){
+							var url:String = location_cmb.value + "?fileName=" + testcase.name; 
 							exportToJs(url, testcase.script, function(){
 								ExternalInterface.call("parent.FlexDoor.createScript", testcase.name, url);
 								attachJsScript(index + 1);
