@@ -283,7 +283,7 @@ package
 					if(_openTestCaseLoader == true){
 						_content.openTestCases();
 					}else{
-						_content.initialized();
+						_content.initialized(true);
 					}
 				}
 			};
@@ -347,6 +347,10 @@ package
 
 		public function openInspector():void{
 			_content.openInspector();
+		}
+
+		public function assertResult(error:Boolean, message:String):void{
+			_content.assertResult(error, message);
 		}
 	}
 }

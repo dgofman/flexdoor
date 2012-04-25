@@ -132,6 +132,7 @@ package
 				ExternalInterface.addCallback("addEventListener", js_addEventListener);
 				ExternalInterface.addCallback("removeEventListener", js_removeEventListener);
 				ExternalInterface.addCallback("dispatchEvent", js_dispatchEvent);
+				ExternalInterface.addCallback("assertResult", js_assertResult);
 
 				var isFlexDoor:Boolean = ExternalInterface.call("eval", "parent['FlexDoor'] instanceof Function");
 				if(isFlexDoor == false){
@@ -422,6 +423,10 @@ package
 			if(target && event != null)
 				return EventDispatcher(target).dispatchEvent(event);
 			return false;
+		}
+
+		protected function js_assertResult(error:Boolean, message:String):void{
+			_fdUtil.assertResult(error, message);
 		}
 
 		protected function deserializeAll(params:Array):Array{

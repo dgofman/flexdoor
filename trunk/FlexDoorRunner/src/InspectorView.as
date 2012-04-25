@@ -5,8 +5,6 @@
 	import fl.events.ListEvent;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-	import flash.utils.setInterval;
-	import flash.utils.clearInterval;
 
 	public class InspectorView extends MovieClip
 	{
@@ -29,8 +27,8 @@
 			events_lst.labelField = "event";
 			events_lst.dataProvider = _eventsDataProvider;
 			events_lst.setStyle("cellRenderer", EventsListCellRenderer);
-			events_lst.addEventListener(ListEvent.ITEM_ROLL_OVER, showListTooltip);
-			events_lst.addEventListener(ListEvent.ITEM_ROLL_OUT, showListTooltip);
+			events_lst.addEventListener(ListEvent.ITEM_ROLL_OVER, _runner.showListTooltip);
+			events_lst.addEventListener(ListEvent.ITEM_ROLL_OUT, _runner.showListTooltip);
 			events_lst.addEventListener(ListEvent.ITEM_CLICK, function(event:ListEvent):void{
 				for(var i:Number = 0; i < _componentsDataProvider.length; i++){
 					var data:Object = _componentsDataProvider.getItemAt(i);
@@ -46,8 +44,8 @@
 			_componentsDataProvider = new DataProvider();
 			components_lst.labelField = "name";
 			components_lst.dataProvider = _componentsDataProvider;
-			components_lst.addEventListener(ListEvent.ITEM_ROLL_OVER, showListTooltip);
-			components_lst.addEventListener(ListEvent.ITEM_ROLL_OUT, showListTooltip);
+			components_lst.addEventListener(ListEvent.ITEM_ROLL_OVER, _runner.showListTooltip);
+			components_lst.addEventListener(ListEvent.ITEM_ROLL_OUT, _runner.showListTooltip);
 			components_lst.addEventListener(Event.CHANGE, function(event:Event):void{
 				details_txt.text = event.target.selectedItem.code;
 			});
@@ -69,27 +67,6 @@
 				components_lst.selectedIndex = 0;
 				components_lst.dispatchEvent(new Event(Event.CHANGE));
 			}
-		}
-
-		private function showListTooltip(event:ListEvent):void{
-			clearInterval(_runner.tooltipDelayInterval);
-			if(event.type == ListEvent.ITEM_ROLL_OVER){
-				_runner.tooltipDelayInterval = setInterval(function():void{
-					mouseMoveListHandler();
-					_runner.tooltip_lbl.text = " " + event.item[event.target.labelField] + " ";
-					_runner.tooltip_lbl.visible = true;
-					stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMoveListHandler);
-				}, 500);
-			}else{
-				_runner.tooltip_lbl.visible = false;
-				stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveListHandler);
-			}
-		}
-
-		private function mouseMoveListHandler(event:MouseEvent=null):void{
-			clearInterval(_runner.tooltipDelayInterval);
-			_runner.tooltip_lbl.x = mouseX + 15;
-			_runner.tooltip_lbl.y = mouseY + 15;
 		}
 
 		private function moveItemTop(uid:String):Boolean{

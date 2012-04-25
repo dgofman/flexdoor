@@ -19,6 +19,8 @@
 	import fl.data.DataProvider;
 	import fl.controls.dataGridClasses.DataGridColumn;
 	import flash.net.SharedObject;
+	import flash.utils.clearInterval;
+	import flash.utils.setInterval;
 
 	public class ScriptLoaderView extends MovieClip
 	{
@@ -27,6 +29,8 @@
 		private var _loadFile:FileReferenceList;
 		private var _testCases:Array;
 		private var _selectedKeys:Object;
+		private var _validateInterval:Number;
+		private var _activeTestItem:Object;
 
 		private static const EMPTY_COLOR:Number = 0x999999;
 
@@ -38,24 +42,35 @@
 			dgc1.width = 25;
 			dgc1.cellRenderer = CheckBoxCellRenderer;
 			dgc1.resizable = false;
+			dgc1.sortable = false;
 			var dgc2:DataGridColumn = new DataGridColumn("jsName");
 			dgc2.headerText = "TestCases";
+			dgc2.sortable = false;
 			var dgc3:DataGridColumn = new DataGridColumn("testName");
 			dgc3.headerText = "Tests";
-			var dgc4:DataGridColumn = new DataGridColumn("up");
-			dgc4.headerText = "";
-			dgc4.width = 25;
-			dgc4.resizable = false;
-			var dgc5:DataGridColumn = new DataGridColumn("down");
-			dgc5.headerText = "";
+			dgc3.sortable = false;
+			var dgc4:DataGridColumn = new DataGridColumn("state");
+			dgc4.headerText = " ?";
+			dgc4.width = 30;
+			dgc4.sortable = false;
+			var dgc5:DataGridColumn = new DataGridColumn("up");
+			dgc5.headerText = " ↑";
 			dgc5.width = 25;
 			dgc5.resizable = false;
-			var dgc6:DataGridColumn = new DataGridColumn("delete");
-			dgc6.headerText = "";
+			dgc5.sortable = false;
+			var dgc6:DataGridColumn = new DataGridColumn("down");
+			dgc6.headerText = " ↓";
 			dgc6.width = 25;
 			dgc6.resizable = false;
+			dgc6.sortable = false;
+			var dgc7:DataGridColumn = new DataGridColumn("delete");
+			dgc7.headerText = " X";
+			dgc7.width = 25;
+			dgc7.resizable = false;
+			dgc7.sortable = false;
 
-			testcases_dg.columns = [dgc1, dgc2, dgc3, dgc4, dgc5, dgc6];
+			testcases_dg.setStyle("cellRenderer", GridRowCellRenderer);
+			testcases_dg.columns = [dgc1, dgc2, dgc3, dgc4, dgc5, dgc6, dgc7];
 
 			testcases_dg.labelFunction = columnLabelFunction;
 			testcases_dg.addEventListener(ListEvent.ITEM_CLICK, function(event:ListEvent):void
@@ -90,6 +105,9 @@
 
 		public function init(runner:FlexDoorRunner){
 			_runner = runner;
+
+			testcases_dg.addEventListener(ListEvent.ITEM_ROLL_OVER, _runner.showDataGridTooltip);
+			testcases_dg.addEventListener(ListEvent.ITEM_ROLL_OUT, _runner.showDataGridTooltip);
 
 			var format:TextFormat = new TextFormat();
 			format.size = 11;
@@ -270,12 +288,14 @@
 			var format = location_cmb.getStyle("textFormat") as TextFormat;
 			var so:SharedObject = _runner.so;
 			if(location_cmb.value.indexOf("http") != -1 && location_cmb.dataProvider is DataProvider){
-				var index:int = location_cmb.dataProvider.getItemIndex(location_cmb.value);
+				var items:Array = _runner.toArray(location_cmb.dataProvider, "label");
+				var index:int = items.indexOf(location_cmb.value);
 				if(index == -1){
 					index = 0;
+					items.unshift(location_cmb.value);
 					location_cmb.dataProvider.addItemAt({label:location_cmb.value}, 0);
 				}
-				so.data.remoteLocation = _runner.toArray(location_cmb.dataProvider, "label");
+				so.data.remoteLocation = items;
 				so.data.locationIndex = index;
 			}else{
 				so.data.remoteLocation = null;
@@ -285,6 +305,7 @@
 			so.data.remoteAccess = remote_rb.selected;
 			so.flush();
 
+			ExternalInterface.call("parent.FlexDoor.reset");
 			var attachJsScript:Function = function(index:uint):void{
 				if(index < _testCases.length){
 					var testcase:Object = _testCases[index];
@@ -305,10 +326,19 @@
 						}
 					}
 				}else{
-					_runner.initialized();
+					clearInterval(_validateInterval);
+					_validateInterval = setInterval(runJSScripts, 500);
 				}
 			};
 			attachJsScript(0);
+		}
+
+		private function runJSScripts(){
+			var pendingJS:uint = ExternalInterface.call("parent.FlexDoor.getPendingJS");
+			if(pendingJS == 0){
+				clearInterval(_validateInterval);
+				_runner.initialized(false);
+			}
 		}
 
 		private function exportToJs(url:String, script:String, callBack:Function):void{
@@ -341,7 +371,28 @@
 					return "X";
 				}
 			}
+			if(column.dataField == "state" && data.errors != undefined && data.success != undefined){
+				return data.errors + "/" + data.success;
+			}
 			return (data[column.dataField] != null ? data[column.dataField] : "");
+		}
+
+		public function assertResult(error:Boolean, message:String):void{
+			testcases_dg.selectedIndex++;
+			_activeTestItem = testcases_dg.selectedItem;
+			if(_activeTestItem != null){
+				if(_activeTestItem.errors == undefined)
+					_activeTestItem.errors = 0;
+				if(_activeTestItem.success == undefined)
+					_activeTestItem.success = 0;
+					
+				_activeTestItem[error ? 'errors' : 'success']++;
+				if(_activeTestItem.toolTip == null)
+					_activeTestItem.toolTip = message;
+				else
+					_activeTestItem.toolTip += '\n\n' + message;
+				
+			}
 		}
 	}
 }

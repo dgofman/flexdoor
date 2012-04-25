@@ -116,6 +116,9 @@
 				include_events_rb.selected = true;
 			}
 
+
+			_runner.initButton(exclude_events_rb, null, "Exclude Events");
+			_runner.initButton(include_events_rb, null, "Include Events");
 			_runner.initButton(adv_save_btn, saveSettings, "Save  Ctrl+Alt+S");
 
 			event_class_txt.addEventListener(FocusEvent.FOCUS_IN, onFocusEventHandler);

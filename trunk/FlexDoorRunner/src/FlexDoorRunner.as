@@ -2,6 +2,7 @@
 
 	import fl.controls.Button;
 	import flash.events.Event;
+	import fl.events.ListEvent;
 	import flash.events.MouseEvent;
 	import flash.display.MovieClip;
 	import flash.net.SharedObject;
@@ -15,12 +16,12 @@
 		public static const VERSION:String = "3.0";
 
 		public var views:MovieClip;
-		public var tooltipDelayInterval:Number;
 
 		private var inspectorView:InspectorView;
 		private var advancedView:AdvancedView;
 		private var scriptLoaderView:ScriptLoaderView;
 
+		private var _tooltipDelayInterval:Number;
 		private var _isInitialized:Boolean;
 		private var _so:SharedObject;
 
@@ -82,7 +83,8 @@
 
 		public function initButton(button:*, eventHandler, toolTip:String):void{
 			button.useHandCursor = true;
-			button.addEventListener(MouseEvent.CLICK, eventHandler);
+			if(eventHandler != null)
+				button.addEventListener(MouseEvent.CLICK, eventHandler);
 			if(toolTip != null){
 				button.setStyle("toolTip", toolTip);
 				button.addEventListener(MouseEvent.ROLL_OVER, showButtonTooltip);
@@ -90,17 +92,19 @@
 			}
 		}
 
-		public function initialized():void{
+		public function initialized(autostart:Boolean):void{
 			if(_isInitialized == false){
 				_isInitialized = true;
-				ExternalInterface.call("parent.FlexDoor.dispatchEvent", "initialized", VERSION);
+				ExternalInterface.call("parent.FlexDoor.dispatchEvent", "initialized", VERSION, autostart);
+			}else{
+				ExternalInterface.call("parent.FlexDoor.run");
 			}
 		}
 
 		public function get so():SharedObject{
 			return _so;
 		}
-		
+
 		public function toArray(dp:DataProvider, key:String="label"):Array{
 			var items:Array = [];
 			for(var i:uint = 0; i < dp.length; i++){
@@ -126,12 +130,16 @@
 			inspectorView.spyObjectsHandler();
 		}
 
-		public function addNewEvent(item){
+		public function addNewEvent(item:Object):void{
 			inspectorView.addNewEvent(item);
 		}
 
-		public function addComponent(item){
+		public function addComponent(item:Object):void{
 			inspectorView.addComponent(item);
+		}
+
+		public function assertResult(error:Boolean, message:String):void{
+			scriptLoaderView.assertResult(error, message);
 		}
 
 		public function openInspector(event:MouseEvent=null):void{
@@ -174,25 +182,64 @@
 		}
 
 		public function showButtonTooltip(event:MouseEvent=null):void{
-			clearInterval(tooltipDelayInterval);
-			if(event != null && event.type == MouseEvent.ROLL_OVER){
-				tooltipDelayInterval = setInterval(function():void{
-					mouseMoveButtonHandler(event);
-					tooltip_lbl.text = " " + event.currentTarget.getStyle("toolTip") + " ";
-					tooltip_lbl.visible = true;
-					stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMoveButtonHandler);
-				}, 500);
-			}else{
-				tooltip_lbl.visible = false;
-				stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveButtonHandler);
-			}
+			var isOver:Boolean = (event != null && event.type == MouseEvent.ROLL_OVER);
+			showTooltip(event, isOver, mouseMoveButtonHandler, function():void{
+				tooltip_lbl.text = " " + event.currentTarget.getStyle("toolTip") + " ";
+			});
 		}
 
-		private function mouseMoveButtonHandler(event:MouseEvent=null):void{
-			clearInterval(tooltipDelayInterval);
+		private function mouseMoveButtonHandler(event:MouseEvent):void{
+			clearInterval(_tooltipDelayInterval);
 			var x:Number = Math.max(0, mouseX - tooltip_lbl.width / 2);
 			tooltip_lbl.x = Math.min(x, stage.stageWidth - tooltip_lbl.width);
 			tooltip_lbl.y = mouseY + (event.target.y > 30 ? -25 : 25);
+		}
+
+		public function showListTooltip(event:ListEvent):void{
+			showTooltip(event, event.type == ListEvent.ITEM_ROLL_OVER, mouseMoveListHandler, function():void{
+				tooltip_lbl.text = " " + event.item[event.target.labelField] + " ";
+			});
+		}
+
+		private function mouseMoveListHandler(event:Event=null):void{
+			clearInterval(_tooltipDelayInterval);
+			tooltip_lbl.x = Math.min(mouseX + 15, stage.stageWidth - tooltip_lbl.width);
+			tooltip_lbl.y = Math.min(mouseY + 15, stage.stageHeight - tooltip_lbl.height);
+		}
+
+		public function showDataGridTooltip(event:ListEvent):void{
+			showTooltip(event, event.type == ListEvent.ITEM_ROLL_OVER, mouseMoveListHandler, function():void{
+				switch(event.columnIndex){
+					case 4:
+						tooltip_lbl.text = "Move Up TestCase";
+						break;
+					case 5:
+						tooltip_lbl.text = "Move Down TestCase";
+						break;
+					case 6:
+						tooltip_lbl.text = "Delete TestCase";
+						break;
+					default:
+						tooltip_lbl.text = (event.item.toolTip ? event.item.toolTip : "");
+				}
+			});
+		}
+		
+		private function showTooltip(event:Event, isOver:Boolean, mouseEventHandler:Function, toolTipHandler:Function):void{
+			clearInterval(_tooltipDelayInterval);
+			if(isOver){
+				_tooltipDelayInterval = setInterval(function():void{
+					mouseEventHandler(event);
+					toolTipHandler();
+					if(tooltip_lbl.text != ""){
+						tooltip_lbl.visible = true;
+						stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseEventHandler);
+					}
+				}, 500);
+			}else{
+				tooltip_lbl.visible = false;
+				stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseEventHandler);
+			}
 		}
 
 		private function dragEventHandler(event:MouseEvent):void{
