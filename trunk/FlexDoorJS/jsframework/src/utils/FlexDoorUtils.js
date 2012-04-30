@@ -153,7 +153,7 @@ FlexDoorUtils.getColumnIndex = function(grid, value, key){
 	var columns = grid.columns();
 	if(columns instanceof Array){
 		for(var  i = 0; i < columns.length; i++){
-			if(EventDispatcher.Is(columns[i]) && columns[i].ref[key] == value)
+			if(columns[i]["ref"] != undefined && columns[i].ref[key] == value)
 				return i;
 		}
 	}
