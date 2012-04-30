@@ -38,8 +38,6 @@ EventDispatcher.prototype.toString = function() {
 EventDispatcher.Get = function(o, classType){
 	if(o == undefined)
 		throw new Error("TypeError: Error #101: Cannot access a property or method of a null object reference");
-	if(classType == undefined)
-		classType = UIComponent;
 	if(o instanceof classType){
 		return o; 
 	}else{
