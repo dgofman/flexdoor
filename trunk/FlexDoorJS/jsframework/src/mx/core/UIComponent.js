@@ -47,15 +47,10 @@ function UIComponent(classType, extendType)
 
 UIComponent.prototype = new EventDispatcher();
 UIComponent.Get = function(o, classType){
-	if(o == undefined)
-		throw new Error("TypeError: Error #101: Cannot access a property or method of a null object reference");
-	if(classType == undefined)
-		classType = UIComponent;
-	if(o instanceof classType){
-		return o; 
-	}else{
-		throw new Error("TypeError: Error #102: Type Coercion failed: cannot convert " + o.toString() + " to " + classType.FLEX_TYPE);
-	}
+	var ref = this;
+	if(classType == undefined) classType = UIComponent;
+	ref = EventDispatcher.Get(o, classType);
+	return ref;
 };
 UIComponent.Is = function(target) { return target instanceof UIComponent; };
 

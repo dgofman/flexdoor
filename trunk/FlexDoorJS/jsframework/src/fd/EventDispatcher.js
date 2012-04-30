@@ -36,9 +36,15 @@ EventDispatcher.prototype.toString = function() {
 
 //Class Functions
 EventDispatcher.Get = function(o, classType){
-	var ref = this;
-	ref = UIComponent.Get(o, EventDispatcher);
-	return ref;
+	if(o == undefined)
+		throw new Error("TypeError: Error #101: Cannot access a property or method of a null object reference");
+	if(classType == undefined)
+		classType = UIComponent;
+	if(o instanceof classType){
+		return o; 
+	}else{
+		throw new Error("TypeError: Error #102: Type Coercion failed: cannot convert " + o.toString() + " to " + classType.FLEX_TYPE);
+	}
 };
 EventDispatcher.Is = function(target) { return target instanceof EventDispatcher; };
 
