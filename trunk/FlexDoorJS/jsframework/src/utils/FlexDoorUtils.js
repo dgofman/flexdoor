@@ -23,6 +23,7 @@ function FlexDoorUtils() {
 FlexDoorUtils.prototype.findIndexInListCollectionView = FlexDoorUtils.findIndexInListCollectionView;
 FlexDoorUtils.prototype.createItemEditRenderer = FlexDoorUtils.createItemEditRenderer;
 FlexDoorUtils.prototype.attachCollectionChangeEvent = FlexDoorUtils.attachCollectionChangeEvent;
+FlexDoorUtils.prototype.getColumnIndex = FlexDoorUtils.getColumnIndex;
 
 /**
  * Required include: mx.collections::ListCollectionView
