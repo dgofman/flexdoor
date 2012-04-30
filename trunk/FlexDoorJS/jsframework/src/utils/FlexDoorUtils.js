@@ -121,7 +121,8 @@ FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, column
  *  
  *  @param grid - DataGrid or AdvancedDataGrid reference.
  *  
- *  @param callBack - The call back function executed as soon as CollectionEvent triggered. 
+ *  @param callBack - The call back function executed as soon as CollectionEvent triggered and 
+ *                    passing the <code>CollectionEventKind</code>. See: CollectionEvent::CollectionEventKind 
  *  
  *  @param attachToDataGrid - indicator, if true addEventListener for data grid otherwise to collection list
  */
@@ -134,6 +135,28 @@ FlexDoorUtils.attachCollectionChangeEvent = function(testCase, grid, callBack, a
 		}
 	};
 	target.addEventListener($CollectionEvent.COLLECTION_CHANGE, changeHandler, this);
+};
+
+/**
+ * Find the columnIndex in DataGrid columns
+ *
+ *  @param grid - DataGrid or AdvancedDataGrid reference.
+ *  
+ *  @param value - value to be associated with the specified key.
+ *
+ *  @param key - key with which the specified value is to be associated. If key is undefined than key equals to <code>dataField</code>
+ */
+
+FlexDoorUtils.getColumnIndex = function(grid, value, key){
+	if(key == undefined) key = "dataField";
+	var columns = grid.columns();
+	if(columns instanceof Array){
+		for(var  i = 0; i < columns.length; i++){
+			if(columns[i][key] == value)
+				return i;
+		}
+	}
+	return -1;
 };
 
 /**
