@@ -39,6 +39,10 @@ function UIComponent(classType, extendType)
 	this.uid = function(){
 		return this.getter("uid");
 	};
+
+	this.currentState = function(){ /* getter and setter */
+		return this.property("currentState");
+	};
 }
 
 UIComponent.prototype = new EventDispatcher();
