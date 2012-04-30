@@ -40,6 +40,7 @@ EventDispatcher.Get = function(o, classType){
 	ref = UIComponent.Get(o, EventDispatcher);
 	return ref;
 };
+EventDispatcher.Is = function(target) { return target instanceof EventDispatcher; };
 
 EventDispatcher.prototype.fireEvent = function(event){
 	System.fireEvent(this, event);
