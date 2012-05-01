@@ -78,9 +78,9 @@ FlexDoor.prototype.waitFor = function(func, delay, timeout){
 	System.waitFor(this, func, delay, timeout, System.getParams(arguments, 2));
 };
 
-FlexDoor.prototype.callNextTest = function(testCaseTestEventType){
-	if(testCaseTestEventType == undefined) testCaseTestEventType = TestEvent.ASYNCHRONOUS; 
-	this.dispatchEvent(testCaseTestEventType);
+FlexDoor.prototype.callNextTest = function(type_TestEvent){
+	if(type_TestEvent == undefined) type_TestEvent = TestEvent.ASYNCHRONOUS; 
+	this.dispatchEvent(type_TestEvent);
 };
 
 FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
