@@ -78,9 +78,8 @@ FlexDoor.prototype.waitFor = function(func, delay, timeout){
 	System.waitFor(this, func, delay, timeout, System.getParams(arguments, 2));
 };
 
-FlexDoor.prototype.callNextTest = function(type_TestEvent){
-	if(type_TestEvent == undefined) type_TestEvent = TestEvent.ASYNCHRONOUS; 
-	this.dispatchEvent(type_TestEvent);
+FlexDoor.prototype.callNextTest = function(){
+	this.dispatchEvent(TestEvent.ASYNCHRONOUS);
 };
 
 FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
@@ -98,9 +97,21 @@ FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
 	var systemManager = new EventDispatcher();
 	systemManager.Initialize(sysObject, this.app);
 	this.app.systemManager = systemManager;
+
+	if(testCaseTitle == undefined)
+		testCaseTitle = flashPlayerId;
+
+	if(testCaseTitle != undefined &&
+		FlexDoor.AUTO_START != true){
+		module(testCaseTitle);
+	}
 };
 
 FlexDoor.prototype.include = function() {
+	if(FlexDoor.SPY_TOOL == true){
+		FlexDoor.SPY_TOOL = false;
+		return;
+	}
 	var testCase = this;
 	var refIds = null;
 	var testCaseType = FlexDoor.TEST_CASES[System.testCaseIndex];
@@ -120,7 +131,13 @@ FlexDoor.prototype.include = function() {
 					var callStartTestCaseListener = function(){
 						startTestCaseListener(testEvent);
 					};
-					setTimeout(callStartTestCaseListener, testEvent.delay);
+					if(FlexDoor.AUTO_START == true){
+						setTimeout(callStartTestCaseListener, testEvent.delay);
+					}else{
+						setTimeout(function(){
+								test(testEvent.functionName, callStartTestCaseListener);
+						}, testEvent.delay);
+					}
 				}else{
 					if(testCaseType.prototype.tearDownAfterClass != undefined){
 						testCase["tearDownAfterClass"].call(testCase);
@@ -141,6 +158,8 @@ FlexDoor.prototype.include = function() {
 
 					testEvent.addAsyncEventListener = function(eventType){
 						//call finalizeFunction after dispatchEvent
+						if(window["QUnit"] && QUnit.config)
+							QUnit.config.blocking = true;
 						testCase.addEventListener(eventType, finalizeFunction, testEvent, releaseRefId);
 					};
 					testCase[testEvent.functionName].call(testCase, testEvent);
@@ -172,6 +191,9 @@ FlexDoor.prototype.include = function() {
 			var finalizeFunction = function(testEvent, releaseRefId){
 				testCase.removeEventListener(testEvent.type, finalizeFunction);
 
+				if(window["QUnit"] && QUnit.config)
+					QUnit.config.blocking = false;
+
 				var nextTestEvent = new TestEvent(tests, testEvent.nextOrder);
 				nextTestEvent.delay = testEvent.delay;
 				nextTestEvent.items = testEvent.items;
@@ -188,6 +210,8 @@ FlexDoor.prototype.include = function() {
 							releaseRefId.push(item.refId);
 					}
 					System.releaseIds(releaseRefId, true);
+
+					Assert.assertTrue(true, "ok succeeds");
 				}else{
 					Assert.fail("Test timed out: " + testEvent.functionName);
 					System.warn("Test timed out: " + testEvent.functionName);
@@ -206,7 +230,6 @@ FlexDoor.prototype.include = function() {
 					testCase["setUpBeforeClass"].call(testCase, testEvent);
 					refIds = System.refIds();
 				}
-				System.trace(System.getNextTest(-1));
 				runTest(testEvent);
 			}
 		};
@@ -286,6 +309,10 @@ FlexDoor.TIME_INTERVAL;
 FlexDoor.INIT_PHASE = 0;
 FlexDoor.TEST_DELAY_INTERVAL = 100;
 FlexDoor.AUTO_START = false;
+FlexDoor.SPY_TOOL = false;
+
+if(window.location.search.indexOf("autoStart=true") != -1)
+	FlexDoor.AUTO_START = true;
 
 if(FlexDoor.LIB_PATH == undefined){
 	var scripts = document.getElementsByTagName("script");
@@ -314,7 +341,7 @@ FlexDoor.include = function(cls, src, callback) {
 			src = FlexDoor.LIB_PATH + src.replace(/\./g, '/') + ".js";
 		}
 
-		var jsLoadHandler = function(){
+		var onJsLoaded = function(){
 			var cls = arguments.callee.prototype.cls;
 			if(window[cls] != undefined){
 				var script = arguments.callee.prototype.script;
@@ -325,63 +352,45 @@ FlexDoor.include = function(cls, src, callback) {
 						System.log("Loaded class: " + cls + ". Total callback functions: " + callbacks.length);
 
 					if (script.attachEvent && !isOpera) {
-						script.detachEvent("onreadystatechange", jsLoadHandler);
+						script.detachEvent("onreadystatechange", onJsLoaded);
 					} else {
-						script.removeEventListener("load", jsLoadHandler, false);
+						script.removeEventListener("load", onJsLoaded, false);
 					}
 
 					for(var i = 0; i < callbacks.length; i++)
 						callbacks[i]();
 				}
 			}else{
-				setTimeout(jsLoadHandler, 50);
+				setTimeout(onJsLoaded, 50);
 			}
 		};
-		jsLoadHandler.prototype.cls = cls;
-		FlexDoor.addScriptToHead(cls, src, null, jsLoadHandler);
+		onJsLoaded.prototype.cls = cls;
+		FlexDoor.addScriptToHead(cls, src, null, onJsLoaded);
 	}else{
 		if(callback != undefined)
 			FlexDoor.LOAD_FILES[cls].push(callback);
 	}
 };
 
-FlexDoor.dispatchEvent = function(eventType, param, autostart){
+FlexDoor.dispatchEvent = function(eventType, param){
 	if(eventType == "initialized"){
 		FlexDoor.VERSION = param;
-		FlexDoor.AUTO_START = autostart;
-		FlexDoor.INIT_PHASE++;
 		FlexDoor.run();
 	}
 };
 
 FlexDoor.run = function(){
-	if(FlexDoor.INIT_PHASE >= 2){	
-		System.startTestCase(0);
+	if(++FlexDoor.INIT_PHASE == 2){
+		if(FlexDoor.AUTO_START == true){
+			System.startTestCase(0);
+		}else{
+			System.loadQUnit();
+		}
 	}
 };
 
-FlexDoor.reset = function(){
-	FlexDoor.pendingJS = 0;
-	FlexDoor.TEST_CASES = [];
-};
-FlexDoor.getPendingJS = function(){
-	return FlexDoor.pendingJS;
-};
 FlexDoor.createScript = function(id, url, text){
-	var jsLoadHandler;
-	if(text == undefined){
-		jsLoadHandler = function(){
-			FlexDoor.pendingJS--;
-			var script = arguments.callee.prototype.script;
-			if (script.attachEvent && !isOpera) {
-				script.detachEvent("onreadystatechange", jsLoadHandler);
-			} else {
-				script.removeEventListener("load", jsLoadHandler, false);
-			}
-		};
-		FlexDoor.pendingJS++;
-	}
-	FlexDoor.addScriptToHead(id, url, text, jsLoadHandler);
+	FlexDoor.addScriptToHead(id, url, text);
 };
 
 FlexDoor.addScriptToHead = function(id, src, text, listener){
@@ -398,15 +407,6 @@ FlexDoor.addScriptToHead = function(id, src, text, listener){
 		script.text = text;
 	}
 
-	if(listener instanceof Function){
-		listener.prototype.script = script;
-		if (script.attachEvent && !isOpera) {
-			script.attachEvent("onreadystatechange", listener);
-		} else {
-			script.addEventListener("load", listener, false);
-		}
-	}
-
 	if(id != undefined){
 		for(var i = 0; i < head.children.length; i++){
 			var elm = head.children[i];
@@ -417,6 +417,14 @@ FlexDoor.addScriptToHead = function(id, src, text, listener){
 		}
 	}
 
+	if(listener instanceof Function){
+		listener.prototype.script = script;
+		if (script.attachEvent && !isOpera) {
+			script.attachEvent("onreadystatechange", listener);
+		} else {
+			script.addEventListener("load", listener, false);
+		}
+	}
 	head.appendChild(script);
 	return script;
 };
@@ -439,7 +447,6 @@ FlexDoor.include("jQuery", "jquery/jquery-latest.js", function(){
 				"mx.core::UITextField"],
 				function(){
 					$(document).ready(function(){
-						FlexDoor.INIT_PHASE++;
 						FlexDoor.run();
 					});
 				}
