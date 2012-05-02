@@ -26,6 +26,10 @@ function mx_controls_DataGrid(classType, extendType)
 		return this.property("columns", arguments);
 	};
 
+	this.lockedColumnCount = function(){ /* getter and setter */
+		return this.property("lockedColumnCount", arguments);
+	};
+
 	this.createItemEditor = function(colIndex, rowIndex){
 		return this.execute("createItemEditor", colIndex, rowIndex);
 	};
@@ -40,6 +44,27 @@ function mx_controls_DataGrid(classType, extendType)
 
 	this.rendererArray = function(){
 		return this.getter("rendererArray");
+	};
+
+	this.dataGridLockedColumns = function(){
+		return this.getter("dataGridLockedColumns");
+	};
+
+	this.indicesToItemRenderer = function(row, col /* skipAdvanced */){
+		if(arguments.length < 3){
+			var lockedColumns = this.lockedColumnCount();
+			if(lockedColumns > 0){ //calculate a columnIndex
+				if(col < lockedColumns){
+					var listBaseContentHolder = this.dataGridLockedColumns();
+					var listItems = System.getter(listBaseContentHolder, "listItems");
+					var renderer = listItems[row][col];
+					return renderer;
+				}else{
+					col -= lockedColumns;
+				}
+			}
+		}
+		return this.execute("mx_internal::indicesToItemRenderer", row, col);
 	};
 }
 
