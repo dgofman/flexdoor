@@ -64,11 +64,11 @@ TestEvent.prototype.getItem = function(name) {
 };
 
 TestEvent.prototype.setEventType = function(type) {
-	if(type != undefined && type != this.type && 
-	   type != TestEvent.SYNCHRONOUS){
-		this.addAsyncEventListener(type);
+	if(type != undefined){
+		if(type != this.type && type != TestEvent.SYNCHRONOUS)
+			this.addAsyncEventListener(type);
+		this.type = type;
 	}
-	this.type = type;
 };
 
 TestEvent.prototype.set = function(params) {
