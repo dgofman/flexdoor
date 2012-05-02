@@ -38,8 +38,8 @@ EventDispatcher.prototype.toString = function() {
 EventDispatcher.Get = function(o, classType){
 	if(o == undefined)
 		throw new Error("TypeError: Error #101: Cannot access a property or method of a null object reference");
-	if(o instanceof classType){
-		return o; 
+	if((classType != undefined && o instanceof classType) || o instanceof EventDispatcher){
+		return o;
 	}else{
 		throw new Error("TypeError: Error #102: Type Coercion failed: cannot convert " + o.toString() + " to " + classType.FLEX_TYPE);
 	}
@@ -94,6 +94,10 @@ EventDispatcher.prototype.getter = function(command){
 
 EventDispatcher.prototype.execute = function(command){
 	return System.execute(this, command, System.getParams(arguments, 1, true));
+};
+
+EventDispatcher.prototype.refValue = function(refObject){
+	return System.refValue(refObject, System.getParams(arguments, 1));
 };
 
 EventDispatcher.prototype.create = function(className){
