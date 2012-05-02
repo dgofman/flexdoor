@@ -24,9 +24,10 @@ Sample4TestCase.prototype.tearDown = function(event){
 };
 
 Sample4TestCase.prototype.test_1 = function(event) {
+	this.async(event);
+
 	var dataGrid = $DataGrid.Get(this.dataGrid);
 	var dataProvider = $ListCollectionView.Get(dataGrid.dataProvider());
-	var eventType = "CollectionChangeType";
 
 	var changeHandler = function(e){
 		dataProvider.removeEventListener($CollectionEvent.COLLECTION_CHANGE, changeHandler);
@@ -34,11 +35,9 @@ Sample4TestCase.prototype.test_1 = function(event) {
 		//Validate changeHandler is not attached to DataGrid 
 		Sample4TestCase.addNewItem(dataProvider);
 
-		this.dispatchEvent(eventType); //Goto next test
+		this.callNextTest();
 	};
 	dataProvider.addEventListener($CollectionEvent.COLLECTION_CHANGE, changeHandler, this);
-
-	TestEvent.Get(event).type = eventType;
 
 	//Trigger changeHandler listener
 	this.callLater(Sample4TestCase.addNewItem, 1000, dataProvider);
@@ -51,7 +50,7 @@ Sample4TestCase.prototype.test_2 = function(event) {
 	var handler = dataProvider.createFunctionByName(Sample4TestCase, "dataGridChangeHandler");
 	dataProvider.addEventListener($CollectionEvent.COLLECTION_CHANGE, handler);
 
-	TestEvent.Get(event).type = $CollectionEvent.COLLECTION_CHANGE;
+	TestEvent.Get(event).setEventType($CollectionEvent.COLLECTION_CHANGE);
 	
 	//Trigger changeHandler listener
 	this.callLater(Sample4TestCase.addNewItem, 1000, dataProvider);

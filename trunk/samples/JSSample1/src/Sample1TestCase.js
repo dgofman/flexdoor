@@ -10,7 +10,7 @@ Sample1TestCase.prototype = new FlexDoor(Sample1TestCase);
 
 Sample1TestCase.prototype.setUpBeforeClass = function(event){
 	this.view = $TitleWindow.Get(this.app.find("sampleView"));
-	TestEvent.Get(event).changeFunction("test_1"); //skip first test - test_alert
+	TestEvent.Get(event).callFunction("test_1"); //skip first test - test_alert
 };
 
 Sample1TestCase.prototype.tearDownAfterClass = function(event){
