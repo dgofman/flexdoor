@@ -64,15 +64,17 @@ TestEvent.prototype.getItem = function(name) {
 };
 
 TestEvent.prototype.setEventType = function(type) {
-	this.type = type;
-	if(type != TestEvent.SYNCHRONOUS)
+	if(type != undefined && type != this.type && 
+	   type != TestEvent.SYNCHRONOUS){
 		this.addAsyncEventListener(type);
+	}
+	this.type = type;
 };
 
 TestEvent.prototype.set = function(params) {
+	this.setEventType(params.type);
 	for(var name in params)
 		this[name] = params[name];
-	this.setEventType(this.type);
 };
 
 fd_TestEvent = function(){};
