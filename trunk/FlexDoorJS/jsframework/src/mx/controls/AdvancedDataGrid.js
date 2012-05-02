@@ -28,6 +28,11 @@ function mx_controls_AdvancedDataGrid(classType, extendType)
 		if(dispatchEvent == undefined) dispatchEvent = false;
 		this.execute("expandItem", item, open, animate, dispatchEvent);
 	};
+	
+	this.dataGridLockedColumns = function(){
+		var advancedListBaseContentHolder = this.getter("getListContentHolder");
+		return UIComponent.Get(advancedListBaseContentHolder).getChildByName("lockedContent");
+	};
 }
 
 mx_controls_AdvancedDataGrid.prototype.Import = function(){
