@@ -38,7 +38,8 @@ EventDispatcher.prototype.toString = function() {
 EventDispatcher.Get = function(o, classType){
 	if(o == undefined)
 		throw new Error("TypeError: Error #101: Cannot access a property or method of a null object reference");
-	if((!classType && o instanceof EventDispatcher) || o instanceof classType){
+	if( (classType != undefined && o instanceof classType) || 
+		(classType == undefined && o instanceof EventDispatcher) ){
 		return o;
 	}else{
 		throw new Error("TypeError: Error #102: Type Coercion failed: cannot convert " + o.toString() + " to " + classType.FLEX_TYPE);
