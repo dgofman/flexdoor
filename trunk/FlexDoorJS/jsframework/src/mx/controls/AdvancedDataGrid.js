@@ -33,6 +33,7 @@ function mx_controls_AdvancedDataGrid(classType, extendType)
 		return this.execute("mx_internal::indicesToItemRenderer", row, col);
 	};
 
+	//Exclude
 	this.dataGridLockedColumns = function(){};
 }
 
