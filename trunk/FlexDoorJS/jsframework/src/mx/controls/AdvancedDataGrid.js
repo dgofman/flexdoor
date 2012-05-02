@@ -30,8 +30,8 @@ function mx_controls_AdvancedDataGrid(classType, extendType)
 	};
 	
 	this.dataGridLockedColumns = function(){
-		var advancedListBaseContentHolder = this.getter("getListContentHolder");
-		return UIComponent.Get(advancedListBaseContentHolder).getChildByName("lockedContent");
+		var advancedListBaseContentHolder = UIComponent.Get(this.getter("getListContentHolder"));
+		return advancedListBaseContentHolder.getChildByName("lockedContent");
 	};
 }
 
