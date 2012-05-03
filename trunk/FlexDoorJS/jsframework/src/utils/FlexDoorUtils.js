@@ -122,19 +122,17 @@ FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, column
  *  
  *  @param grid - DataGrid or AdvancedDataGrid reference.
  *  
- *  @param preEventCallBack - The call back function executed as soon as editInstance is initialized. 
+ *  @param callBack - The call back function executed as soon as CollectionEvent triggered and 
+ *                    passing the <code>CollectionEventKind</code>. See: CollectionEvent::CollectionEventKind 
  *  
- *  @param postEventCallBack - The call back function executed after COLLECTION_CHANGE event (Optional)
- *  
- *  @param attachToDataGrid - indicator, if true addEventListener for data grid otherwise to collection list  (Optional)
+ *  @param attachToDataGrid - indicator, if true addEventListener for data grid otherwise to collection list
  */
-FlexDoorUtils.attachCollectionChangeEvent = function(testCase, grid, preEventCallBack, postEventCallBack, attachToDataGrid){
+FlexDoorUtils.attachCollectionChangeEvent = function(testCase, grid, callBack, attachToDataGrid){
 	var target = (attachToDataGrid == true ? grid : grid.dataProvider());
 	var changeHandler = function(e){
-		if(preEventCallBack.apply(testCase, [e.kind])){
+		if(callBack.apply(testCase, [e.kind])){
 			target.removeEventListener($CollectionEvent.COLLECTION_CHANGE, changeHandler);
-			if(postEventCallBack != undefined)
-				postEventCallBack.apply(testCase);
+			testCase.dispatchEvent($CollectionEvent.COLLECTION_CHANGE);
 		}
 	};
 	target.addEventListener($CollectionEvent.COLLECTION_CHANGE, changeHandler, this);
