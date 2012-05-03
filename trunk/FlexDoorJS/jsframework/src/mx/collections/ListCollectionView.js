@@ -67,6 +67,7 @@ mx_collections_ListCollectionView.prototype.toString = function() {
 mx_collections_ListCollectionView.prototype.Initialize = function(object, parent){
 	EventDispatcher.prototype.Initialize.call(this, object, parent);
 	this.source = object.ref.source;
+	this.length = (this.source instanceof Array ? this.source.length : 0);
 };
 mx_collections_ListCollectionView.Get = function(o){
 	var ref = this;
