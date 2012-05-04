@@ -56,7 +56,6 @@ public class FlexDoorProxyServlet extends HttpServlet {
 			stream.write(jsBytes);
 			stream.flush();
 			stream.close();
-			session.setAttribute("jsScripts", null);
 			return;
 		}
 

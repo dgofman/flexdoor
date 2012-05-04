@@ -481,7 +481,7 @@
 				testcases_dg.selectedIndex = i;
 				var item:Object = testcases_dg.selectedItem;
 				if(item["testName"] != null && item["include"] != false){
-					testcases_dg.verticalScrollPosition = ((i - 1) * testcases_dg.rowHeight);
+					testcases_dg.verticalScrollPosition = ((i - 5) * testcases_dg.rowHeight);
 					return item["testIndex"];  //returns next available test index
 				}
 			}
