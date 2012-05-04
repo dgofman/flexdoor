@@ -27,7 +27,6 @@ package
 		private var _topChildIndex:Number;
 		private var _delayInterval:Number;
 		private var _application:*;
-		private var _openTestCaseLoader:Boolean;
 
 		private var _classMap:Object;
 		private var _uiComponent:Class;
@@ -49,18 +48,12 @@ package
 			
 		};
 
-		public function FlexDoorUtil(flexDoor:FlexDoor, application:*, openTestCaseLoader:Boolean){
+		public function FlexDoorUtil(flexDoor:FlexDoor, application:*){
 			_flexDoor = flexDoor;
 			_application = application;
-			_openTestCaseLoader = openTestCaseLoader;
 
 			_queueMap = {};
 			_queueList = [];
-
-			_loader = new Loader(); 
-			_loader.loadBytes(new _flexdoorSWF()); 
-			_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onComplete);
-			application.systemManager.addChild(_loader);
 
 			_uiComponent = _flexDoor.getClassByName("mx.core::UIComponent");
 			if(_uiComponent == null)
@@ -82,6 +75,11 @@ package
 					}
 				}
 			}
+
+			_loader = new Loader(); 
+			_loader.loadBytes(new _flexdoorSWF()); 
+			_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onComplete);
+			application.systemManager.cursorChildren.addChild(_loader);
 		}
 
 		private function clear():void{
@@ -280,11 +278,7 @@ package
 					_content.addEventListener("startSpyObjects", spyEventHandler);
 					_content.addEventListener("stopSpyObjects", spyEventHandler);
 
-					if(_openTestCaseLoader == true){
-						_content.openTestCases();
-					}else{
-						_content.initialized(true);
-					}
+					_content.openTestCases();
 				}
 			};
 			var timer:Timer = new Timer(100);
@@ -351,6 +345,14 @@ package
 
 		public function assertResult(error:Boolean, message:String):void{
 			_content.assertResult(error, message);
+		}
+
+		public function getNextTestCase():String{
+			return _content.getNextTestCase();
+		}
+
+		public function getTestIndex(index:uint):int{
+			return _content.getTestIndex(index);
 		}
 	}
 }

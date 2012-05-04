@@ -127,25 +127,27 @@ package
 				ExternalInterface.addCallback("setter", js_setter);
 				ExternalInterface.addCallback("getter", js_getter);
 				ExternalInterface.addCallback("execute", js_execute);
+				ExternalInterface.addCallback("refValue", js_refValue);
 				ExternalInterface.addCallback("create",  js_create);
 				ExternalInterface.addCallback("createFunction",  js_createFunction);
 				ExternalInterface.addCallback("addEventListener", js_addEventListener);
 				ExternalInterface.addCallback("removeEventListener", js_removeEventListener);
 				ExternalInterface.addCallback("dispatchEvent", js_dispatchEvent);
 				ExternalInterface.addCallback("assertResult", js_assertResult);
+				ExternalInterface.addCallback("getNextTestCase", js_getNextTestCase);
+				ExternalInterface.addCallback("getTestIndex", js_getTestIndex);
 
 				var isFlexDoor:Boolean = ExternalInterface.call("eval", "parent['FlexDoor'] instanceof Function");
 				if(isFlexDoor == false){
-					if(_application.url == null || _application.url.indexOf("http://localhost:8090") == -1){
-						addJavaScript("https://flexdoor.googlecode.com/svn/trunk/FlexDoorJS/jsframework/src/fd/FlexDoor.js");
-						addJavaScript("https://flexdoor.googlecode.com/svn/trunk/FlexDoorJS/jsframework/src/utils/FlexDoorUtils.js");
-					}else{
-						//DELETE THIS CONDITION
-						addJavaScript("http://localhost:8090/dtclient/promocp/fd/FlexDoor.js");
-						addJavaScript("http://localhost:8090/dtclient/promocp/utils/FlexDoorUtils.js");
-					}
+					addJavaScript("https://flexdoor.googlecode.com/svn/trunk/FlexDoorJS/jsframework/src/fd/FlexDoor.js");
+					addJavaScript("https://flexdoor.googlecode.com/svn/trunk/FlexDoorJS/jsframework/src/utils/FlexDoorUtils.js");
 				}
-				_fdUtil = new FlexDoorUtil(this, _application, isFlexDoor == false);
+
+				if(isFlexDoor == true){
+					ExternalInterface.call("parent.FlexDoor.dispatchEvent", "initialized", true);
+				}else{
+					_fdUtil = new FlexDoorUtil(this, _application);
+				}
 			}
 		}
 
@@ -326,7 +328,7 @@ package
 			return null;
 		}
 
-		protected function js_execute(refId:Number, command:String, values:Array):Object{
+		protected function js_execute(refId:Number, command:String, values:Array, includeRef:Boolean=true):Object{
 			var target:* = _refMap[refId];
 			var pair:Array = command.split("::");
 			if(validateCommand(target, (pair.length == 2 ? pair[1] : pair[0]))){
@@ -338,12 +340,24 @@ package
 					}else{
 						ret = func();
 					}
-					return serialize(ret);
+					return serialize(ret, includeRef);
 				}catch(e:Error){
-					return serialize(e);
+					return serialize(e, false);
 				}
 			}
 			return null;
+		}
+
+		protected function js_refValue(refId:Number, keys:Array, includeRef:Boolean=true):Object{
+			var target:* = _refMap[refId];
+			for(var i:uint = 0; i < keys.length; i++){
+				try{
+					target = target[keys[i]];
+				}catch(e:Error){
+					return serialize(e, false);
+				}
+			}
+			return serialize(target, includeRef);
 		}
 
 		protected function getFunction(target:*, pair:Array):Function{
@@ -429,6 +443,14 @@ package
 			_fdUtil.assertResult(error, message);
 		}
 
+		protected function js_getNextTestCase():String{
+			return _fdUtil.getNextTestCase();
+		}
+
+		protected function js_getTestIndex(index:uint):int{
+			return _fdUtil.getTestIndex(index);
+		}
+
 		protected function deserializeAll(params:Array):Array{
 			if(params is Array){
 				for(var i:uint = 0; i < params.length; i++)
@@ -467,15 +489,17 @@ package
 				out.stackTrace = Error(ref).getStackTrace();
 				return out;
 			}else if(ref is Array){
-				for(var a:uint = 0; a < ref.length; a++)
-					ref[a] = serialize(ref[a]);
-				return ref;
+				if(includeRef == true){
+					for(var a:uint = 0; a < ref.length; a++)
+						ref[a] = serialize(ref[a], includeRef);
+					return ref;
+				}
 			}else if(!(ref is Function) && (typeof(ref) != "object")){
 				return ref; //Number, uint, int, String, Boolean
 			}else{
 				if(ref is Event){
-					out.target = serialize(ref.target);
-					out.currentTarget = serialize(ref.currentTarget);
+					out.target = serialize(ref.target, includeRef);
+					out.currentTarget = serialize(ref.currentTarget, includeRef);
 					out.type = ref.type;
 				}else{
 					if(ref.hasOwnProperty('id'))
@@ -570,7 +594,7 @@ package
 
 		protected function validateCommand(object:*, command:String):Boolean{
 			if(object == null){
-				serialize(new Error("The reference id is invalid or object was destroyed."));
+				serialize(new Error("The reference id is invalid or object was destroyed."), false);
 			}else if(object.hasOwnProperty(command) || object[command]){
 				return true;
 			}

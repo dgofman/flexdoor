@@ -10,11 +10,10 @@
 	import flash.utils.setInterval;
 	import flash.external.ExternalInterface;
 	import fl.data.DataProvider;
+	import flash.utils.setTimeout;
 
 	public class FlexDoorRunner extends MovieClip
 	{
-		public static const VERSION:String = "3.0";
-
 		public var views:MovieClip;
 
 		private var inspectorView:InspectorView;
@@ -82,6 +81,7 @@
 		}
 
 		public function initButton(button:*, eventHandler, toolTip:String):void{
+			button.buttonMode = true;
 			button.useHandCursor = true;
 			if(eventHandler != null)
 				button.addEventListener(MouseEvent.CLICK, eventHandler);
@@ -92,12 +92,10 @@
 			}
 		}
 
-		public function initialized(autostart:Boolean):void{
+		public function initialized():void{
 			if(_isInitialized == false){
 				_isInitialized = true;
-				ExternalInterface.call("parent.FlexDoor.dispatchEvent", "initialized", VERSION, autostart);
-			}else{
-				ExternalInterface.call("parent.FlexDoor.run");
+				externalCall("dispatchEvent", "initialized", false);
 			}
 		}
 
@@ -142,6 +140,14 @@
 			scriptLoaderView.assertResult(error, message);
 		}
 
+		public function getNextTestCase():String{
+			return scriptLoaderView.getNextTestCase();
+		}
+
+		public function getTestIndex(index:uint):int{
+			return scriptLoaderView.getTestIndex(index);
+		}
+
 		public function openInspector(event:MouseEvent=null):void{
 			scriptLoaderView.visible = false;
 			advancedView.visible = false;
@@ -162,7 +168,7 @@
 			scriptLoaderView.visible = true;
 			this.visible = true;
 		}
-
+		
 		private function minimizeWindow(event:MouseEvent=null):void{
 			showButtonTooltip();
 			scaleX = .2;
@@ -198,7 +204,7 @@
 		public function showListTooltip(event:ListEvent):void{
 			showTooltip(event, event.type == ListEvent.ITEM_ROLL_OVER, mouseMoveListHandler, function():void{
 				tooltip_lbl.text = " " + event.item[event.target.labelField] + " ";
-			});
+			}, false);
 		}
 
 		private function mouseMoveListHandler(event:Event=null):void{
@@ -222,10 +228,10 @@
 					default:
 						tooltip_lbl.text = (event.item.toolTip ? event.item.toolTip : "");
 				}
-			});
+			}, false);
 		}
 		
-		private function showTooltip(event:Event, isOver:Boolean, mouseEventHandler:Function, toolTipHandler:Function):void{
+		private function showTooltip(event:Event, isOver:Boolean, mouseEventHandler:Function, toolTipHandler:Function=null, autoHide:Boolean=true):void{
 			clearInterval(_tooltipDelayInterval);
 			if(isOver){
 				_tooltipDelayInterval = setInterval(function():void{
@@ -234,6 +240,8 @@
 					if(tooltip_lbl.text != ""){
 						tooltip_lbl.visible = true;
 						stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseEventHandler);
+						if(autoHide)
+							setTimeout(showTooltip, 1500, event, false, mouseEventHandler);
 					}
 				}, 500);
 			}else{
@@ -248,6 +256,11 @@
 			}else{
 				this.stopDrag();
 			}
+		}
+		
+		public function externalCall(command:String, ...params):void{
+			if(loaderInfo.url == null || loaderInfo.url.indexOf("file:///") == -1)
+				ExternalInterface.call("parent.FlexDoor.externalCall", command, params);
 		}
 	}
 }

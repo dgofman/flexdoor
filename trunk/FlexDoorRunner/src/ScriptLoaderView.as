@@ -13,7 +13,6 @@
 	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-	import flash.external.ExternalInterface;
 	import fl.events.ListEvent;
 	import flash.events.FocusEvent;
 	import fl.data.DataProvider;
@@ -25,17 +24,18 @@
 	public class ScriptLoaderView extends MovieClip
 	{
 		private var _runner:FlexDoorRunner;
-		private var _testcasesList:DataProvider;
 		private var _loadFile:FileReferenceList;
 		private var _testCases:Array;
 		private var _selectedKeys:Object;
 		private var _validateInterval:Number;
-		private var _activeTestItem:Object;
 
 		private static const EMPTY_COLOR:Number = 0x999999;
 
 		public function ScriptLoaderView(){
 			super();
+
+			overlay_mc.alpha = .01;
+			overlay_mc.visible = false;
 
 			var dgc1:DataGridColumn = new DataGridColumn("include");
 			dgc1.headerText = "";
@@ -53,6 +53,8 @@
 			dgc4.headerText = " ?";
 			dgc4.width = 30;
 			dgc4.sortable = false;
+			dgc4.resizable = false;
+			dgc4.editable = false;
 			var dgc5:DataGridColumn = new DataGridColumn("up");
 			dgc5.headerText = " ↑";
 			dgc5.width = 25;
@@ -75,17 +77,23 @@
 			testcases_dg.labelFunction = columnLabelFunction;
 			testcases_dg.addEventListener(ListEvent.ITEM_CLICK, function(event:ListEvent):void
 			{
+				if(play_pause_btn.selected == true){
+					event.preventDefault();
+					return;
+				}
+
 				var dataField:String = testcases_dg.columns[event.columnIndex].dataField;
 				if(dataField == "include")
 					updateItem(event.item, event.item["include"]);
 						
 				if(event.item["testName"] == null){
 					var items:Array;
+					var dp:DataProvider = testcases_dg.dataProvider;
 					if(dataField == "up" && event.item.index > 0){
 						items = _testCases.splice(event.item.index, 1);
 						_testCases.splice(event.item.index - 1, 0, items[0]);
 						invalidateDataGrid();
-					}else if(dataField == "down" && event.item.index < _testcasesList.length - 1){
+					}else if(dataField == "down" && event.item.index < dp.length - 1){
 						items = _testCases.splice(event.item.index, 1);
 						_testCases.splice(event.item.index + 1, 0, items[0]);
 						invalidateDataGrid();
@@ -93,8 +101,8 @@
 						items = _testCases.splice(event.item.index, 1);
 						invalidateDataGrid();
 					}else if(dataField == "include"){
-						for(var i:uint = 0; i < _testcasesList.length; i++){
-							var item:Object = _testcasesList.getItemAt(i);
+						for(var i:uint = 0; i < dp.length; i++){
+							var item:Object = dp.getItemAt(i);
 							if(item["jsName"] == event.item["jsName"])
 								updateItem(item, (item["include"] = event.item["include"]));
 						}
@@ -133,8 +141,25 @@
 			local_rb.selected = (so.data.remoteAccess == false);
 			remote_rb.selected = !local_rb.selected;
 
+			play_pause_btn.setStyle("upIcon", "PlayButtonNormal");
+			play_pause_btn.setStyle("downIcon", "PlayButtonDown");
+			play_pause_btn.setStyle("overIcon", "PlayButtonOver");
+			play_pause_btn.setStyle("disabledIcon", "PlayButtonDisabled");
+
+			play_pause_btn.setStyle("selectedUpIcon", "PauseButtonNormal");
+			play_pause_btn.setStyle("selectedDownIcon", "PauseButtonDown");
+			play_pause_btn.setStyle("selectedOverIcon", "PauseButtonOver");
+			play_pause_btn.setStyle("selectedDisabledIcon", "PauseButtonDisabled");
+
+			stop_btn.setStyle("upIcon", "StopButtonNormal");
+			stop_btn.setStyle("downIcon", "StopButtonDown");
+			stop_btn.setStyle("overIcon", "StopButtonOver");
+			stop_btn.setStyle("disabledIcon", "StopButtonDisabled");
+
+			_runner.initButton(open_testcases_btn, openTestCases, "Open TestCases");
 			_runner.initButton(load_testcases_btn, loadTestCases, "Load TestCases");
-			_runner.initButton(run_testcases_btn, runTestCases, "Run TestCases");
+			_runner.initButton(play_pause_btn, playPauseTestCases, "Run/Pause TestCases");
+			_runner.initButton(stop_btn, stopTestCases, "Stop TestCases");
 			local_rb.addEventListener(Event.CHANGE, radioButtonChangeHandler);
 			remote_rb.addEventListener(Event.CHANGE, radioButtonChangeHandler);
 
@@ -143,13 +168,15 @@
 
 			location_cmb.dispatchEvent(new FocusEvent(FocusEvent.FOCUS_OUT));
 		}
-		
 
 		private function radioButtonChangeHandler(event:Event):void{
 			var format = location_cmb.getStyle("textFormat") as TextFormat;
 			format.color = EMPTY_COLOR;
 			testcases_dg.dataProvider = new DataProvider();
-			run_testcases_btn.enabled = false;
+			load_testcases_btn.enabled = false;
+			stop_btn.enabled = false;
+			play_pause_btn.enabled = false;
+			play_pause_btn.selected = false;
 			location_cmb.selectedIndex = -1;
 			location_cmb.dropdown.dispatchEvent(new Event(Event.CHANGE));
 
@@ -175,7 +202,14 @@
 			}
 		}
 
-		private function loadTestCases(event:MouseEvent=null):void{
+		private function isValidProtocol(value:String):Boolean{
+			return (value.indexOf("http") != -1 || value.indexOf("file:///") != -1);
+		}
+
+		private function openTestCases(event:MouseEvent=null):void{
+			play_pause_btn.enabled = false;
+			stop_btn.enabled = false;
+
 			if(local_rb.selected){
 				_loadFile = new FileReferenceList();
 				_loadFile.addEventListener(Event.SELECT, onFileRefHandler);
@@ -188,8 +222,8 @@
 				}
 			}else{
 				var format = location_cmb.getStyle("textFormat") as TextFormat;
-				if(format.color != EMPTY_COLOR && location_cmb.value.indexOf("http") != -1 && location_cmb.value.indexOf("/properties.txt") != -1){
-					var uri:String = location_cmb.value.substring(0, location_cmb.value.indexOf("properties.txt"));
+				if(format.color != EMPTY_COLOR && isValidProtocol(location_cmb.value)){
+					var uri:String = location_cmb.value.substring(0, location_cmb.value.lastIndexOf("/") + 1);
 					var request:URLRequest = new URLRequest(); 
 					request.url = location_cmb.value;
 					request.method = URLRequestMethod.GET; 
@@ -263,16 +297,16 @@
 		}
 
 		private function invalidateDataGrid():void{
-			_testcasesList = new DataProvider();
+			var dp:DataProvider = new DataProvider();
 			for(var i:uint = 0; i < _testCases.length; i++){
 				var testcase:Object = _testCases[i];
-				_testcasesList.addItem(initItem({jsName:testcase.name, data:testcase.script, index:i}));
+				dp.addItem(initItem({jsName:testcase.name, data:testcase.script, tests:testcase.tests, index:i}));
 				for(var t:uint = 1; t < testcase.tests.length; t++){
-					_testcasesList.addItem(initItem({jsName:testcase.name, testName:testcase.tests[t]}));
+					dp.addItem(initItem({jsName:testcase.name, testName:testcase.tests[t], testIndex:t - 1}));
 				}
 			}
-			testcases_dg.dataProvider = _testcasesList;
-			run_testcases_btn.enabled = (_testCases.length > 0);
+			testcases_dg.dataProvider = dp;
+			load_testcases_btn.enabled = (_testCases.length > 0);
 		}
 
 		private function initItem(item:Object):Object{
@@ -284,10 +318,11 @@
 			_selectedKeys[item.jsName + "::" + item.testName] = value;
 		}
 
-		public function runTestCases(event:MouseEvent=null):void{
+		public function loadTestCases(event:MouseEvent=null):void{
+			load_testcases_btn.enabled = false;
 			var format = location_cmb.getStyle("textFormat") as TextFormat;
 			var so:SharedObject = _runner.so;
-			if(location_cmb.value.indexOf("http") != -1 && location_cmb.dataProvider is DataProvider){
+			if(isValidProtocol(location_cmb.value) && location_cmb.dataProvider is DataProvider){
 				var items:Array = _runner.toArray(location_cmb.dataProvider, "label");
 				var index:int = items.indexOf(location_cmb.value);
 				if(index == -1){
@@ -305,39 +340,58 @@
 			so.data.remoteAccess = remote_rb.selected;
 			so.flush();
 
-			ExternalInterface.call("parent.FlexDoor.reset");
+			externalCall("reset");
 			var attachJsScript:Function = function(index:uint):void{
 				if(index < _testCases.length){
 					var testcase:Object = _testCases[index];
 					if(_selectedKeys[testcase.name + "::undefined"] != false){
 						if(format.color != EMPTY_COLOR && remote_rb.selected){
 							var uri:String = location_cmb.value.substring(0, location_cmb.value.indexOf("properties.txt"));
-							ExternalInterface.call("parent.FlexDoor.createScript", testcase.name, uri + testcase.name);
+							externalCall("createScript", testcase.name, uri + testcase.name);
 							attachJsScript(index + 1);
-						}else if(format.color != EMPTY_COLOR && location_cmb.value.indexOf("http") != -1){
+						}else if(format.color != EMPTY_COLOR && isValidProtocol(location_cmb.value)){
 							var url:String = location_cmb.value + "?fileName=" + testcase.name; 
 							exportToJs(url, testcase.script, function(){
-								ExternalInterface.call("parent.FlexDoor.createScript", testcase.name, url);
+								externalCall("createScript", testcase.name, url);
 								attachJsScript(index + 1);
 							});
 						}else{
-							ExternalInterface.call("parent.FlexDoor.createScript", testcase.name, null, testcase.script);
+							externalCall("createScript", testcase.name, null, testcase.script);
 							attachJsScript(index + 1);
 						}
 					}
 				}else{
 					clearInterval(_validateInterval);
-					_validateInterval = setInterval(runJSScripts, 500);
+					_validateInterval = setInterval(initialized, 500);
 				}
 			};
 			attachJsScript(0);
 		}
 
-		private function runJSScripts(){
-			var pendingJS:uint = ExternalInterface.call("parent.FlexDoor.getPendingJS");
+		private function playPauseTestCases(event:MouseEvent=null):void{
+			if(play_pause_btn.selected == true){
+				var testCaseName:String = getNextTestCase();
+				if(testCaseName != null){
+					overlay_mc.visible = true;
+					externalCall("run", testCaseName);
+					return;
+				}
+			}
+			play_pause_btn.selected = false;
+		}
+
+		private function stopTestCases(event:MouseEvent=null):void{
+			overlay_mc.visible = false;
+			play_pause_btn.selected = false;
+		}
+
+		private function initialized(){
+			var pendingJS:uint = externalCall("getPendingJS");
 			if(pendingJS == 0){
 				clearInterval(_validateInterval);
-				_runner.initialized(false);
+				play_pause_btn.enabled = true;
+				stop_btn.enabled = true;
+				_runner.initialized();
 			}
 		}
 
@@ -378,21 +432,65 @@
 		}
 
 		public function assertResult(error:Boolean, message:String):void{
-			testcases_dg.selectedIndex++;
-			_activeTestItem = testcases_dg.selectedItem;
-			if(_activeTestItem != null){
-				if(_activeTestItem.errors == undefined)
-					_activeTestItem.errors = 0;
-				if(_activeTestItem.success == undefined)
-					_activeTestItem.success = 0;
+			var dp:DataProvider = testcases_dg.dataProvider;
+			var item:Object = testcases_dg.selectedItem;
+			if(item != null){
+				if(item.errors == undefined)
+					item.errors = 0;
+				if(item.success == undefined)
+					item.success = 0;
 					
-				_activeTestItem[error ? 'errors' : 'success']++;
-				if(_activeTestItem.toolTip == null)
-					_activeTestItem.toolTip = message;
+				item[error ? 'errors' : 'success']++;
+				if(item.toolTip == null)
+					item.toolTip = message;
 				else
-					_activeTestItem.toolTip += '\n\n' + message;
+					item.toolTip += '\n\n' + message;
 				
+				dp.replaceItem(item, testcases_dg.selectedItem);
 			}
+		}
+
+		public function getNextTestCase():String{
+			if(play_pause_btn.selected == true){
+				var dp:DataProvider = testcases_dg.dataProvider;
+	
+				if(testcases_dg.selectedIndex < 0)
+					testcases_dg.selectedIndex = 0;
+	
+				for(var i:uint = testcases_dg.selectedIndex; i < dp.length -1; i++){
+					var item:Object = dp.getItemAt(i);
+					if(item["testName"] != null && item["include"] != false){
+						testcases_dg.selectedIndex = i;
+						return item["jsName"].split(".js")[0]
+					}
+				}
+				stopTestCases();
+			}
+			return null; //pause testcases
+		}
+
+		public function getTestIndex(index:uint):int{
+			if(play_pause_btn.selected == false)
+				return -1; //pause tests
+
+			if(index == 0 && testcases_dg.selectedItem != null){
+				return testcases_dg.selectedItem["testIndex"]; //get selected test index
+			}
+			var dp:DataProvider = testcases_dg.dataProvider;
+			for(var i:uint = testcases_dg.selectedIndex + 1; i < dp.length; i++){
+				testcases_dg.selectedIndex = i;
+				var item:Object = testcases_dg.selectedItem;
+				if(item["testName"] != null && item["include"] != false){
+					testcases_dg.verticalScrollPosition = ((i - 1) * testcases_dg.rowHeight);
+					return item["testIndex"];  //returns next available test index
+				}
+			}
+			return index + 1;
+		}
+
+		private function externalCall(command:String, ...params):uint{
+			_runner.externalCall.apply(_runner, [command].concat(params));
+			return 0;
 		}
 	}
 }

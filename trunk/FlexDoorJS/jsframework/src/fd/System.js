@@ -126,10 +126,18 @@ System.getter = function(target, command, includeRef){
 	return System.deserialize(object);
 };
 
-System.execute = function(target, command, values){
+System.execute = function(target, command, values, includeRef){
+	includeRef = (includeRef == undefined ? true : includeRef);
 	if(values != null && !(values instanceof Array)) values = [values];
 	var flash = Application.application.flash;
-	var object = flash.execute(target.refId, command, values);
+	var object = flash.execute(target.refId, command, values, includeRef);
+	return System.deserialize(object);
+};
+
+System.refValue = function(target, keys, includeRef){
+	includeRef = (includeRef == undefined ? true : includeRef);
+	var flash = Application.application.flash;
+	var object = flash.refValue(target.refId, keys, includeRef);
 	return System.deserialize(object);
 };
 
@@ -270,49 +278,4 @@ System.trace = function(message, level) {
 		window['console'][level](message);
 };
 
-System.startTestCase = function(index){
-	System.testCaseIndex = index;
-	if(FlexDoor.TEST_CASES.length > index){
-		new FlexDoor.TEST_CASES[index]();
-	}else{
-		module("DONE");
-		test("Finished at: " +new Date().toLocaleString(), function(){});
-	}
-};
-
-System.loadQUnit = function(){
-	var index = 0;
-	function assetsLoadHandler(){
-		if(++index == 2)
-			System.doTestLoader();
-	};
-	FlexDoor.include("QUnit", "qunit.js", assetsLoadHandler);
-	FlexDoor.include("jQueryUI", "jquery/jquery.ui.js", assetsLoadHandler);
-
-	if (document.createStyleSheet){
-		document.createStyleSheet('http://code.jquery.com/qunit/qunit-git.css'); 
-	}else{
-		$('head').append('<link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-git.css" type="text/css"/>');
-	}
-};
-
-System.doTestLoader = function(){
-	$(document.body).append($("<div id='draggable' style='width: 600px; padding: 0.5em; position:absolute; top:0;right:0;display:none;'>" +
-							"<h1 id='qunit-header'>FlexDoor v" + FlexDoor.VERSION + "</h1>" +
-							"<h5 id='qunit-banner'></h5>" +
-							"<div id='qunit-testrunner-toolbar'></div>" + 
-							"<div align='center' style='background-color:#eee'>" + 
-							"<input id='runTest' type='button' value='Run Tests'/>&nbsp;" +
-							"<h2 id='qunit-userAgent'></h2>" +
-							"<ol id='qunit-tests'></ol></div>"));
-
-	QUnit.load();
-
-	$("#draggable").show();
-	$("#draggable").draggable();
-
-	$("#runTest").click( function() {
-		System.startTestCase(0);
-	});
-};
 fd_System = function(){};

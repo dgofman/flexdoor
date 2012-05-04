@@ -11,7 +11,7 @@
 
 		public function GridRowCellRenderer():void {
 			super();
-			_color = 0xFFFFFF;
+			setStyle("selectedOverSkin", CellRenderer_selectedUpSkin);
 		}
 
 		override public function set data(value:Object):void {
@@ -34,6 +34,7 @@
 			rectangle.graphics.drawRect(0, 0, 100, 20);
 			rectangle.graphics.endFill();
 			setStyle("upSkin", rectangle);
+			setStyle("overSkin", rectangle);
 			super.drawBackground();
 		}
 	}

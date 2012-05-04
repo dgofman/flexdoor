@@ -17,25 +17,21 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function Assert() 
-{
+function Assert() {
 }
 Assert.CLASS_NAME = "Assert";
 
 //Static Functions
 Assert.assertEquals = function(actual, expected, message) {
 	var error = (actual != expected);
+	var str = (error ? (message != undefined ? message : "failed") : "okay") +
+				" - Expected: " + expected + (error ? ", Result: " + actual : "");
 
 	if(FlexDoor.AUTO_START != true){
-		if(error && window["QUnit"] && QUnit.config.notrycatch)
-			debugger;
-		equal(actual, expected, message);
+		var flash = Application.application.flash;
+		flash.assertResult(error, str);
 	}else{
-		System.trace(
-				(message != undefined ? message : (error ? "failed" : "okay")) +
-				" - Expected: " + expected +
-				(error ? ", Result: " + actual : ""), 
-				(error ? "warn" : "log"));
+		System.trace(str, error ? "warn" : "log");
 	}
 };
 
@@ -51,10 +47,9 @@ Assert.assertType = function(uiComponent, expectedType, message) {
 };
 
 Assert.fail = function(message) {
-	if(window["QUnit"] && QUnit.config.notrycatch)
-		debugger;
 	if(FlexDoor.AUTO_START != true){
-		ok(false, message);
+		var flash = Application.application.flash;
+		flash.assertResult(true, message);
 	}else{
 		System.error(message);
 	}

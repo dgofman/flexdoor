@@ -21,6 +21,11 @@
 		
 		public function set data(value:Object):void { 
 			_data = value;
+			if(_data != null && _data.hasOwnProperty("tests")){
+				enabled = _data.tests.length > 1;
+			}else{
+				enabled = true;
+			}
 			validateValue();
 		} 
 		public function get data():Object { 

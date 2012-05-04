@@ -25,10 +25,6 @@ function FlexDoor(testCaseType)
 	FlexDoor.TEST_CASES.push(testCaseType);
 };
 
-FlexDoor.prototype.toString = function() {
-	return this.moduleName;
-};
-
 FlexDoor.prototype.addEventListener = function(type, callback){
 	this.events[type] = this.events[type] || [];
 	if(this.events[type]) {
@@ -78,12 +74,19 @@ FlexDoor.prototype.waitFor = function(func, delay, timeout){
 	System.waitFor(this, func, delay, timeout, System.getParams(arguments, 2));
 };
 
-FlexDoor.prototype.callNextTest = function(){
-	this.dispatchEvent(TestEvent.ASYNCHRONOUS);
+FlexDoor.prototype.callNextTest = function(type_TestEvent){
+	if(type_TestEvent == undefined) type_TestEvent = TestEvent.ASYNCHRONOUS; 
+	this.dispatchEvent(type_TestEvent);
+};
+
+FlexDoor.prototype.async = function(event){
+	TestEvent.Get(event).setEventType(TestEvent.ASYNCHRONOUS);
 };
 
 FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
 {
+	System.info(testCaseTitle);
+
 	var flash =  System.getFlash(flashPlayerId);
 	if(flash == undefined)
 		throw new Error("You must provide a valid Flash Player Object ID");
@@ -97,31 +100,18 @@ FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
 	var systemManager = new EventDispatcher();
 	systemManager.Initialize(sysObject, this.app);
 	this.app.systemManager = systemManager;
-
-	if(testCaseTitle == undefined)
-		testCaseTitle = flashPlayerId;
-
-	if(testCaseTitle != undefined &&
-		FlexDoor.AUTO_START != true){
-		module(testCaseTitle);
-	}
 };
 
 FlexDoor.prototype.include = function() {
-	if(FlexDoor.SPY_TOOL == true){
-		FlexDoor.SPY_TOOL = false;
-		return;
-	}
 	var testCase = this;
 	var refIds = null;
-	var testCaseType = FlexDoor.TEST_CASES[System.testCaseIndex];
 
 	var runTestCase = function(){
 		refIds = System.refIds();
 
-		if(testCase instanceof testCaseType.prototype.constructor){
+		if(testCase instanceof FlexDoor.ACTIVE_TESTCASE.prototype.constructor){
 			var tests = [];
-			for(var name in testCaseType.prototype){
+			for(var name in FlexDoor.ACTIVE_TESTCASE.prototype){
 				if(name.indexOf("test_") == 0 && typeof(testCase[name]) == "function")
 					tests.push(name);
 			}
@@ -131,20 +121,14 @@ FlexDoor.prototype.include = function() {
 					var callStartTestCaseListener = function(){
 						startTestCaseListener(testEvent);
 					};
-					if(FlexDoor.AUTO_START == true){
-						setTimeout(callStartTestCaseListener, testEvent.delay);
-					}else{
-						setTimeout(function(){
-								test(testEvent.functionName, callStartTestCaseListener);
-						}, testEvent.delay);
-					}
+					setTimeout(callStartTestCaseListener, testEvent.delay);
 				}else{
-					if(testCaseType.prototype.tearDownAfterClass != undefined){
+					if(FlexDoor.ACTIVE_TESTCASE.prototype.tearDownAfterClass != undefined){
 						testCase["tearDownAfterClass"].call(testCase);
 						System.releaseIds();
 					}
 					//Run Next TestCase
-					System.startTestCase(System.testCaseIndex + 1);
+					FlexDoor.runTestCase();
 				}
 			};
 
@@ -153,13 +137,11 @@ FlexDoor.prototype.include = function() {
 
 				//Execute Test
 				try{
-					if(testCaseType.prototype.setUp != undefined)
+					if(FlexDoor.ACTIVE_TESTCASE.prototype.setUp != undefined)
 						testCase["setUp"].call(testCase, testEvent);
 
 					testEvent.addAsyncEventListener = function(eventType){
 						//call finalizeFunction after dispatchEvent
-						if(window["QUnit"] && QUnit.config)
-							QUnit.config.blocking = true;
 						testCase.addEventListener(eventType, finalizeFunction, testEvent, releaseRefId);
 					};
 					testCase[testEvent.functionName].call(testCase, testEvent);
@@ -191,10 +173,13 @@ FlexDoor.prototype.include = function() {
 			var finalizeFunction = function(testEvent, releaseRefId){
 				testCase.removeEventListener(testEvent.type, finalizeFunction);
 
-				if(window["QUnit"] && QUnit.config)
-					QUnit.config.blocking = false;
-
-				var nextTestEvent = new TestEvent(tests, testEvent.nextOrder);
+				var testIndex = testEvent.nextOrder;
+				if(FlexDoor.AUTO_START == false){
+					var flash = Application.application.flash;
+					testIndex = flash.getTestIndex(testEvent.nextOrder);
+					if(testIndex == -1) return;
+				}
+				var nextTestEvent = new TestEvent(tests, testIndex);
 				nextTestEvent.delay = testEvent.delay;
 				nextTestEvent.items = testEvent.items;
 
@@ -210,14 +195,12 @@ FlexDoor.prototype.include = function() {
 							releaseRefId.push(item.refId);
 					}
 					System.releaseIds(releaseRefId, true);
-
-					Assert.assertTrue(true, "ok succeeds");
 				}else{
 					Assert.fail("Test timed out: " + testEvent.functionName);
 					System.warn("Test timed out: " + testEvent.functionName);
 				}
 
-				if(testCaseType.prototype.tearDown != undefined)
+				if(FlexDoor.ACTIVE_TESTCASE.prototype.tearDown != undefined)
 					testCase["tearDown"].call(testCase, nextTestEvent);
 
 				//Run Next Test
@@ -225,8 +208,14 @@ FlexDoor.prototype.include = function() {
 			};
 
 			if(tests.length > 0){
-				var testEvent = new TestEvent(tests, 0);
-				if(testCaseType.prototype.setUpBeforeClass != undefined){
+				var testIndex = 0;
+				if(FlexDoor.AUTO_START == false){
+					var flash = Application.application.flash;
+					testIndex = flash.getTestIndex(0);
+				}
+
+				var testEvent = new TestEvent(tests, testIndex);
+				if(FlexDoor.ACTIVE_TESTCASE.prototype.setUpBeforeClass != undefined){
 					testCase["setUpBeforeClass"].call(testCase, testEvent);
 					refIds = System.refIds();
 				}
@@ -262,7 +251,7 @@ FlexDoor.includeAll = function(instance, files, callback) {
 			if(classType && classType.prototype.Import != undefined){
 				var importFiles = classType.prototype.Import();
 				if(window["System"])
-					System.info("Class: " + className + ". Total dependencies: " + importFiles.length);
+					System.log("Class: " + className + ". Total dependencies: " + importFiles.length);
 				FlexDoor.includeAll(instance, importFiles, validateAllClasses);
 			}else{
 				index++;
@@ -303,16 +292,13 @@ FlexDoor.toClassName = function(pair) {
 };
 
 //Static API's and Variables
+FlexDoor.VERSION    = 3.1;
 FlexDoor.TEST_CASES = [];
 FlexDoor.LOAD_FILES = {};
 FlexDoor.TIME_INTERVAL;
 FlexDoor.INIT_PHASE = 0;
 FlexDoor.TEST_DELAY_INTERVAL = 100;
 FlexDoor.AUTO_START = false;
-FlexDoor.SPY_TOOL = false;
-
-if(window.location.search.indexOf("autoStart=true") != -1)
-	FlexDoor.AUTO_START = true;
 
 if(FlexDoor.LIB_PATH == undefined){
 	var scripts = document.getElementsByTagName("script");
@@ -341,7 +327,7 @@ FlexDoor.include = function(cls, src, callback) {
 			src = FlexDoor.LIB_PATH + src.replace(/\./g, '/') + ".js";
 		}
 
-		var onJsLoaded = function(){
+		var jsLoadHandler = function(){
 			var cls = arguments.callee.prototype.cls;
 			if(window[cls] != undefined){
 				var script = arguments.callee.prototype.script;
@@ -352,45 +338,87 @@ FlexDoor.include = function(cls, src, callback) {
 						System.log("Loaded class: " + cls + ". Total callback functions: " + callbacks.length);
 
 					if (script.attachEvent && !isOpera) {
-						script.detachEvent("onreadystatechange", onJsLoaded);
+						script.detachEvent("onreadystatechange", jsLoadHandler);
 					} else {
-						script.removeEventListener("load", onJsLoaded, false);
+						script.removeEventListener("load", jsLoadHandler, false);
 					}
 
 					for(var i = 0; i < callbacks.length; i++)
 						callbacks[i]();
 				}
 			}else{
-				setTimeout(onJsLoaded, 50);
+				setTimeout(jsLoadHandler, 50);
 			}
 		};
-		onJsLoaded.prototype.cls = cls;
-		FlexDoor.addScriptToHead(cls, src, null, onJsLoaded);
+		jsLoadHandler.prototype.cls = cls;
+		FlexDoor.addScriptToHead(cls, src, null, jsLoadHandler);
 	}else{
 		if(callback != undefined)
 			FlexDoor.LOAD_FILES[cls].push(callback);
 	}
 };
 
-FlexDoor.dispatchEvent = function(eventType, param){
+FlexDoor.dispatchEvent = function(eventType, autostart){
 	if(eventType == "initialized"){
-		FlexDoor.VERSION = param;
-		FlexDoor.run();
+		FlexDoor.AUTO_START = autostart;
+		FlexDoor.INIT_PHASE++;
+		if(autostart == true)
+			FlexDoor.run();
 	}
 };
 
-FlexDoor.run = function(){
-	if(++FlexDoor.INIT_PHASE == 2){
-		if(FlexDoor.AUTO_START == true){
-			System.startTestCase(0);
-		}else{
-			System.loadQUnit();
+FlexDoor.runTestCase = function(testCaseName){
+	if(FlexDoor.AUTO_START == true){
+		for(var i = 0; i < FlexDoor.TEST_CASES.length; i++){
+			if(!FlexDoor.ACTIVE_TESTCASE || FlexDoor.TEST_CASES[i] == FlexDoor.ACTIVE_TESTCASE){
+				FlexDoor.ACTIVE_TESTCASE = FlexDoor.TEST_CASES[FlexDoor.ACTIVE_TESTCASE ? i + 1 : 0];
+				break;
+			}
 		}
+	}else{
+		if(testCaseName == undefined){
+			var flash = Application.application.flash;
+			testCaseName = flash.getNextTestCase();
+		}
+		FlexDoor.ACTIVE_TESTCASE = window[testCaseName];
+	}
+
+	if(FlexDoor.ACTIVE_TESTCASE != undefined){
+		new FlexDoor.ACTIVE_TESTCASE();
+	}else{
+		System.info("Complete " + new Date().toLocaleString());
 	}
 };
 
+FlexDoor.run = function(testCaseName){
+	if(FlexDoor.INIT_PHASE >= 2){
+		FlexDoor.ACTIVE_TESTCASE = null;
+		FlexDoor.runTestCase(testCaseName);
+	}
+};
+
+FlexDoor.reset = function(){
+	FlexDoor.pendingJS = 0;
+	FlexDoor.TEST_CASES = [];
+};
+FlexDoor.getPendingJS = function(){
+	return FlexDoor.pendingJS;
+};
 FlexDoor.createScript = function(id, url, text){
-	FlexDoor.addScriptToHead(id, url, text);
+	var jsLoadHandler;
+	if(text == undefined){
+		jsLoadHandler = function(){
+			FlexDoor.pendingJS--;
+			var script = arguments.callee.prototype.script;
+			if (script.attachEvent && !isOpera) {
+				script.detachEvent("onreadystatechange", jsLoadHandler);
+			} else {
+				script.removeEventListener("load", jsLoadHandler, false);
+			}
+		};
+		FlexDoor.pendingJS++;
+	}
+	FlexDoor.addScriptToHead(id, url, text, jsLoadHandler);
 };
 
 FlexDoor.addScriptToHead = function(id, src, text, listener){
@@ -407,6 +435,15 @@ FlexDoor.addScriptToHead = function(id, src, text, listener){
 		script.text = text;
 	}
 
+	if(listener instanceof Function){
+		listener.prototype.script = script;
+		if (script.attachEvent && !isOpera) {
+			script.attachEvent("onreadystatechange", listener);
+		} else {
+			script.addEventListener("load", listener, false);
+		}
+	}
+
 	if(id != undefined){
 		for(var i = 0; i < head.children.length; i++){
 			var elm = head.children[i];
@@ -417,16 +454,12 @@ FlexDoor.addScriptToHead = function(id, src, text, listener){
 		}
 	}
 
-	if(listener instanceof Function){
-		listener.prototype.script = script;
-		if (script.attachEvent && !isOpera) {
-			script.attachEvent("onreadystatechange", listener);
-		} else {
-			script.addEventListener("load", listener, false);
-		}
-	}
 	head.appendChild(script);
 	return script;
+};
+
+FlexDoor.externalCall = function(command, params){
+	FlexDoor[command].apply(null, params);
 };
 
 //Loading depended libraries
@@ -447,6 +480,7 @@ FlexDoor.include("jQuery", "jquery/jquery-latest.js", function(){
 				"mx.core::UITextField"],
 				function(){
 					$(document).ready(function(){
+						FlexDoor.INIT_PHASE++;
 						FlexDoor.run();
 					});
 				}
