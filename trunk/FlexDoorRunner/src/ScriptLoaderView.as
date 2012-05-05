@@ -34,7 +34,7 @@
 		public function ScriptLoaderView(){
 			super();
 
-			overlay_mc.alpha = .01;
+			overlay_mc.alpha = .1;
 			overlay_mc.visible = false;
 
 			var dgc1:DataGridColumn = new DataGridColumn("include");
@@ -290,6 +290,9 @@
 		}
 
 		private function parseJSFile(jsName:String, script:String):void{
+			var regExp:RegExp = /(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm;
+			script = script.replace(regExp, "");
+
 			var tests:Array = script.split(".prototype.test_");
 			for(var t:uint = 1; t < tests.length; t++)
 				tests[t] = 'test_' + tests[t].split(" ")[0];

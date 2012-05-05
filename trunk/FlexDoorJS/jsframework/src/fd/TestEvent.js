@@ -23,10 +23,10 @@ function TestEvent(tests, order)
 	this.order = order;
 	this.nextOrder = order + 1;
 	this.delay = FlexDoor.TEST_DELAY_INTERVAL;
-	this.items = null;
 	this.functionName = tests[order];
 	this.timeout = TestEvent.TIMEOUT;
 	this.type = TestEvent.SYNCHRONOUS;
+	this.nextTestArgs = null;
 }
 TestEvent.SYNCHRONOUS  = "synchronous";
 TestEvent.ASYNCHRONOUS = "asynchronous"; 
@@ -53,16 +53,6 @@ TestEvent.prototype.callFunction = function(functionName) {
 	}
 };
 
-TestEvent.prototype.addItems = function(items) {
-	this.items = items;
-};
-
-TestEvent.prototype.getItem = function(name) {
-	if(this.items instanceof Object)
-		return this.items[name];
-	return null;
-};
-
 TestEvent.prototype.setEventType = function(type) {
 	if(type != undefined){
 		if(type != this.type && type != TestEvent.SYNCHRONOUS)
@@ -73,8 +63,14 @@ TestEvent.prototype.setEventType = function(type) {
 
 TestEvent.prototype.set = function(params) {
 	this.setEventType(params.type);
-	for(var name in params)
-		this[name] = params[name];
+	for(var name in params){
+		if(params[name] != undefined)
+			this[name] = params[name];
+	}
 };
 
 fd_TestEvent = function(){};
+
+function ARGS(){
+}
+ARGS.prototype = new Array;

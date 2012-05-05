@@ -77,14 +77,19 @@ Sample1TestCase.prototype.test_1 = function(event) {
 };
 
 Sample1TestCase.prototype.test_2 = function(event) {
+	var rowIndex = 0;
 	var dataGrid = $DataGrid.Get(this.dataGrid);
-	dataGrid.selectedIndex(0);
+	dataGrid.selectedIndex(rowIndex);
+
+	//Pass rowIndex as argument for the next test function 
+	return rowIndex;
 };
 
-Sample1TestCase.prototype.test_3 = function(event) {
+Sample1TestCase.prototype.test_3 = function(event, rowIndex) {
+	this.sync(1000, 10000); //Delay next function call and setting timeout
 	var dataGrid = $DataGrid.Get(this.dataGrid);
-	var rowIndex = 4;
 	var columnIndex = 1;
+	rowIndex++;
 	dataGrid.selectedIndex(rowIndex, function(value){
 		//Override Change event to itemClick
 		Assert.assertEquals(rowIndex, value);
@@ -94,15 +99,12 @@ Sample1TestCase.prototype.test_3 = function(event) {
 	var dataProvider = $ListCollectionView.Get(dataGrid.dataProvider());
 	Assert.assertEquals(dataProvider.source.length, 5);
 
-	//Pass local dataGrid object to the next test function 
-	TestEvent.Get(event).addItems({dataProvider:dataProvider});
-	//Set delay before calling a new function
-	TestEvent.Get(event).delay = 500;
+	//Pass multiple arguments to the next test function 
+	return new ARGS(dataGrid, dataProvider);
 };
 
-Sample1TestCase.prototype.test_4 = function(event) {
+Sample1TestCase.prototype.test_4 = function(event, dataGrid, dataProvider) {
 	var event = TestEvent.Get(event);
-	var dataProvider = $ListCollectionView.Get(event.getItem('dataProvider'));
 	var item = dataProvider.getItemAt(0);
 	Assert.assertEquals(item, 1);
 

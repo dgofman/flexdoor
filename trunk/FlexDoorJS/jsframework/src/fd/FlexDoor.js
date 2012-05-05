@@ -79,8 +79,12 @@ FlexDoor.prototype.callNextTest = function(type_TestEvent){
 	this.dispatchEvent(type_TestEvent);
 };
 
-FlexDoor.prototype.async = function(event){
-	TestEvent.Get(event).setEventType(TestEvent.ASYNCHRONOUS);
+FlexDoor.prototype.sync = function(delay, timeout){
+	TestEvent.Get(event).set({delay:delay, timeout:timeout});
+};
+
+FlexDoor.prototype.async = function(event, delay, timeout){
+	TestEvent.Get(event).set({type:TestEvent.ASYNCHRONOUS, delay:delay, timeout:timeout});
 };
 
 FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
@@ -117,56 +121,56 @@ FlexDoor.prototype.include = function() {
 			}
 
 			var runTest = function(testEvent){
-				if(testEvent.order < tests.length){
-					var callStartTestCaseListener = function(){
-						startTestCaseListener(testEvent);
-					};
-					setTimeout(callStartTestCaseListener, testEvent.delay);
-				}else{
+				if(testEvent.order >= tests.length){
 					if(FlexDoor.ACTIVE_TESTCASE.prototype.tearDownAfterClass != undefined){
 						testCase["tearDownAfterClass"].call(testCase);
 						System.releaseIds();
 					}
 					//Run Next TestCase
 					FlexDoor.runTestCase();
-				}
-			};
+				}else{
+					var releaseRefId = [].concat(refIds); //clone exisitng ids
 
-			var startTestCaseListener = function(testEvent){
-				var releaseRefId = [].concat(refIds); //clone exisitng ids
+					//Execute Test
+					try{
+						if(FlexDoor.ACTIVE_TESTCASE.prototype.setUp != undefined)
+							testCase["setUp"].call(testCase, testEvent);
 
-				//Execute Test
-				try{
-					if(FlexDoor.ACTIVE_TESTCASE.prototype.setUp != undefined)
-						testCase["setUp"].call(testCase, testEvent);
+						testEvent.addAsyncEventListener = function(eventType){
+							//call finalizeFunction after dispatchEvent
+							testCase.addEventListener(eventType, function(){
+								setTimeout(testCase.delegate(finalizeFunction, testEvent, releaseRefId), testEvent.delay);
+							});
+						};
+						var retArgs = testCase[testEvent.functionName].call(testCase, testEvent);
+						if(retArgs != undefined){
+							if(!(retArgs instanceof ARGS))
+								retArgs = new ARGS(retArgs);
+							testEvent.nextTestArgs = retArgs;
+						}
 
-					testEvent.addAsyncEventListener = function(eventType){
-						//call finalizeFunction after dispatchEvent
-						testCase.addEventListener(eventType, finalizeFunction, testEvent, releaseRefId);
-					};
-					testCase[testEvent.functionName].call(testCase, testEvent);
+						//Set timeout interval
+						if(testEvent.timeout <= testEvent.delay + 100)
+							testEvent.timeout = testEvent.delay + 100;
 
-					//Set timeout interval
-					if(testEvent.timeout <= testEvent.delay + 100)
-						testEvent.timeout = testEvent.delay + 100;
+						//call finalizeFunction by timeout
+						clearInterval(testCase.interval);
+						testCase.interval = setInterval(testCase.delegate(finalizeFunction, testEvent), testEvent.timeout);
 
-					//call finalizeFunction by timeout
-					clearInterval(testCase.interval);
-					testCase.interval = setInterval(testCase.delegate(finalizeFunction, testEvent), testEvent.timeout);
-
-					//execute finalizeFunction by exist from a test
-					if(testEvent.type == TestEvent.SYNCHRONOUS){
+						//execute finalizeFunction by exist from a test
+						if(testEvent.type == TestEvent.SYNCHRONOUS){
+							setTimeout(testCase.delegate(finalizeFunction, testEvent, releaseRefId), testEvent.delay);
+						}
+					}catch(e){
+						if(e.fileName != undefined && e.lineNumber != undefined){
+							Assert.fail(e.fileName + '#' + e.lineNumber + '\n' + e.message);
+							System.error(e);
+						}else{
+							Assert.fail(e.message);
+							System.error(e.message);
+						}
 						finalizeFunction(testEvent, releaseRefId);
 					}
-				}catch(e){
-					if(e.fileName != undefined && e.lineNumber != undefined){
-						Assert.fail(e.fileName + '#' + e.lineNumber + '\n' + e.message);
-						System.error(e);
-					}else{
-						Assert.fail(e.message);
-						System.error(e.message);
-					}
-					finalizeFunction(testEvent, releaseRefId);
 				}
 			};
 
