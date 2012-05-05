@@ -42,17 +42,6 @@ TestEvent.Get = function(o){
 	return ref;
 };
 
-TestEvent.prototype.callFunction = function(functionName) {
-	for(var i = 0; i < this.tests.length; i++){
-		if(this.tests[i] == functionName){
-			this.functionName = functionName;
-			this.order = i;
-			this.nextOrder = i + 1;
-			break;
-		}
-	}
-};
-
 TestEvent.prototype.setEventType = function(type) {
 	if(type != undefined){
 		if(type != this.type && type != TestEvent.SYNCHRONOUS)
@@ -72,5 +61,6 @@ TestEvent.prototype.set = function(params) {
 fd_TestEvent = function(){};
 
 function ARGS(){
+	Array.call(this, arguments);
 }
 ARGS.prototype = new Array;
