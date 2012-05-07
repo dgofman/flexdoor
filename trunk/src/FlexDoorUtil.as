@@ -95,35 +95,33 @@ package
 			}
 		}
 
-		public function spyObjects(enable:Boolean):void{
+		public function inspectObjects(active:Boolean):void{
 			if(_stage != null){
 				_stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveEventHandler);
-				if(enable == true)
+				if(active == true)
 					_stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMoveEventHandler);
 			}
 		}
 
-		public function stopSpyEvents():void{
-			_uiComponent.mx_internal::dispatchEventHook = _dispatchEventHook;
-			clearInterval(_queueInterval);
-		}
-
-		public function startSpyEvents():void{
+		public function inspectEvents(active:Boolean):void{
 			if(_content != null){
-				_uiComponent.mx_internal::dispatchEventHook = function(event:Event, uicomponent:*):void{
-					var eventKey:String = getQualifiedClassName(event) + '_' + event.type;
-					if(_excludeEvents[eventKey] == true) return;
-					var uniqKey:String =  eventKey + '_' + uicomponent.toString();
-					if(_queueMap[uniqKey] == null){
-						_queueList.unshift({event:event, uicomponent:uicomponent});
-						_queueMap[uniqKey] = true; //do not add the same event types
-					}
-				}
 				clearInterval(_queueInterval);
-				_queueInterval = setInterval(readQueue, 100);
+				if(active == true){
+					_uiComponent.mx_internal::dispatchEventHook = function(event:Event, uicomponent:*):void{
+						var eventKey:String = getQualifiedClassName(event) + '_' + event.type;
+						if(_excludeEvents[eventKey] == true) return;
+						var uniqKey:String =  eventKey + '_' + uicomponent.toString();
+						if(_queueMap[uniqKey] == null){
+							_queueList.unshift({event:event, uicomponent:uicomponent});
+							_queueMap[uniqKey] = true; //do not add the same event types
+						}
+					}
+					_queueInterval = setInterval(readQueue, 100);
+				}else{
+					_uiComponent.mx_internal::dispatchEventHook = _dispatchEventHook;
+				}
 			}
 		}
-
 
 		private function readQueue():void{
 			if(_queueList.length > 0){
@@ -271,12 +269,7 @@ package
 					_stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDownEventHanlder);
 					_content.x = (_stage.stageWidth - _content.width) / 2;
 					_content.y = (_stage.stageHeight - _content.height) / 2;
-					_content.addEventListener("close", spyEventHandler);
-					_content.addEventListener("clear", spyEventHandler);
-					_content.addEventListener("startSpyEvents", spyEventHandler);
-					_content.addEventListener("stopSpyEvents", spyEventHandler);
-					_content.addEventListener("startSpyObjects", spyEventHandler);
-					_content.addEventListener("stopSpyObjects", spyEventHandler);
+					_content.addEventListener(ContentEvent.CONTENT_TYPE, contentEventHandler);
 
 					_content.openTestCases();
 				}
@@ -286,27 +279,21 @@ package
 			timer.start();
 		}
 
-		private function spyEventHandler(event:Event):void{
-			switch(event.type){
-				case "startSpyEvents":
-					startSpyEvents();
+		private function contentEventHandler(event:ContentEvent):void{
+			switch(event.kind){
+				case ContentEvent.EVENTS_KIND:
+					inspectEvents(event.state);
 					break;
-				case "stopSpyEvents":
-					stopSpyEvents();
+				case ContentEvent.OBJECTS_KIND:
+					inspectObjects(event.state);
 					break;
-				case "startSpyObjects":
-					spyObjects(true);
-					break;
-				case "stopSpyObjects":
-					spyObjects(false);
-					break;
-				case "clear":
+				case ContentEvent.CLEAR_KIND:
 					clear();
 					break;
-				case "close":
+				case ContentEvent.CLOSE_KIND:
 					clear();
-					stopSpyEvents();
-					spyObjects(false);
+					inspectEvents(false);
+					inspectObjects(false);
 					break;
 			}
 		}
@@ -314,26 +301,20 @@ package
 		private function onKeyDownEventHanlder(event:KeyboardEvent):void{
 			if(event.ctrlKey && event.altKey){
 				switch(String.fromCharCode(event.charCode).toUpperCase()){
-					case 'A':
-						_content.openAdvanced();
+					case 'O':
+						_content.inspectObjects();
+						break;
+					case 'E':
+						_content.inspectEvents();
 						break;
 					case 'C':
 						_content.clearAll();
 						break;
-					case 'L':
-						_content.closeWindow();
-						break;
-					case 'E':
-						_content.spyEvents();
-						break;
-					case 'O':
-						_content.spyObjects();
+					case 'P':
+						_content.playPauseTestCases();
 						break;
 					case 'S':
-						_content.saveAdvancedSettings();
-						break;
-					case 'T':
-						_content.openTestCases();
+						_content.stopTestCases();
 						break;
 				}
 			}
@@ -351,8 +332,8 @@ package
 			return _content.getNextTestCase();
 		}
 
-		public function getTestIndex(index:uint):int{
-			return _content.getTestIndex(index);
+		public function getTestIndex(index:uint, testCaseName:String):int{
+			return _content.getTestIndex(index, testCaseName);
 		}
 	}
 }

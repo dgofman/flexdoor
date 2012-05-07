@@ -50,6 +50,7 @@ Sample4TestCase.prototype.test_2 = function(event) {
 	var handler = dataProvider.createFunctionByName(Sample4TestCase, "dataGridChangeHandler");
 	dataProvider.addEventListener($CollectionEvent.COLLECTION_CHANGE, handler);
 
+	//Create async event as COLLECTION_CHANGE type 
 	TestEvent.Get(event).setEventType($CollectionEvent.COLLECTION_CHANGE);
 	
 	//Trigger changeHandler listener

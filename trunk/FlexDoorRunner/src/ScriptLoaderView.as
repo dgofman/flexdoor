@@ -43,18 +43,16 @@
 			dgc1.cellRenderer = CheckBoxCellRenderer;
 			dgc1.resizable = false;
 			dgc1.sortable = false;
-			var dgc2:DataGridColumn = new DataGridColumn("jsName");
+			var dgc2:DataGridColumn = new DataGridColumn("jsFile");
 			dgc2.headerText = "TestCases";
 			dgc2.sortable = false;
 			var dgc3:DataGridColumn = new DataGridColumn("testName");
 			dgc3.headerText = "Tests";
 			dgc3.sortable = false;
 			var dgc4:DataGridColumn = new DataGridColumn("state");
-			dgc4.headerText = " ?";
-			dgc4.width = 30;
+			dgc4.headerText = "  ?";
+			dgc4.width = 35;
 			dgc4.sortable = false;
-			dgc4.resizable = false;
-			dgc4.editable = false;
 			var dgc5:DataGridColumn = new DataGridColumn("up");
 			dgc5.headerText = " ↑";
 			dgc5.width = 25;
@@ -103,7 +101,7 @@
 					}else if(dataField == "include"){
 						for(var i:uint = 0; i < dp.length; i++){
 							var item:Object = dp.getItemAt(i);
-							if(item["jsName"] == event.item["jsName"])
+							if(item["jsFile"] == event.item["jsFile"])
 								updateItem(item, (item["include"] = event.item["include"]));
 						}
 					}
@@ -158,8 +156,8 @@
 
 			_runner.initButton(open_testcases_btn, openTestCases, "Open TestCases");
 			_runner.initButton(load_testcases_btn, loadTestCases, "Load TestCases");
-			_runner.initButton(play_pause_btn, playPauseTestCases, "Run/Pause TestCases");
-			_runner.initButton(stop_btn, stopTestCases, "Stop TestCases");
+			_runner.initButton(play_pause_btn, playPauseTestCases, "Play/Pause TestCases Ctrl+Alt+P");
+			_runner.initButton(stop_btn, stopTestCases, "Stop TestCases Ctrl+Alt+S");
 			local_rb.addEventListener(Event.CHANGE, radioButtonChangeHandler);
 			remote_rb.addEventListener(Event.CHANGE, radioButtonChangeHandler);
 
@@ -289,23 +287,24 @@
 			}
 		}
 
-		private function parseJSFile(jsName:String, script:String):void{
+		private function parseJSFile(jsFile:String, script:String):void{
 			var regExp:RegExp = /(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm;
 			script = script.replace(regExp, "");
 
+			var testCaseName:String = jsFile.split(".js")[0];
 			var tests:Array = script.split(".prototype.test_");
 			for(var t:uint = 1; t < tests.length; t++)
 				tests[t] = 'test_' + tests[t].split(" ")[0];
-			_testCases.push({name:jsName, tests:tests, script:script});
+			_testCases.push({jsFile:jsFile, testCaseName:testCaseName, tests:tests, script:script});
 		}
 
 		private function invalidateDataGrid():void{
 			var dp:DataProvider = new DataProvider();
 			for(var i:uint = 0; i < _testCases.length; i++){
 				var testcase:Object = _testCases[i];
-				dp.addItem(initItem({jsName:testcase.name, data:testcase.script, tests:testcase.tests, index:i}));
+				dp.addItem(initItem({jsFile:testcase.jsFile, testCaseName:testcase.testCaseName, data:testcase.script, tests:testcase.tests, index:i}));
 				for(var t:uint = 1; t < testcase.tests.length; t++){
-					dp.addItem(initItem({jsName:testcase.name, testName:testcase.tests[t], testIndex:t - 1}));
+					dp.addItem(initItem({jsFile:testcase.jsFile, testCaseName:testcase.testCaseName, testName:testcase.tests[t], testIndex:t - 1}));
 				}
 			}
 			testcases_dg.dataProvider = dp;
@@ -313,12 +312,12 @@
 		}
 
 		private function initItem(item:Object):Object{
-			item["include"] = (_selectedKeys[item.jsName + "::" + item.testName] != false);
+			item["include"] = (_selectedKeys[item.jsFile + "::" + item.testName] != false);
 			return item;
 		}
 
 		private function updateItem(item:Object, value:Boolean):void{
-			_selectedKeys[item.jsName + "::" + item.testName] = value;
+			_selectedKeys[item.jsFile + "::" + item.testName] = value;
 		}
 
 		public function loadTestCases(event:MouseEvent=null):void{
@@ -347,19 +346,19 @@
 			var attachJsScript:Function = function(index:uint):void{
 				if(index < _testCases.length){
 					var testcase:Object = _testCases[index];
-					if(_selectedKeys[testcase.name + "::undefined"] != false){
+					if(_selectedKeys[testcase.testCaseName + "::undefined"] != false){
 						if(format.color != EMPTY_COLOR && remote_rb.selected){
 							var uri:String = location_cmb.value.substring(0, location_cmb.value.indexOf("properties.txt"));
-							externalCall("createScript", testcase.name, uri + testcase.name);
+							externalCall("createScript", testcase.testCaseName, uri + testcase.jsFile);
 							attachJsScript(index + 1);
 						}else if(format.color != EMPTY_COLOR && isValidProtocol(location_cmb.value)){
-							var url:String = location_cmb.value + "?fileName=" + testcase.name; 
+							var url:String = location_cmb.value + "?fileName=" + testcase.jsFile; 
 							exportToJs(url, testcase.script, function(){
-								externalCall("createScript", testcase.name, url);
+								externalCall("createScript", testcase.jsFile, url);
 								attachJsScript(index + 1);
 							});
 						}else{
-							externalCall("createScript", testcase.name, null, testcase.script);
+							externalCall("createScript", testcase.jsFile, null, testcase.script);
 							attachJsScript(index + 1);
 						}
 					}
@@ -371,8 +370,10 @@
 			attachJsScript(0);
 		}
 
-		private function playPauseTestCases(event:MouseEvent=null):void{
-			if(play_pause_btn.selected == true){
+		public function playPauseTestCases(event:MouseEvent=null):void{
+			if(event == null)
+				play_pause_btn.selected = !play_pause_btn.selected;
+			if(play_pause_btn.enabled && play_pause_btn.selected == true){
 				var testCaseName:String = getNextTestCase();
 				if(testCaseName != null){
 					overlay_mc.visible = true;
@@ -383,9 +384,11 @@
 			play_pause_btn.selected = false;
 		}
 
-		private function stopTestCases(event:MouseEvent=null):void{
-			overlay_mc.visible = false;
-			play_pause_btn.selected = false;
+		public function stopTestCases(event:MouseEvent=null):void{
+			if(stop_btn.enabled){
+				overlay_mc.visible = false;
+				play_pause_btn.selected = false;
+			}
 		}
 
 		private function initialized(){
@@ -456,15 +459,14 @@
 		public function getNextTestCase():String{
 			if(play_pause_btn.selected == true){
 				var dp:DataProvider = testcases_dg.dataProvider;
-	
 				if(testcases_dg.selectedIndex < 0)
 					testcases_dg.selectedIndex = 0;
-	
+
 				for(var i:uint = testcases_dg.selectedIndex; i < dp.length -1; i++){
 					var item:Object = dp.getItemAt(i);
 					if(item["testName"] != null && item["include"] != false){
 						testcases_dg.selectedIndex = i;
-						return item["jsName"].split(".js")[0]
+						return item["testCaseName"];
 					}
 				}
 				stopTestCases();
@@ -472,7 +474,7 @@
 			return null; //pause testcases
 		}
 
-		public function getTestIndex(index:uint):int{
+		public function getTestIndex(index:uint, testCaseName:String):int{
 			if(play_pause_btn.selected == false)
 				return -1; //pause tests
 
@@ -483,9 +485,11 @@
 			for(var i:uint = testcases_dg.selectedIndex + 1; i < dp.length; i++){
 				testcases_dg.selectedIndex = i;
 				var item:Object = testcases_dg.selectedItem;
-				if(item["testName"] != null && item["include"] != false){
+				if(item["testCaseName"] == testCaseName && item["testName"] != null && item["include"] != false){
 					testcases_dg.verticalScrollPosition = ((i - 5) * testcases_dg.rowHeight);
 					return item["testIndex"];  //returns next available test index
+				}else if(item["testCaseName"] != testCaseName){
+					break;
 				}
 			}
 			return index + 1;

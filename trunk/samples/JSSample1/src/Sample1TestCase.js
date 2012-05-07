@@ -10,7 +10,6 @@ Sample1TestCase.prototype = new FlexDoor(Sample1TestCase);
 
 Sample1TestCase.prototype.setUpBeforeClass = function(event){
 	this.view = $TitleWindow.Get(this.app.find("sampleView"));
-	TestEvent.Get(event).callFunction("test_1"); //skip first test - test_alert
 };
 
 Sample1TestCase.prototype.tearDownAfterClass = function(event){
@@ -31,10 +30,6 @@ Sample1TestCase.prototype.setUp = function(event){
  */
 Sample1TestCase.prototype.tearDown = function(event){
 	this.dataGrid = null;
-};
-
-Sample1TestCase.prototype.test_alert = function(event) {
-	alert("IGNORE THIS TEST");
 };
 
 Sample1TestCase.prototype.test_1 = function(event) {
@@ -86,7 +81,7 @@ Sample1TestCase.prototype.test_2 = function(event) {
 };
 
 Sample1TestCase.prototype.test_3 = function(event, rowIndex) {
-	this.sync(1000, 10000); //Delay next function call and setting timeout
+	this.sync(event, 1000, 10000); //Delay next function call and setting timeout
 	var dataGrid = $DataGrid.Get(this.dataGrid);
 	var columnIndex = 1;
 	rowIndex++;
@@ -104,7 +99,6 @@ Sample1TestCase.prototype.test_3 = function(event, rowIndex) {
 };
 
 Sample1TestCase.prototype.test_4 = function(event, dataGrid, dataProvider) {
-	var event = TestEvent.Get(event);
 	var item = dataProvider.getItemAt(0);
 	Assert.assertEquals(item, 1);
 

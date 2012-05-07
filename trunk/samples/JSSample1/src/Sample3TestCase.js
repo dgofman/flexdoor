@@ -37,11 +37,10 @@ Sample3TestCase.prototype.test_1 = function(event) {
 		}
 	}
 	Assert.assertTrue(findIndex != -1);
-	TestEvent.Get(event).addItems({dataProvider:dataProvider});
+	return dataProvider;
 };
 
-Sample3TestCase.prototype.test_2 = function(event) {
-	var dataProvider = $ListCollectionView.Get(event.getItem('dataProvider'));
+Sample3TestCase.prototype.test_2 = function(event, dataProvider) {
 	var dataGrid = $DataGrid.Get(this.dataGrid);
 	
 	//Find item renderer
@@ -56,11 +55,11 @@ Sample3TestCase.prototype.test_2 = function(event) {
 		return true;
 	});
 
-	TestEvent.Get(event).addItems({dataProvider:dataProvider});
+	return dataProvider;
 };
 
-Sample3TestCase.prototype.test_3 = function(event) {
-	var dataProvider = $ListCollectionView.Get(event.getItem('dataProvider'));
+Sample3TestCase.prototype.test_3 = function(event, dataProvider) {
+	this.sync(event, 1000);
 
 	//Filter and remove item
 	var findItem = "NEW ROW";
@@ -70,6 +69,4 @@ Sample3TestCase.prototype.test_3 = function(event) {
 		return true;
 	});
 	dataProvider.refresh();
-
-	TestEvent.Get(event).delay = 1000;
 };

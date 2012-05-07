@@ -79,7 +79,7 @@ FlexDoor.prototype.callNextTest = function(type_TestEvent){
 	this.dispatchEvent(type_TestEvent);
 };
 
-FlexDoor.prototype.sync = function(delay, timeout){
+FlexDoor.prototype.sync = function(event, delay, timeout){
 	TestEvent.Get(event).set({delay:delay, timeout:timeout});
 };
 
@@ -142,7 +142,11 @@ FlexDoor.prototype.include = function() {
 								setTimeout(testCase.delegate(finalizeFunction, testEvent, releaseRefId), testEvent.delay);
 							});
 						};
-						var retArgs = testCase[testEvent.functionName].call(testCase, testEvent);
+
+						var args = [testEvent];
+						if(testEvent.testArgs instanceof ARGS)
+							args = args.concat(testEvent.testArgs.source);
+						var retArgs = testCase[testEvent.functionName].apply(testCase, args);
 						if(retArgs != undefined){
 							if(!(retArgs instanceof ARGS))
 								retArgs = new ARGS(retArgs);
@@ -177,26 +181,29 @@ FlexDoor.prototype.include = function() {
 			var finalizeFunction = function(testEvent, releaseRefId){
 				testCase.removeEventListener(testEvent.type, finalizeFunction);
 
-				var testIndex = testEvent.nextOrder;
-				if(FlexDoor.AUTO_START == false){
-					var flash = Application.application.flash;
-					testIndex = flash.getTestIndex(testEvent.nextOrder);
-					if(testIndex == -1) return;
-				}
-				var nextTestEvent = new TestEvent(tests, testIndex);
-				nextTestEvent.delay = testEvent.delay;
-				nextTestEvent.items = testEvent.items;
-
 				if(testCase.interval != undefined){
 					clearInterval(testCase.interval);
 					testCase.interval = undefined;
 				}
 
+				var testIndex = testEvent.nextOrder;
+				if(FlexDoor.AUTO_START == false){
+					var flash = Application.application.flash;
+					testIndex = flash.getTestIndex(testEvent.nextOrder, FlexDoor.ACTIVE_TESTCASE_NAME);
+					if(testIndex == -1) return;
+				}
+				var nextTestEvent = new TestEvent(tests, testIndex);
+				nextTestEvent.delay = testEvent.delay;
+				nextTestEvent.testArgs = testEvent.nextTestArgs;
+
 				if(releaseRefId != undefined){
-					for(var name in testEvent.items){
-						var item = testEvent.items[name];
-						if(item instanceof EventDispatcher)
-							releaseRefId.push(item.refId);
+					//Keep references to the next function argument
+					if(nextTestEvent.testArgs instanceof ARGS){
+						var items = nextTestEvent.testArgs.source;
+						for(var i = 0; i < items.length; i++){
+							if(items[i] instanceof EventDispatcher)
+								releaseRefId.push(items[i].refId);
+						}
 					}
 					System.releaseIds(releaseRefId, true);
 				}else{
@@ -215,7 +222,7 @@ FlexDoor.prototype.include = function() {
 				var testIndex = 0;
 				if(FlexDoor.AUTO_START == false){
 					var flash = Application.application.flash;
-					testIndex = flash.getTestIndex(0);
+					testIndex = flash.getTestIndex(0, FlexDoor.ACTIVE_TESTCASE_NAME);
 				}
 
 				var testEvent = new TestEvent(tests, testIndex);
@@ -384,6 +391,7 @@ FlexDoor.runTestCase = function(testCaseName){
 			var flash = Application.application.flash;
 			testCaseName = flash.getNextTestCase();
 		}
+		FlexDoor.ACTIVE_TESTCASE_NAME = testCaseName;
 		FlexDoor.ACTIVE_TESTCASE = window[testCaseName];
 	}
 

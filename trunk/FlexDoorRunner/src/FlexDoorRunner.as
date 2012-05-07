@@ -65,11 +65,11 @@
 			tooltip_lbl.visible = false;
 
 			views.inspector_btn.setStyle("icon", _targetSWF);
-			initButton(views.inspector_btn, openInspector, "Inspector  Ctrl+Alt+I");
+			initButton(views.inspector_btn, openInspector, "Inspector");
 			views.advanced_btn.setStyle("icon", _filterSWF);
-			initButton(views.advanced_btn, openAdvanced, "Filter  Ctrl+Alt+F");
+			initButton(views.advanced_btn, openAdvanced, "Filter");
 			views.testcases_btn.setStyle("icon", _folderSWF);
-			initButton(views.testcases_btn, openTestCases, "Loader  Ctrl+Alt+L");
+			initButton(views.testcases_btn, openTestCases, "Loader");
 			views.minimize_btn.setStyle("icon", _minimizeSWF);
 			initButton(views.minimize_btn, minimizeWindow, "Minimize");
 
@@ -112,20 +112,24 @@
 			return items;
 		}
 
-		public function saveAdvancedSettings():void{
-			advancedView.saveSettings();
-		}
-
 		public function clearAll():void{
 			inspectorView.clearAll();
 		}
 
-		public function spyEvents():void{
-			inspectorView.spyEventsHandler();
+		public function inspectEvents():void{
+			inspectorView.inspectEventsHandler();
 		}
 
-		public function spyObjects():void{
-			inspectorView.spyObjectsHandler();
+		public function inspectObjects():void{
+			inspectorView.inspectObjectsHandler();
+		}
+
+		public function playPauseTestCases():void{
+			scriptLoaderView.playPauseTestCases();
+		}
+
+		public function stopTestCases():void{
+			scriptLoaderView.stopTestCases();
 		}
 
 		public function addNewEvent(item:Object):void{
@@ -144,8 +148,8 @@
 			return scriptLoaderView.getNextTestCase();
 		}
 
-		public function getTestIndex(index:uint):int{
-			return scriptLoaderView.getTestIndex(index);
+		public function getTestIndex(index:uint, testCaseName:String):int{
+			return scriptLoaderView.getTestIndex(index, testCaseName);
 		}
 
 		public function openInspector(event:MouseEvent=null):void{
@@ -215,18 +219,19 @@
 
 		public function showDataGridTooltip(event:ListEvent):void{
 			showTooltip(event, event.type == ListEvent.ITEM_ROLL_OVER, mouseMoveListHandler, function():void{
-				switch(event.columnIndex){
-					case 4:
-						tooltip_lbl.text = "Move Up TestCase";
-						break;
-					case 5:
-						tooltip_lbl.text = "Move Down TestCase";
-						break;
-					case 6:
-						tooltip_lbl.text = "Delete TestCase";
-						break;
-					default:
-						tooltip_lbl.text = (event.item.toolTip ? event.item.toolTip : "");
+				tooltip_lbl.text = (event.item.toolTip ? event.item.toolTip : "");
+				if(event.item["testName"] == null){
+					switch(event.columnIndex){
+						case 4:
+							tooltip_lbl.text = "Move Up TestCase";
+							break;
+						case 5:
+							tooltip_lbl.text = "Move Down TestCase";
+							break;
+						case 6:
+							tooltip_lbl.text = "Delete TestCase";
+							break;
+					}
 				}
 			}, false);
 		}
@@ -259,8 +264,10 @@
 		}
 		
 		public function externalCall(command:String, ...params):void{
-			if(loaderInfo.url == null || loaderInfo.url.indexOf("file:///") == -1)
+			if(loaderInfo.url == null || loaderInfo.url.indexOf("file:///") == -1 || 
+										 loaderInfo.url.indexOf("[[DYNAMIC]]") != -1){
 				ExternalInterface.call("parent.FlexDoor.externalCall", command, params);
+			}
 		}
 	}
 }

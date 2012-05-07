@@ -20,8 +20,8 @@
 			_runner = runner;
 
 			_runner.initButton(clear_btn, clearAll, "Clear  Ctrl+Alt+C");
-			_runner.initButton(spy_events_ckb, spyEventsHandler, "Inspect Events  Ctrl+Alt+E");
-			_runner.initButton(spy_objects_ckb, spyObjectsHandler, "Inspect Objects  Ctrl+Alt+O");
+			_runner.initButton(spy_events_ckb, inspectEventsHandler, "Inspect Events  Ctrl+Alt+E");
+			_runner.initButton(spy_objects_ckb, inspectObjectsHandler, "Inspect Objects  Ctrl+Alt+O");
 
 			_eventsDataProvider = new DataProvider();
 			events_lst.labelField = "event";
@@ -87,19 +87,19 @@
 			_componentsDataProvider.removeAll();
 			_eventsDataProvider.removeAll();
 			details_txt.text = "";
-			_runner.dispatchEvent(new Event("clear"));
+			_runner.dispatchEvent(new ContentEvent(ContentEvent.CLEAR_KIND));
 		}
 
-		public function spyEventsHandler(event:MouseEvent=null):void{
+		public function inspectEventsHandler(event:MouseEvent=null):void{
 			if(event == null)
-				spy_events_ckb.selected = !spy_events_ckb.selected; 
-			_runner.dispatchEvent(new Event(spy_events_ckb.selected ? "startSpyEvents" : "stopSpyEvents"));
+				spy_events_ckb.selected = !spy_events_ckb.selected;
+			_runner.dispatchEvent(new ContentEvent(ContentEvent.EVENTS_KIND, spy_events_ckb.selected));
 		}
 
-		public function spyObjectsHandler(event:MouseEvent=null):void{
+		public function inspectObjectsHandler(event:MouseEvent=null):void{
 			if(event == null)
 				spy_objects_ckb.selected = !spy_objects_ckb.selected; 
-			_runner.dispatchEvent(new Event(spy_objects_ckb.selected ? "startSpyObjects" : "stopSpyObjects"));
+			_runner.dispatchEvent(new ContentEvent(ContentEvent.OBJECTS_KIND, spy_objects_ckb.selected));
 		}
 	}
 }

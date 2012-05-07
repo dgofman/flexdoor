@@ -26,6 +26,7 @@ function TestEvent(tests, order)
 	this.functionName = tests[order];
 	this.timeout = TestEvent.TIMEOUT;
 	this.type = TestEvent.SYNCHRONOUS;
+	this.testArgs = null;
 	this.nextTestArgs = null;
 }
 TestEvent.SYNCHRONOUS  = "synchronous";
@@ -61,6 +62,7 @@ TestEvent.prototype.set = function(params) {
 fd_TestEvent = function(){};
 
 function ARGS(){
-	Array.call(this, arguments);
+	this.source = [];
+	for(var i = 0; i < arguments.length; i++)
+		this.source[i] = arguments[i];
 }
-ARGS.prototype = new Array;

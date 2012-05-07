@@ -314,18 +314,28 @@ package
 		}
 
 		protected function js_setter(refId:Number, command:String, value:*):void{
-			var target:Object = _refMap[refId];
-			if(validateCommand(target, command)){
-				var actualValue:* = deserialize(value);
-				target[command] = actualValue;
+			try{
+				var target:Object = _refMap[refId];
+				if(validateCommand(target, command)){
+					var actualValue:* = deserialize(value);
+					target[command] = actualValue;
+				}
+			}catch(e:Error){
+				trace(e.getStackTrace());
+				if(_fdUtil != null)
+					_fdUtil.assertResult(true, e.message);
 			}
 		}
 
 		protected function js_getter(refId:Number, command:String, includeRef:Boolean=true):*{
-			var target:Object = _refMap[refId];
-			if(validateCommand(target, command))
-				return serialize(target[command], includeRef);
-			return null;
+			try{
+				var target:Object = _refMap[refId];
+				if(validateCommand(target, command))
+					return serialize(target[command], includeRef);
+				return null;
+			}catch(e:Error){
+				return serialize(e, false);
+			}
 		}
 
 		protected function js_execute(refId:Number, command:String, values:Array, includeRef:Boolean=true):Object{
@@ -403,7 +413,9 @@ package
 
 		protected function js_createFunction(className:String, functionName:String):Object{
 			var handler:Function;
-			handler = function():*{
+			handler = function(event:*=null):*{
+				if(event is Event)
+					Event(event).preventDefault();
 				var listenerId:Number = arguments.callee.prototype.listenerId;
 				var jsName:String = arguments.callee.prototype.jsName;
 				serializeAll(arguments);
@@ -434,8 +446,13 @@ package
 		protected function js_dispatchEvent(refId:Number, eventRefId:uint):Boolean{
 			var target:Object = _refMap[refId];
 			var event:Event = _refMap[eventRefId];
-			if(target && event != null)
-				return EventDispatcher(target).dispatchEvent(event);
+			if(target && event != null){
+				try{
+					return EventDispatcher(target).dispatchEvent(event);
+				}catch(e:Error){
+					return serialize(e, false);
+				}
+			}
 			return false;
 		}
 
@@ -447,8 +464,8 @@ package
 			return _fdUtil.getNextTestCase();
 		}
 
-		protected function js_getTestIndex(index:uint):int{
-			return _fdUtil.getTestIndex(index);
+		protected function js_getTestIndex(index:uint, testCaseName:String):int{
+			return _fdUtil.getTestIndex(index, testCaseName);
 		}
 
 		protected function deserializeAll(params:Array):Array{
@@ -487,6 +504,7 @@ package
 				out.errorID = ref.errorID;
 				out.message = ref.message;
 				out.stackTrace = Error(ref).getStackTrace();
+				trace(out.stackTrace);
 				return out;
 			}else if(ref is Array){
 				if(includeRef == true){
