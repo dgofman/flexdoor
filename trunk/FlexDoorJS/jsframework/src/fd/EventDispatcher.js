@@ -130,6 +130,22 @@ EventDispatcher.prototype.createFunction = function(){
 	return listener;
 };
 
+EventDispatcher.prototype.addAnyEventListener = function(type, listener, target){
+	var asFunction = null;
+	if(listener instanceof fd_Function){
+		asFunction = listener;
+	}else{
+		asFunction = this.createFunction(function(event){
+			listener.apply(target, [System.deserialize(event)]);
+		});
+	}
+	System.addAnyEventListener(this, this.serialize(asFunction), type);
+};
+
+EventDispatcher.prototype.removeAnyEventListener = function(){
+	System.removeAnyEventListener();
+};
+
 EventDispatcher.prototype.addEventListener = function(type, listener, target, useWeakReference, useCapture, priority){
 	var asFunction = null;
 	if(useWeakReference == undefined) useWeakReference = false;
