@@ -4,8 +4,6 @@ function Sample2TestCase(){
 				 "mx.controls::Alert",
 				 "mx.controls::Button",
 				 "spark.components::Button");
-
-	this.CLOSE_TYPE = "AlertCloseType";
 }
 Sample2TestCase.prototype = new FlexDoor(Sample2TestCase);
 
