@@ -78,7 +78,7 @@ System.killTimers = function(){
 };
 
 System.callLater = function(target, func, delay, params){
-	if(delay == undefined) delay = FlexDoor.TEST_DELAY_INTERVAL;
+	if(delay == undefined) delay = TestEvent.TEST_DELAY;
 	var timer = System.timer(null, function(){
 		System.timer(timer);
 		func.apply(target, params);
@@ -86,7 +86,7 @@ System.callLater = function(target, func, delay, params){
 };
 
 System.waitFor = function(target, func, delay, timeout, params){
-	if(delay == undefined) delay = FlexDoor.TEST_DELAY_INTERVAL;
+	if(delay == undefined) delay = TestEvent.TEST_DELAY;
 	var timer1 = System.timer(null, function(){ 
 		if(func.apply(target, params) == true){
 			System.timer(timer1);

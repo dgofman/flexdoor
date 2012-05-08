@@ -305,7 +305,6 @@ FlexDoor.TEST_CASES = [];
 FlexDoor.LOAD_FILES = {};
 FlexDoor.TIME_INTERVAL;
 FlexDoor.INIT_PHASE = 0;
-FlexDoor.TEST_DELAY_INTERVAL = 100;
 FlexDoor.AUTO_START = false;
 
 if(FlexDoor.LIB_PATH == undefined){

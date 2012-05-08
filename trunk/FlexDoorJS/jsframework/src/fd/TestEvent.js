@@ -22,7 +22,7 @@ function TestEvent(tests, order)
 	this.tests = tests;
 	this.order = order;
 	this.nextOrder = order + 1;
-	this.delay = FlexDoor.TEST_DELAY_INTERVAL;
+	this.delay = TestEvent.TEST_DELAY;
 	this.functionName = tests[order];
 	this.timeout = TestEvent.TIMEOUT;
 	this.type = TestEvent.SYNCHRONOUS;
@@ -32,6 +32,7 @@ function TestEvent(tests, order)
 TestEvent.SYNCHRONOUS  = "synchronous";
 TestEvent.ASYNCHRONOUS = "asynchronous"; 
 TestEvent.TIMEOUT = 120000; //Two minutes
+TestEvent.TEST_DELAY = 100;
 
 TestEvent.prototype.toString = function() {
 	return "fd::TestEvent";
