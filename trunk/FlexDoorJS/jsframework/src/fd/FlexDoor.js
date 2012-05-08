@@ -90,6 +90,7 @@ FlexDoor.prototype.async = function(event, delay, timeout){
 FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
 {
 	System.info(testCaseTitle);
+	this.testCaseTitle = testCaseTitle;
 
 	var flash =  System.getFlash(flashPlayerId);
 	if(flash == undefined)
@@ -139,7 +140,7 @@ FlexDoor.prototype.include = function() {
 						testEvent.addAsyncEventListener = function(eventType){
 							//call finalizeFunction after dispatchEvent
 							testCase.addEventListener(eventType, function(){
-								setTimeout(testCase.delegate(finalizeFunction, testEvent, releaseRefId), testEvent.delay);
+								System.timer(null, testCase.delegate(finalizeFunction, testEvent, releaseRefId), testEvent.delay);
 							});
 						};
 
@@ -158,12 +159,11 @@ FlexDoor.prototype.include = function() {
 							testEvent.timeout = testEvent.delay + 100;
 
 						//call finalizeFunction by timeout
-						clearInterval(testCase.interval);
-						testCase.interval = setInterval(testCase.delegate(finalizeFunction, testEvent), testEvent.timeout);
+						System.timer(null, testCase.delegate(finalizeFunction, testEvent), testEvent.timeout);
 
 						//execute finalizeFunction by exist from a test
 						if(testEvent.type == TestEvent.SYNCHRONOUS){
-							setTimeout(testCase.delegate(finalizeFunction, testEvent, releaseRefId), testEvent.delay);
+							System.timer(null, testCase.delegate(finalizeFunction, testEvent, releaseRefId), testEvent.delay);
 						}
 					}catch(e){
 						if(e.fileName != undefined && e.lineNumber != undefined){
@@ -181,10 +181,7 @@ FlexDoor.prototype.include = function() {
 			var finalizeFunction = function(testEvent, releaseRefId){
 				testCase.removeEventListener(testEvent.type, finalizeFunction);
 
-				if(testCase.interval != undefined){
-					clearInterval(testCase.interval);
-					testCase.interval = undefined;
-				}
+				System.killTimers();
 
 				var testIndex = testEvent.nextOrder;
 				if(FlexDoor.AUTO_START == false){
@@ -259,11 +256,11 @@ FlexDoor.includeAll = function(instance, files, callback) {
 		var onClassLoaded = function(){
 			var className = arguments.callee.prototype.name;
 			var classType = FlexDoor.classType(className);
-			if(classType && classType.prototype.Import != undefined){
-				var importFiles = classType.prototype.Import();
+			if(classType && classType.prototype && classType.prototype.Import != undefined){
+				var includeFiles = classType.prototype.Import();
 				if(window["System"])
-					System.log("Class: " + className + ". Total dependencies: " + importFiles.length);
-				FlexDoor.includeAll(instance, importFiles, validateAllClasses);
+					System.log("Class: " + className + ". Total dependencies: " + includeFiles.length);
+				FlexDoor.includeAll(instance, includeFiles, validateAllClasses);
 			}else{
 				index++;
 			}
@@ -322,6 +319,10 @@ if(FlexDoor.LIB_PATH == undefined){
 	}
 }
 
+FlexDoor.isOpera = function(){
+	return typeof(opera) != "undefined" && opera.toString() == "[object Opera]";
+};
+
 FlexDoor.include = function(cls, src, callback) {
 	if(cls != null && typeof(window[cls]) == "function"){
 		if(callback != undefined)
@@ -329,8 +330,6 @@ FlexDoor.include = function(cls, src, callback) {
 	}else if(!(FlexDoor.LOAD_FILES[cls] instanceof Array)){
 		if(callback != undefined)
 			FlexDoor.LOAD_FILES[cls] = [callback];
-
-		var isOpera = typeof(opera) != "undefined" && opera.toString() == "[object Opera]";
 
 		if(src.indexOf('.js') != -1){
 			src = FlexDoor.LIB_PATH + src;
@@ -348,7 +347,7 @@ FlexDoor.include = function(cls, src, callback) {
 					if(window["System"])
 						System.log("Loaded class: " + cls + ". Total callback functions: " + callbacks.length);
 
-					if (script.attachEvent && !isOpera) {
+					if (script.attachEvent && !FlexDoor.isOpera()) {
 						script.detachEvent("onreadystatechange", jsLoadHandler);
 					} else {
 						script.removeEventListener("load", jsLoadHandler, false);
@@ -422,7 +421,7 @@ FlexDoor.createScript = function(id, url, text){
 		jsLoadHandler = function(){
 			FlexDoor.pendingJS--;
 			var script = arguments.callee.prototype.script;
-			if (script.attachEvent && !isOpera) {
+			if (script.attachEvent && !FlexDoor.isOpera()) {
 				script.detachEvent("onreadystatechange", jsLoadHandler);
 			} else {
 				script.removeEventListener("load", jsLoadHandler, false);
@@ -449,7 +448,7 @@ FlexDoor.addScriptToHead = function(id, src, text, listener){
 
 	if(listener instanceof Function){
 		listener.prototype.script = script;
-		if (script.attachEvent && !isOpera) {
+		if (script.attachEvent && !FlexDoor.isOpera()) {
 			script.attachEvent("onreadystatechange", listener);
 		} else {
 			script.addEventListener("load", listener, false);

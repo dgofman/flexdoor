@@ -36,4 +36,4 @@ Container.Get = function(o){
 };
 Container.Is = function(target) { return target instanceof Container; };
 
-mx_core_Container = function(){};
+function mx_core_Container(){};

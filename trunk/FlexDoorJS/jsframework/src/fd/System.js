@@ -26,6 +26,7 @@ System.CLASSES = [];
 System.LOADING = {};
 System.LOAD_DELAY;
 System.INIT_PHASE = 0;
+System.TIMERS = {};
 
 System.getFlash = function(flashPlayerId){
 	if(document.embeds && document.embeds[flashPlayerId]){ //FireFox, Chrome, Opera
@@ -60,22 +61,41 @@ System.getParams = function(args, index, isSerializable){
 	return params;
 };
 
+System.timer = function(timeInterval, func, delay){
+	if(timeInterval == undefined){
+		System.TIMERS[timeInterval = setInterval(func, delay)] = func;
+		return timeInterval;
+	}else{
+		clearInterval(timeInterval);
+		delete System.TIMERS[timeInterval];
+	}
+};
+
+System.killTimers = function(){
+	for(var timeInterval in System.TIMERS)
+		clearInterval(timeInterval);
+	System.TIMERS = {};
+};
+
 System.callLater = function(target, func, delay, params){
 	if(delay == undefined) delay = FlexDoor.TEST_DELAY_INTERVAL;
-	setTimeout(function(){ func.apply(target, params); }, delay);
+	var timer = System.timer(null, function(){
+		System.timer(timer);
+		func.apply(target, params);
+	}, delay);
 };
 
 System.waitFor = function(target, func, delay, timeout, params){
 	if(delay == undefined) delay = FlexDoor.TEST_DELAY_INTERVAL;
-	var interval1 = setInterval(function(){ 
+	var timer1 = System.timer(null, function(){ 
 		if(func.apply(target, params) == true){
-			clearInterval(interval1);
-			clearInterval(interval2);
+			System.timer(timer1);
+			System.timer(timer2);
 		}	
 	}, delay);
-	var interval2 = setInterval(function(){
-		clearInterval(interval1);
-		clearInterval(interval2);
+	var timer2 = System.timer(null, function(){
+		System.timer(interval1);
+		System.timer(interval2);
 		throw new Error("Timeout!!!");
 	}, timeout);
 };
@@ -278,4 +298,4 @@ System.trace = function(message, level) {
 		window['console'][level](message);
 };
 
-fd_System = function(){};
+function fd_System(){};

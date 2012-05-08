@@ -165,6 +165,6 @@ EventDispatcher.prototype.serialize = function(object){
 	return System.serialize(object);
 };
 
-fd_EventDispatcher = function(){};
+function fd_EventDispatcher(){};
 function flash_events_EventDispatcher(){};
 flash_events_EventDispatcher.prototype = new EventDispatcher();

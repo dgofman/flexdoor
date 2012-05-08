@@ -59,7 +59,7 @@ TestEvent.prototype.set = function(params) {
 	}
 };
 
-fd_TestEvent = function(){};
+function fd_TestEvent(){};
 
 function ARGS(){
 	this.source = [];

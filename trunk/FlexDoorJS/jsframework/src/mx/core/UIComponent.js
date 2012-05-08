@@ -54,4 +54,4 @@ UIComponent.Get = function(o, classType){
 };
 UIComponent.Is = function(target) { return target instanceof UIComponent; };
 
-mx_core_UIComponent = function(){};
+function mx_core_UIComponent(){};

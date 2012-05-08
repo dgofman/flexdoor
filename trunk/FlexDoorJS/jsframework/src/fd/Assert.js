@@ -55,4 +55,4 @@ Assert.fail = function(message) {
 	}
 };
 
-fd_Assert = function(){};
+function fd_Assert(){};

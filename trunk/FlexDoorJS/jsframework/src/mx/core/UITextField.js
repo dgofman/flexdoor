@@ -38,4 +38,4 @@ UITextField.Get = function(o){
 };
 UITextField.Is = function(target) { return target instanceof UITextField; };
 
-mx_core_UITextField = function(){};
+function mx_core_UITextField(){};

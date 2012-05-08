@@ -46,4 +46,4 @@ Application.Get = function(o){
 };
 Application.Is = function(target) { return target instanceof Application; };
 
-mx_core_Application = function(){};
+function mx_core_Application(){};
