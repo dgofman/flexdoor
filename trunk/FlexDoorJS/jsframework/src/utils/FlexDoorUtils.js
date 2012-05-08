@@ -135,6 +135,9 @@ FlexDoorUtils.attachCollectionChangeEvent = function(testCase, grid, preEventCal
 		if(preEventCallBack.apply(testCase, [e.kind])){
 			target.removeEventListener($CollectionEvent.COLLECTION_CHANGE, changeHandler);
 			testCase.dispatchEvent($CollectionEvent.COLLECTION_CHANGE);
+			
+			if(postEventCallBack != undefined)
+				postEventCallBack.apply(testCase);
 		}
 	};
 	target.addEventListener($CollectionEvent.COLLECTION_CHANGE, changeHandler, this);
