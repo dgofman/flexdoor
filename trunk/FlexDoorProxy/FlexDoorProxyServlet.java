@@ -45,9 +45,9 @@ public class FlexDoorProxyServlet extends HttpServlet {
 		if(scripts == null)
 			scripts = new HashMap<String, String>();
 
-		if(filename != null && scripts.containsKey(filename)){
+		if(jsscript == null && filename != null && scripts.containsKey(filename)){
 			jsscript = scripts.get(filename);
-			scripts.remove(filename);
+			//scripts.remove(filename);
 			byte[] jsBytes = jsscript.getBytes();
 			resp.setContentLength(jsBytes.length);
 			resp.setContentType("text/javascript");
