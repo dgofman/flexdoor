@@ -388,6 +388,7 @@
 			if(stop_btn.enabled){
 				overlay_mc.visible = false;
 				play_pause_btn.selected = false;
+				testcases_dg.selectedIndex = -1;
 			}
 		}
 
