@@ -8,6 +8,7 @@
 	<property name="out.swc" value="FlexDoor"/>
 	<property name="src.dir" value="./src"/>
 	<property name="out.dir" value="./bin"/>
+	<property name="events.dir" value="./FlexDoorRunner/src/events"/>
 	<property name="compc.jar.path" value="${FLEX_HOME}/lib/compc.jar"/>
 	<property name="mxmlc.jar.path" value="${FLEX_HOME}/lib/mxmlc.jar"/>
 
@@ -23,6 +24,7 @@
 			<arg value='-local-fonts-snapshot=${FLEX_HOME}/frameworks/localFonts.ser'/>
 			<arg value='-load-config=${FLEX_HOME}/frameworks/flex-config.xml'/>
 			<arg value='-include-sources=${src.dir}'/>
+			<arg value='-include-sources=${events.dir}'/>
 			<arg value='-output=${out.dir}/${out.swc}.swc'/>
 		</java>
 	</target>
@@ -33,8 +35,10 @@
 			<arg value='-debug=false'/>
 			<arg value='-local-fonts-snapshot=${FLEX_HOME}/frameworks/localFonts.ser'/>
 			<arg value='-load-config=${FLEX_HOME}/frameworks/flex-config.xml'/>
+			<arg value='-static-link-runtime-shared-libraries=true'/>
 			<arg value='-file-specs=${src.dir}/FlexDoor.as'/>
 			<arg value='-source-path+=${src.dir}'/>
+			<arg value='-source-path+=${events.dir}'/>
 			<arg value='-output=${out.dir}/${out.swc}.swf'/>
 		</java>
 	</target>
