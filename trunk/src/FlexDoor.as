@@ -65,6 +65,8 @@ package
 		protected var _jsFunction:*;
 		protected var _fdUtil:FlexDoorUtil;
 
+		protected var _dispatchEventHook:Function;
+
 		protected static var isRuntimeLoader:Boolean = false;
 
 		public function FlexDoor(application:*=null){
@@ -130,6 +132,8 @@ package
 				ExternalInterface.addCallback("refValue", js_refValue);
 				ExternalInterface.addCallback("create",  js_create);
 				ExternalInterface.addCallback("createFunction",  js_createFunction);
+				ExternalInterface.addCallback("addAnyEventListener", js_addAnyEventListener);
+				ExternalInterface.addCallback("removeAllEventListener", js_removeAnyEventListener);
 				ExternalInterface.addCallback("addEventListener", js_addEventListener);
 				ExternalInterface.addCallback("removeEventListener", js_removeEventListener);
 				ExternalInterface.addCallback("dispatchEvent", js_dispatchEvent);
@@ -332,7 +336,7 @@ package
 				var target:Object = _refMap[refId];
 				if(validateCommand(target, command))
 					return serialize(target[command], includeRef);
-				return null;
+				return serialize(new Error("Error 1011: Reference or command is invalid"), false);
 			}catch(e:Error){
 				return serialize(e, false);
 			}
@@ -355,7 +359,7 @@ package
 					return serialize(e, false);
 				}
 			}
-			return null;
+			return serialize(new Error("Error 1012: Cannot execute a command: " + command), false);
 		}
 
 		protected function js_refValue(refId:Number, keys:Array, includeRef:Boolean=true):Object{
@@ -427,6 +431,27 @@ package
 			handler.prototype.jsName = className + '.' + functionName;
 			handler.prototype.listenerId = obj.refId;
 			return obj;
+		}
+
+		protected function js_addAnyEventListener(refId:Number, listenerRef:Object, type:String=null):void{
+			var target:* = _refMap[refId];
+			var listener:Function = deserialize(listenerRef);
+			var uiComponent:* = getClassByName("mx.core::UIComponent");
+			if(uiComponent != null){
+				_dispatchEventHook = uiComponent.mx_internal::dispatchEventHook;
+				uiComponent.mx_internal::dispatchEventHook = function(event:Event, uicomponent:*):void{
+					if(target == uicomponent){
+						if(type == null || type == event.type)
+							listenerRef(serialize(event, false));
+					}
+				};
+			}
+		}
+
+		protected function js_removeAnyEventListener():void{
+			var uiComponent:* = getClassByName("mx.core::UIComponent");
+			if(uiComponent != null)
+				uiComponent.mx_internal::dispatchEventHook = _dispatchEventHook;
 		}
 
 		protected function js_addEventListener(refId:Number, type:String, listenerRef:Object, 
