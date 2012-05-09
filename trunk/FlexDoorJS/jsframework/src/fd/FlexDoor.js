@@ -324,7 +324,7 @@ FlexDoor.executeFunction = function(className, functionName, args){
 	var classType = window[className];
 	if(classType instanceof Function && classType[functionName] instanceof Function){
 		var func = classType[functionName];
-		if(FlexDoor.isOpera() && func.refFunc instanceof fd_Function && func.refFunc.isEventListener){
+		if(func.refFunc instanceof fd_Function && func.refFunc.isEventListener){
 			setTimeout(function(){
 				func.call(classType, args);
 			}, 1);
