@@ -139,11 +139,11 @@ EventDispatcher.prototype.addAnyEventListener = function(type, listener, target)
 			listener.apply(target, [System.deserialize(event)]);
 		});
 	}
-	System.addAnyEventListener(this, this.serialize(asFunction), type);
+	System.dispatchEventHook(this, this.serialize(asFunction), type);
 };
 
 EventDispatcher.prototype.removeAnyEventListener = function(){
-	System.removeAnyEventListener();
+	System.dispatchEventHook();
 };
 
 EventDispatcher.prototype.addEventListener = function(type, listener, target, useWeakReference, useCapture, priority){
@@ -161,6 +161,7 @@ EventDispatcher.prototype.addEventListener = function(type, listener, target, us
 			listener.apply(target, arguments);
 		});
 	}
+	asFunction.isEventListener = true;
 	System.addEventListener(this, type, this.serialize(asFunction), useCapture, priority, useWeakReference);
 };
 

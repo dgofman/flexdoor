@@ -21,6 +21,7 @@ function fd_Function(object)
 {
 	UIComponent.call(this, fd_Function, "Function");
 	this.refId = object.refId;
+	this.isEventListener = false;
 
 	this.Initialize = function(classType, funtionName){
 		this.classType = classType;

@@ -132,8 +132,7 @@ package
 				ExternalInterface.addCallback("refValue", js_refValue);
 				ExternalInterface.addCallback("create",  js_create);
 				ExternalInterface.addCallback("createFunction",  js_createFunction);
-				ExternalInterface.addCallback("addAnyEventListener", js_addAnyEventListener);
-				ExternalInterface.addCallback("removeAllEventListener", js_removeAnyEventListener);
+				ExternalInterface.addCallback("dispatchEventHook", js_dispatchEventHook);
 				ExternalInterface.addCallback("addEventListener", js_addEventListener);
 				ExternalInterface.addCallback("removeEventListener", js_removeEventListener);
 				ExternalInterface.addCallback("dispatchEvent", js_dispatchEvent);
@@ -421,37 +420,37 @@ package
 				if(event is Event)
 					Event(event).preventDefault();
 				var listenerId:Number = arguments.callee.prototype.listenerId;
-				var jsName:String = arguments.callee.prototype.jsName;
+				var className:String = arguments.callee.prototype.className;
+				var functionName:String = arguments.callee.prototype.functionName;
 				serializeAll(arguments);
 				var args:* = (arguments.length == 1 ? arguments[0] : arguments);
-				var result:* = ExternalInterface.call("parent." + jsName, args);
+				var result:* = ExternalInterface.call("FlexDoor.executeFunction", className, functionName, args);
 				return result;
 			};
 			var obj:Object = serialize(handler);
-			handler.prototype.jsName = className + '.' + functionName;
+			handler.prototype.className = className;
+			handler.prototype.functionName = functionName;
 			handler.prototype.listenerId = obj.refId;
 			return obj;
 		}
 
-		protected function js_addAnyEventListener(refId:Number, listenerRef:Object, type:String=null):void{
-			var target:* = _refMap[refId];
-			var listener:Function = deserialize(listenerRef);
+		protected function js_dispatchEventHook(refId:Number=NaN, listenerRef:Object=null, type:String=null):void{
 			var uiComponent:* = getClassByName("mx.core::UIComponent");
 			if(uiComponent != null){
-				_dispatchEventHook = uiComponent.mx_internal::dispatchEventHook;
-				uiComponent.mx_internal::dispatchEventHook = function(event:Event, uicomponent:*):void{
-					if(target == uicomponent){
-						if(type == null || type == event.type)
-							listenerRef(serialize(event, false));
-					}
-				};
+				if(isNaN(refId) && listenerRef == null){
+					uiComponent.mx_internal::dispatchEventHook = _dispatchEventHook;
+				}else{
+					var target:* = _refMap[refId];
+					var listener:Function = deserialize(listenerRef);
+					_dispatchEventHook = uiComponent.mx_internal::dispatchEventHook;
+					uiComponent.mx_internal::dispatchEventHook = function(event:Event, uicomponent:*):void{
+						if(target == uicomponent){
+							if(type == null || type == event.type)
+								listenerRef(serialize(event, false));
+						}
+					};
+				}
 			}
-		}
-
-		protected function js_removeAnyEventListener():void{
-			var uiComponent:* = getClassByName("mx.core::UIComponent");
-			if(uiComponent != null)
-				uiComponent.mx_internal::dispatchEventHook = _dispatchEventHook;
 		}
 
 		protected function js_addEventListener(refId:Number, type:String, listenerRef:Object, 
