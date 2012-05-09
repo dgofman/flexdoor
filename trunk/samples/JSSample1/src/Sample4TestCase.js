@@ -24,7 +24,7 @@ Sample4TestCase.prototype.tearDown = function(event){
 };
 
 Sample4TestCase.prototype.test_1 = function(event) {
-	this.async(event);
+	this.async(event, TestEvent.TEST_DELAY, 5000);
 
 	var dataGrid = $DataGrid.Get(this.dataGrid);
 	var dataProvider = $ListCollectionView.Get(dataGrid.dataProvider());
@@ -44,13 +44,14 @@ Sample4TestCase.prototype.test_1 = function(event) {
 };
 
 Sample4TestCase.prototype.test_2 = function(event) {
+	this.async(event, 1000, 5000);
 	var dataGrid = $DataGrid.Get(this.dataGrid);
 	var dataProvider = $ListCollectionView.Get(dataGrid.dataProvider());
 
 	var handler = dataProvider.createFunctionByName(Sample4TestCase, "dataGridChangeHandler");
 	dataProvider.addEventListener($CollectionEvent.COLLECTION_CHANGE, handler);
 
-	//Create async event as COLLECTION_CHANGE type 
+	//Goto the next function after COLLECTION_CHANGE event type 
 	TestEvent.Get(event).setEventType($CollectionEvent.COLLECTION_CHANGE);
 	
 	//Trigger changeHandler listener
