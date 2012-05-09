@@ -183,6 +183,11 @@ FlexDoor.prototype.include = function() {
 
 				System.killTimers();
 
+				if(releaseRefId == undefined){ //finalizeFunction called by timeout timer
+					Assert.fail("Test timed out: " + testEvent.functionName);
+					System.warn("Test timed out: " + testEvent.functionName);
+				}
+				
 				var testIndex = testEvent.nextOrder;
 				if(FlexDoor.AUTO_START == false){
 					var flash = Application.application.flash;
@@ -192,9 +197,9 @@ FlexDoor.prototype.include = function() {
 				var nextTestEvent = new TestEvent(tests, testIndex);
 				nextTestEvent.delay = testEvent.delay;
 				nextTestEvent.testArgs = testEvent.nextTestArgs;
-
+				
+				//Keep references to the next function argument
 				if(releaseRefId != undefined){
-					//Keep references to the next function argument
 					if(nextTestEvent.testArgs instanceof ARGS){
 						var items = nextTestEvent.testArgs.source;
 						for(var i = 0; i < items.length; i++){
@@ -203,9 +208,6 @@ FlexDoor.prototype.include = function() {
 						}
 					}
 					System.releaseIds(releaseRefId, true);
-				}else{
-					Assert.fail("Test timed out: " + testEvent.functionName);
-					System.warn("Test timed out: " + testEvent.functionName);
 				}
 
 				if(FlexDoor.ACTIVE_TESTCASE.prototype.tearDown != undefined)
@@ -341,8 +343,10 @@ FlexDoor.include = function(cls, src, callback) {
 			if(window[cls] != undefined){
 				var script = arguments.callee.prototype.script;
 				var callbacks = FlexDoor.LOAD_FILES[cls];
-				delete FlexDoor.LOAD_FILES[cls];
-				if(callbacks != undefined){
+
+				if(script.readyState != "loading" && callbacks != undefined){
+					delete FlexDoor.LOAD_FILES[cls];
+					
 					if(window["System"])
 						System.log("Loaded class: " + cls + ". Total callback functions: " + callbacks.length);
 
