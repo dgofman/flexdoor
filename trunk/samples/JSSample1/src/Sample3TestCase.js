@@ -61,7 +61,7 @@ Sample3TestCase.prototype.test_2 = function(event, dataProvider) {
 Sample3TestCase.prototype.test_3 = function(event, dataProvider) {
 	this.sync(event, 1000);
 
-	//Filter and remove item
+	//Remove item using filterFunction
 	var findItem = "NEW ROW";
 	dataProvider.filterFunction(function(item){
 		if(item == findItem)
