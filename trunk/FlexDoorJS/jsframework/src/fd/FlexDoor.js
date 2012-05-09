@@ -302,7 +302,7 @@ FlexDoor.toClassName = function(pair) {
 };
 
 //Static API's and Variables
-FlexDoor.VERSION    = 3.1;
+FlexDoor.VERSION    = 3.0;
 FlexDoor.TEST_CASES = [];
 FlexDoor.LOAD_FILES = {};
 FlexDoor.TIME_INTERVAL;
