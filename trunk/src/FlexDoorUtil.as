@@ -91,7 +91,7 @@ package
 		private function mouseMoveEventHandler(event:MouseEvent):void{
 			if(_lastSpyComponent != event.target){
 				_lastSpyComponent = event.target;
-				getComponentInfo(_lastSpyComponent, [], {});
+				getComponentInfo(_lastSpyComponent, [], [], {});
 			}
 		}
 
@@ -132,11 +132,12 @@ package
 				delete _queueMap[uniqKey];
 			
 				var components:Array = [];
+				var locators:Array = [];
 				var includes:Object = {};
 				var eventType:XML = describeType(event);
 				includes[eventType.@name.toString()] = 0;
 
-				getComponentInfo(uicomponent, components, includes);
+				getComponentInfo(uicomponent, components, locators, includes);
 
 				if(components.length > 0){
 					var uid:String = (uicomponent.hasOwnProperty("uid") ? uicomponent.uid : uicomponent.toString());
@@ -145,13 +146,17 @@ package
 			};
 		}
 
-		private function getComponentInfo(uicomponent:*, components:Array, includes:Object):void{
+		private function getComponentInfo(uicomponent:*, components:Array, locators:Array, includes:Object):void{
 			var uniqNames:Object = {};
+			var locatorType:String = "";
 
 			function getInfo(c:*, childRef:*=null, childId:String=null):String{
+				var classType:String;
+				var visibleCount:int; 
 				if(c != _application && c != _application.systemManager){
 					var type:XML = describeType(c);
 					var extendsClass:XMLList = <></>;
+					var listData:XMLList = type.implementsInterface.(@type == "mx.controls.listClasses::IDropInListItemRenderer");
 					extendsClass += new XML('<extendsClass type="' + type.@name.toString() + '"/>') + type.extendsClass;
 					for(var i:uint = 0; i < extendsClass.length(); i++){
 						var pckgName:String = extendsClass[i].@type.toString();
@@ -168,6 +173,14 @@ package
 								variableName += '$' + uniqNames[variableName]; //attach index for repeating variable names
 							}
 							var parent:* = c.parent;
+							var parentName:String;
+							if(listData.length() > 0 && c.listData != null){
+								parentName = getInfo(c.owner);
+								locatorType = '<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(locator);';
+								components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.indicesToItemRenderer(' + c.listData.rowIndex + ', ' + c.listData.columnIndex + '));');
+								locators.push(':' + c.listData.rowIndex + ',' + c.listData.columnIndex);
+								return variableName;
+							}
 							if(c.hasOwnProperty('id') && c.id != null){
 								//Try to find a parent reference by id
 								while(parent != null){
@@ -180,50 +193,78 @@ package
 							}
 							if(parent == null)
 								parent = c.parent;
-							var parentName:String = getInfo(parent);
+							parentName = getInfo(parent);
 							if(parentName == null){ //probably is systemManager child
-								components.push('var ' + variableName + ' = this.app.getPopupWindow("' + type.@name.toString() + '");');
+								classType = type.@name.toString();
+								visibleCount = findIndexByClassType(c, "numElements", "getElementAt", classType);
+								if(visibleCount == -1)
+									visibleCount = findIndexByClassType(c, "numChildren", "getChildAt", classType);
+								locators.push('!');
+								if(visibleCount > 0){
+									components.push('<font color="#7F0055">var</font> ' + variableName + ' = <font color="#7F0055">this</font>.app.getPopupWindow("' + classType + '", ' + visibleCount + ');');
+									locators.push('#' + classType + ',' + visibleCount);
+								}else{
+									components.push('<font color="#7F0055">var</font> ' + variableName + ' = <font color="#7F0055">this</font>.app.getPopupWindow("' + classType + '");');
+									locators.push('#' + classType);
+								}
 							}else{
+								locatorType = '<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(locator);';
 								try{
 									if(c.id != null && parent[c.id]){
-										components.push('var ' + variableName + ' = ' + alias + '.Get(' + parentName + '.find("' + c.id + '"));');
+										if(parent[c.id] is Array){
+											for(var j:uint = 0; j < parent[c.id].length; j++){
+												if(parent[c.id][j] == c){
+													components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.find("' + c.id + '", ' + j + '));');
+													locators.push(c.id + "," + j);
+													break;
+												}
+											}
+										}else{
+											components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.find("' + c.id + '"));');
+											locators.push(c.id);
+										}
 										return variableName;
 									}
 								}catch(e:Error){};
 								
-								var classType:String = type.@base.toString();
-								var visibleCount:int = findIndexByClassType(c, "numElements", "getElementAt", classType);
+								classType = type.@base.toString();
+								visibleCount = findIndexByClassType(c, "numElements", "getElementAt", classType);
 								if(visibleCount == -1)
 									visibleCount = findIndexByClassType(c, "numChildren", "getChildAt", classType);
 								
 								if(visibleCount != -1){
-									components.push('var ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByType("' + classType + '", ' + visibleCount + '));');
+									if(visibleCount > 0){
+										components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByType("' + classType + '", ' + visibleCount + '));');
+										locators.push('#' + classType + ',' + visibleCount);
+									}else{
+										components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByType("' + classType + '"));');
+										locators.push('#' + classType);
+									}
 									return variableName;
 								}
 								
-								components.push('var ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByName("' + c.name + '"));');
+								components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByName("' + c.name + '"));');
+								locators.push('@' + c.name);
 							}
 							return variableName;
 						}
 					}
 				}else if(c == _application){
-					return 'this.app';
+					return '<font color="#7F0055">this</font>.app';
 				}
 				return null;
 			};
 			getInfo(uicomponent);
 
 			if(components.length > 0){
-				var code:String = null;
-				for(var pckg:String in includes){
-					if(code == null){
-						code = '//' + uicomponent.toString() + '\n\nthis.include(\n';
-					}else{
-						code += ',\n';
-					}
-					code += '"' + pckg + '"';
-				}
-				code += ');\n\n' + components.join('\n');
+				var code:String = '<font color="#3F7F5F">//' + uicomponent.toString() + '</font>\n\n' +
+								  '<font color="#7F0055">var</font> locator = Locator.Get("/' + locators.join('/') + '");\n' + locatorType + '\n\n';
+				var packages:Array = [];
+				for(var pckg:String in includes)
+					packages.push('<font color="#2A00FF">"' + pckg + '"</font>');
+				if(packages.length > 0)
+					code += '<font color="#7F0055">this</font>.include(\n' + packages.join(',\n') + ');\n\n'; 
+				code += components.join('\n');
 				
 				var uid:String = (uicomponent.hasOwnProperty("uid") ? uicomponent.uid : uicomponent.toString());
 				_content.addComponent({name:uicomponent.name, uid:uid, code:code});
