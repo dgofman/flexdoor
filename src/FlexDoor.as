@@ -121,11 +121,12 @@ package
 				ExternalInterface.addCallback("releaseIds", js_releaseIds);
 				ExternalInterface.addCallback("application", js_application);
 				ExternalInterface.addCallback("systemManager", js_systemManager);
-				ExternalInterface.addCallback("find", js_find);
 				ExternalInterface.addCallback("findById", js_findById);
+				ExternalInterface.addCallback("find", js_find);
 				ExternalInterface.addCallback("getClass", js_class);
 				ExternalInterface.addCallback("getChildByName", js_childByName);
 				ExternalInterface.addCallback("getChildByType", js_childByType);
+				ExternalInterface.addCallback("getLocator", js_locator);
 				ExternalInterface.addCallback("setter", js_setter);
 				ExternalInterface.addCallback("getter", js_getter);
 				ExternalInterface.addCallback("execute", js_execute);
@@ -257,6 +258,9 @@ package
 			return serialize(_refMap[refId], includeRef);
 		}
 
+		/**
+		 *  Locator /id 
+		 */
 		protected function js_find(refId:Number, id:String, index:uint, visibleOnly:Boolean, includeRef:Boolean=true):*{
 			try{
 				var target:* = _refMap[refId];
@@ -278,17 +282,65 @@ package
 			}
 		}
 
+		/**
+		 *  Locator /@name
+		 */
 		protected function js_childByName(refId:Number, name:String, includeRef:Boolean=true):Object{
 			var target:DisplayObjectContainer = _refMap[refId];
 			return serialize(target.getChildByName(name), includeRef);
 		}
 
+		/**
+		 *  Locator /#type:index
+		 */
 		protected function js_childByType(refId:Number, classType:String, index:uint, visibleOnly:Boolean, includeRef:Boolean=true):Object{
 			var target:* = _refMap[refId];
 			var child:* = findChildByClassType(target, "numElements", "getElementAt", classType, index, visibleOnly);
 			if(child == null)
 				child = findChildByClassType(target, "numChildren", "getChildAt", classType, index, visibleOnly);
 			return serialize(child, includeRef);
+		}
+
+		protected function js_locator(path:String):Object{
+			var items:Array = path.split('/');
+			var child:* = _application;
+			var pair:Array;
+			for(var i:uint = 1; i < items.length; i++){
+				var item:String = items[i];
+				try{
+					switch(item.charAt(0)){
+						case '!': //systemManager
+							child = child.systemManager;
+							break;
+						case '#': //by type
+							pair = item.substring(1).split(',');
+							var index:uint = pair.length == 1 ? 0 : pair[1];
+							var component:* = findChildByClassType(child, "numElements", "getElementAt", pair[0], index, true);
+							if(component == null)
+								component = findChildByClassType(child, "numChildren", "getChildAt", pair[0], index, true);
+							if(component == null)
+								return serialize(new Error("Property " + items[i] + " not found on " + items[i - 1] + " and there is no default value."), false);
+							child = component;
+							break;
+						case '@': //by name
+							child = child.getChildByName(item.substring(1));
+							break;
+						case ':': //itemRenderer
+							pair = item.substring(1).split(',');
+							child = child.mx_internal::indicesToItemRenderer(pair[0], pair[1]);
+							break;
+						default: //by id
+							pair = item.split(',');
+							child = child[pair[0]];
+							if(child is Array)
+								child = (pair.length == 1 ? child[0] : child[pair[1]]);
+							break;
+					}
+				}catch(e:Error){
+					return serialize(e, false);
+				}
+			}
+			return serialize(child);
 		}
 
 		protected function findChildByClassType(target:*, numName:String, funName:String,
@@ -316,6 +368,9 @@ package
 			return null;
 		}
 
+		/**
+		 *  Locator /+command
+		 */
 		protected function js_setter(refId:Number, command:String, value:*):void{
 			try{
 				var target:Object = _refMap[refId];
@@ -330,6 +385,9 @@ package
 			}
 		}
 
+		/**
+		 *  Locator /-command
+		 */
 		protected function js_getter(refId:Number, command:String, includeRef:Boolean=true):*{
 			try{
 				var target:Object = _refMap[refId];
@@ -637,7 +695,7 @@ package
 		protected function validateCommand(object:*, command:String):Boolean{
 			if(object == null){
 				serialize(new Error("The reference id is invalid or object was destroyed."), false);
-			}else if(object.hasOwnProperty(command) || object[command]){
+			}else if(object.hasOwnProperty(command) || object[command] != undefined){
 				return true;
 			}
 			return false;
