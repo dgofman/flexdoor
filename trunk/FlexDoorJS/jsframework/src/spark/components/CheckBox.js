@@ -40,6 +40,6 @@ spark_components_CheckBox.Get = function(o){
 	return ref;
 };
 
-function $CheckBox() {}
-$CheckBox.Get = spark_components_CheckBox.Get;
-$CheckBox.Is = function(target) { return target instanceof spark_components_CheckBox; };
+function $SCheckBox() {}
+$$CheckBox.Get = spark_components_CheckBox.Get;
+$$CheckBox.Is = function(target) { return target instanceof spark_components_CheckBox; };
