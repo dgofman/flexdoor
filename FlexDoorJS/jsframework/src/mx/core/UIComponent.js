@@ -28,6 +28,10 @@ function UIComponent(classType, extendType)
 		return extendType;
 	};
 
+	this.enabled = function(){ /* getter and setter */
+		return this.property("enabled", arguments);
+	};
+
 	this.visible = function(){ /* getter and setter */
 		return this.property("visible", arguments);
 	};
