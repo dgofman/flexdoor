@@ -17,9 +17,9 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_CheckBox(classType, extendType) 
+function spark_components_CheckBox(classType, extendType) 
 {
-	/* extendType - mx.controls::CheckBox */
+	/* extendType - spark.components::CheckBox */
 	UIComponent.call(this, classType, extendType);
 
 	this.selected = function(){ /* getter and setter */
@@ -27,19 +27,19 @@ function mx_controls_CheckBox(classType, extendType)
 	};
 }
 
-mx_controls_CheckBox.prototype.Import = function(){
-	return ["mx.controls::Button"];
+spark_components_CheckBox.prototype.Import = function(){
+	return ["spark.components::Button"];
 };
-mx_controls_CheckBox.prototype.Extends = function(){
-	mx_controls_Button.prototype.Extends();
-	mx_controls_CheckBox.prototype = new mx_controls_Button(mx_controls_CheckBox);
+spark_components_CheckBox.prototype.Extends = function(){
+	spark_components_Button.prototype.Extends();
+	spark_components_CheckBox.prototype = new spark_components_Button(spark_components_CheckBox);
 };
-mx_controls_CheckBox.Get = function(o){
+spark_components_CheckBox.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, mx_controls_CheckBox);
+	ref = UIComponent.Get(o, spark_components_CheckBox);
 	return ref;
 };
 
 function $CheckBox() {}
-$CheckBox.Get = mx_controls_CheckBox.Get;
-$CheckBox.Is = function(target) { return target instanceof mx_controls_CheckBox; };
+$CheckBox.Get = spark_components_CheckBox.Get;
+$CheckBox.Is = function(target) { return target instanceof spark_components_CheckBox; };
