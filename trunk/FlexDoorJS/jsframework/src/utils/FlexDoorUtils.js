@@ -20,14 +20,42 @@
 function FlexDoorUtils() {
 }
 
+FlexDoorUtils.prototype.findIndexInArray = FlexDoorUtils.findIndexInArray;
 FlexDoorUtils.prototype.findIndexInListCollectionView = FlexDoorUtils.findIndexInListCollectionView;
 FlexDoorUtils.prototype.createItemEditRenderer = FlexDoorUtils.createItemEditRenderer;
 FlexDoorUtils.prototype.attachCollectionChangeEvent = FlexDoorUtils.attachCollectionChangeEvent;
 FlexDoorUtils.prototype.getColumnIndex = FlexDoorUtils.getColumnIndex;
 
 /**
- * Required include: mx.collections::ListCollectionView
  * 
+ *  Returns the index of the item if it is in the list such that 
+ *	  item[key1][key2] == value or item[key] == value or item = value. 
+ *
+ *  @param collection - An array.
+ *  
+ *  @param key - key with which the specified value is to be associated. If key is null than
+ *  collection item will be comparing by value. The array of keys represents multiple level of nested keys.
+ *
+ *  @param value - value to be associated with the specified key. 
+ *  
+ *  returns: the index of the  occurrence of the specified object in this list; returns -1 if the object is not found.
+ */
+FlexDoorUtils.findIndexInArray = function(source, key, value){
+	for(var rowIndex = 0; rowIndex < source.length; rowIndex++){
+		var item = source[rowIndex];
+		if(typeof(key) == "string" && item[key] == value){
+			return rowIndex;
+		}else if(key instanceof Array){
+			for(var i = 0; i < key.length; i++)
+				item = item[key[i]];
+		}
+		if(item == value)
+			return rowIndex;
+	}
+	return -1;
+};
+
+/**
  *  Returns the index of the item if it is in the list such that 
  *	  item[key1][key2] == value or item[key] == value or item = value. 
  *
@@ -41,19 +69,7 @@ FlexDoorUtils.prototype.getColumnIndex = FlexDoorUtils.getColumnIndex;
  *  returns: the index of the  occurrence of the specified object in this list; returns -1 if the object is not found.
  */
 FlexDoorUtils.findIndexInListCollectionView = function(collection, key, value){
-	var dataProvider = $ListCollectionView.Get(collection);
-	for(var rowIndex = 0; rowIndex < dataProvider.source.length; rowIndex++){
-		var item = dataProvider.source[rowIndex];
-		if(typeof(key) == "string" && item[key] == value){
-			return rowIndex;
-		}else if(key instanceof Array){
-			for(var i = 0; i < key.length; i++)
-				item = item[key[i]];
-		}
-		if(item == value)
-			return rowIndex;
-	}
-	return -1;
+	return FlexDoorUtils.findIndexInArray(collection.source, key, value);
 };
 
 /**
