@@ -48,7 +48,7 @@ $Event.Is = function(target) { return target instanceof flash_events_Event; };
 $Event.Params = function(type, bubbles, cancelable){
 	if(bubbles == undefined) bubbles = false;
 	if(cancelable == undefined) cancelable = false;
-	return System.getParams(arguments, 0, true);
+	return [type, bubbles, cancelable].concat(System.getParams(arguments, 3, true));
 };
 $Event.Create = function(type, bubbles, cancelable){
 	return System.create("flash.events::Event",
