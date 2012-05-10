@@ -1,5 +1,5 @@
 function Sample3TestCase(){
-	this.init("SampleApp", "FlexDoor Sample 3");
+	this.init("SampleApp", "DataGrid Search and Filtering");
 	this.include("mx.containers::TitleWindow",
 				 "mx.controls::DataGrid",
 				 "mx.collections::ListCollectionView");

@@ -1,5 +1,5 @@
 function Sample2TestCase(){
-	this.init("SampleApp", "FlexDoor Sample 2");
+	this.init("SampleApp", "Button Events");
 	this.include("mx.containers::TitleWindow",
 				 "mx.controls::Alert",
 				 "mx.controls::Button",

@@ -302,7 +302,7 @@ FlexDoor.toClassName = function(pair) {
 };
 
 //Static API's and Variables
-FlexDoor.VERSION    = 3.0;
+FlexDoor.VERSION    = 3.1;
 FlexDoor.TEST_CASES = [];
 FlexDoor.LOAD_FILES = {};
 FlexDoor.TIME_INTERVAL;
@@ -503,6 +503,7 @@ FlexDoor.include("jQuery", "jquery/jquery-latest.js", function(){
 		"flash.events::Event"], 
 		function(){
 			FlexDoor.includeAll(this, [
+			    "fd::Locator",
 				"mx.core::UIComponent",
 				"mx.core::Container",
 				"mx.core::Application",

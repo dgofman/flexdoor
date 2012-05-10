@@ -1,5 +1,5 @@
 function Sample1TestCase(){
-	this.init("SampleApp", "FlexDoor Sample 1");
+	this.init("SampleApp", "Inspect Views");
 	this.include("mx.containers::Panel",
 				 "mx.containers::TitleWindow",
 				 "mx.controls::DataGrid",
