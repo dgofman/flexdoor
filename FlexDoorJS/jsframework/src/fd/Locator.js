@@ -17,33 +17,14 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function Application(classType, extendType, flash)
-{
-	UIComponent.call(this, classType, extendType);
-	Application.application = this;
-	this.flash = flash;
-
-	this.getSystemManager = function(){
-		return this.systemManager;
-	};
-
-	this.getPopupWindow = function(extendType, index, visibleOnly){
-		return this.systemManager.getChildByType(extendType, index, visibleOnly);
-	};
+function Locator() {
 }
+Locator.CLASS_NAME = "Locator";
 
-Application.prototype.Import = function(){
-	return ["mx.core::Container"];
+Locator.prototype = new EventDispatcher();
+Locator.Get = function(path){
+	var object = System.getLocator(path);
+	return System.deserialize(object);
 };
-Application.prototype.Extends = function(){
-	Container.prototype.Extends();
-	Application.prototype = new Container(Application);
-};
-Application.Get = function(o){
-	var ref = this;
-	ref = UIComponent.Get(o, Application);
-	return ref;
-};
-Application.Is = function(target) { return target instanceof Application; };
 
-function mx_core_Application(){};
+function fd_Locator(){};

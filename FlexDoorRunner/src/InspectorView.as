@@ -47,7 +47,7 @@
 			components_lst.addEventListener(ListEvent.ITEM_ROLL_OVER, _runner.showListTooltip);
 			components_lst.addEventListener(ListEvent.ITEM_ROLL_OUT, _runner.showListTooltip);
 			components_lst.addEventListener(Event.CHANGE, function(event:Event):void{
-				details_txt.text = event.target.selectedItem.code;
+				details_txt.htmlText = event.target.selectedItem.code.split('\n').join('<br>');
 			});
 			components_lst.addEventListener(ListEvent.ITEM_CLICK, function(event:ListEvent):void{
 				events_lst.selectedIndex = -1;
@@ -86,7 +86,7 @@
 		public function clearAll(event:MouseEvent=null):void{
 			_componentsDataProvider.removeAll();
 			_eventsDataProvider.removeAll();
-			details_txt.text = "";
+			details_txt.htmlText = "";
 			_runner.dispatchEvent(new ContentEvent(ContentEvent.CLEAR_KIND));
 		}
 

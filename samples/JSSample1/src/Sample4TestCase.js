@@ -1,5 +1,5 @@
 function Sample4TestCase(){
-	this.init("SampleApp", "FlexDoor Sample 4");
+	this.init("SampleApp", "Event Listeners and Handlers");
 	this.include("mx.containers::TitleWindow",
 				 "mx.controls::DataGrid",
 				 "mx.collections::ListCollectionView",
@@ -56,10 +56,6 @@ Sample4TestCase.prototype.test_2 = function(event) {
 	
 	//Trigger changeHandler listener
 	this.callLater(Sample4TestCase.addNewItem, 1000, dataProvider);
-};
-
-Sample4TestCase.prototype.test_3 = function(event) {
-	alert("DONE!");
 };
 
 Sample4TestCase.dataGridChangeHandler = function(event){

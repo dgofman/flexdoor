@@ -103,11 +103,10 @@ System.waitFor = function(target, func, delay, timeout, params){
 	}, timeout);
 };
 
-System.find = function(parent, id, index, visibleOnly, includeRef){
-	includeRef = (includeRef == undefined ? true : includeRef);
+System.getLocator = function(path){
 	var flash = Application.application.flash;
-	var object = flash.find(parent.refId, id, index, visibleOnly, includeRef);
-	return System.deserialize(object, parent);
+	var object = flash.getLocator(path);
+	return System.deserialize(object);
 };
 
 System.findById = function(refId, includeRef){
@@ -115,6 +114,13 @@ System.findById = function(refId, includeRef){
 	var flash = Application.application.flash;
 	var object = flash.findById(refId);
 	return System.deserialize(object, includeRef);
+};
+
+System.find = function(parent, id, index, visibleOnly, includeRef){
+	includeRef = (includeRef == undefined ? true : includeRef);
+	var flash = Application.application.flash;
+	var object = flash.find(parent.refId, id, index, visibleOnly, includeRef);
+	return System.deserialize(object, parent);
 };
 
 System.getClass = function(className){
