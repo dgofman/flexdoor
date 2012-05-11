@@ -11,6 +11,7 @@
 	import flash.external.ExternalInterface;
 	import fl.data.DataProvider;
 	import flash.utils.setTimeout;
+	import flash.text.TextField;
 
 	public class FlexDoorRunner extends MovieClip
 	{
@@ -30,6 +31,7 @@
 		[Embed("../assets/minimize.swf")] private const _minimizeSWF:Class;
 		[Embed("../assets/restore.swf")]  private const _restoreSWF:Class;
 
+		private var _tooltip_lbl:TextField;
 		private var _targetButton:Button;
 		private var _filterButton:Button;
 		private var _folderButton:Button;
@@ -57,12 +59,16 @@
 			advancedView.init(this);
 			scriptLoaderView.init(this);
 
-			tooltip_lbl.autoSize = "left";
-			tooltip_lbl.border = true;
-			tooltip_lbl.borderColor = 0xCCCCCC;
-			tooltip_lbl.background = true;
-			tooltip_lbl.backgroundColor = 0xF5EE77;
-			tooltip_lbl.visible = false;
+			tooltip_mc.mouseEnabled = false;
+			tooltip_mc.mouseChildren = false;
+			tooltip_mc.visible = false;
+
+			_tooltip_lbl = tooltip_mc.tooltip_lbl;
+			_tooltip_lbl.autoSize = "left";
+			_tooltip_lbl.border = true;
+			_tooltip_lbl.borderColor = 0xCCCCCC;
+			_tooltip_lbl.background = true;
+			_tooltip_lbl.backgroundColor = 0xF5EE77;
 
 			views.inspector_btn.setStyle("icon", _targetSWF);
 			initButton(views.inspector_btn, openInspector, "Inspector");
@@ -81,14 +87,10 @@
 		}
 
 		public function initButton(button:*, eventHandler, toolTip:String):void{
-			button.buttonMode = true;
-			button.useHandCursor = true;
 			if(eventHandler != null)
 				button.addEventListener(MouseEvent.CLICK, eventHandler);
 			if(toolTip != null){
-				button.setStyle("toolTip", toolTip);
-				button.addEventListener(MouseEvent.ROLL_OVER, showButtonTooltip);
-				button.addEventListener(MouseEvent.ROLL_OUT, showButtonTooltip);
+				attachToolTip(button, toolTip);
 			}
 		}
 
@@ -118,10 +120,6 @@
 
 		public function inspectEvents():void{
 			inspectorView.inspectEventsHandler();
-		}
-
-		public function inspectObjects():void{
-			inspectorView.inspectObjectsHandler();
 		}
 
 		public function playPauseTestCases():void{
@@ -174,7 +172,6 @@
 		}
 		
 		private function minimizeWindow(event:MouseEvent=null):void{
-			showButtonTooltip();
 			scaleX = .2;
 			scaleY = .05;
 			visibleViews(false);
@@ -191,49 +188,52 @@
 			restore_btn.visible = !b;
 		}
 
-		public function showButtonTooltip(event:MouseEvent=null):void{
-			var isOver:Boolean = (event != null && event.type == MouseEvent.ROLL_OVER);
-			showTooltip(event, isOver, mouseMoveButtonHandler, function():void{
-				tooltip_lbl.text = " " + event.currentTarget.getStyle("toolTip") + " ";
+		public function attachToolTip(clip:*, toolTip:String, autoHide:Boolean=true):void{
+			clip.buttonMode = true;
+			clip.useHandCursor = true;
+			clip.addEventListener(MouseEvent.ROLL_OVER, function(event:MouseEvent){
+				showTooltip(event, true, mouseMoveToolTipHandler, function():String{
+					return toolTip;
+			}, autoHide)});
+			clip.addEventListener(MouseEvent.ROLL_OUT, function(event:MouseEvent):void{
+				showTooltip(event, false, mouseMoveToolTipHandler);
 			});
 		}
 
-		private function mouseMoveButtonHandler(event:MouseEvent):void{
+		private function mouseMoveToolTipHandler(event:MouseEvent):void{
 			clearInterval(_tooltipDelayInterval);
-			var x:Number = Math.max(0, mouseX - tooltip_lbl.width / 2);
-			tooltip_lbl.x = Math.min(x, stage.stageWidth - tooltip_lbl.width);
-			tooltip_lbl.y = mouseY + (event.target.y > 30 ? -25 : 25);
+			var x:Number = Math.max(0, mouseX - _tooltip_lbl.width / 2);
+			var y:Number = mouseY + (event.target.y > 30 ? -25 : 25);
+			tooltip_mc.x = Math.min(x, stage.stageWidth - _tooltip_lbl.width);
+			tooltip_mc.y = Math.min(y, stage.stageHeight - _tooltip_lbl.height - 25);
 		}
 
 		public function showListTooltip(event:ListEvent):void{
-			showTooltip(event, event.type == ListEvent.ITEM_ROLL_OVER, mouseMoveListHandler, function():void{
-				tooltip_lbl.text = " " + event.item[event.target.labelField] + " ";
+			showTooltip(event, event.type == ListEvent.ITEM_ROLL_OVER, mouseMoveListHandler, function():String{
+				return event.item[event.target.labelField];
 			}, false);
-		}
-
-		private function mouseMoveListHandler(event:Event=null):void{
-			clearInterval(_tooltipDelayInterval);
-			tooltip_lbl.x = Math.min(mouseX + 15, stage.stageWidth - tooltip_lbl.width);
-			tooltip_lbl.y = Math.min(mouseY + 15, stage.stageHeight - tooltip_lbl.height);
 		}
 
 		public function showDataGridTooltip(event:ListEvent):void{
-			showTooltip(event, event.type == ListEvent.ITEM_ROLL_OVER, mouseMoveListHandler, function():void{
-				tooltip_lbl.text = (event.item.toolTip ? event.item.toolTip : "");
+			showTooltip(event, event.type == ListEvent.ITEM_ROLL_OVER, mouseMoveListHandler, function():String{
 				if(event.item["testName"] == null){
 					switch(event.columnIndex){
 						case 4:
-							tooltip_lbl.text = "Move Up TestCase";
-							break;
+							return "Move Up TestCase";
 						case 5:
-							tooltip_lbl.text = "Move Down TestCase";
-							break;
+							return "Move Down TestCase";
 						case 6:
-							tooltip_lbl.text = "Delete TestCase";
-							break;
+							return "Delete TestCase";
 					}
 				}
+				return (event.item.toolTip ? event.item.toolTip : "");
 			}, false);
+		}
+		
+		private function mouseMoveListHandler(event:Event=null):void{
+			clearInterval(_tooltipDelayInterval);
+			tooltip_mc.x = Math.min(mouseX + 15, stage.stageWidth - _tooltip_lbl.width);
+			tooltip_mc.y = Math.min(mouseY + 15, stage.stageHeight - _tooltip_lbl.height);
 		}
 		
 		private function showTooltip(event:Event, isOver:Boolean, mouseEventHandler:Function, toolTipHandler:Function=null, autoHide:Boolean=true):void{
@@ -241,16 +241,17 @@
 			if(isOver){
 				_tooltipDelayInterval = setInterval(function():void{
 					mouseEventHandler(event);
-					toolTipHandler();
-					if(tooltip_lbl.text != ""){
-						tooltip_lbl.visible = true;
+					_tooltip_lbl.text = " " + toolTipHandler() + " ";
+					if(_tooltip_lbl.text != "  "){
+						mouseEventHandler(event);
+						tooltip_mc.visible = true;
 						stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseEventHandler);
 						if(autoHide)
 							setTimeout(showTooltip, 1500, event, false, mouseEventHandler);
 					}
 				}, 500);
 			}else{
-				tooltip_lbl.visible = false;
+				tooltip_mc.visible = false;
 				stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseEventHandler);
 			}
 		}
