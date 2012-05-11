@@ -644,26 +644,28 @@ package
 		
 		protected function createProxyObject(ref:*, includeNamespaces:Boolean=false):*{
 			if(ref is DisplayObject)
-				return DisplayObject(ref).toString();
-			if(ref == null || typeof(ref) != "object")
-				return ref;
+				return '"' + DisplayObject(ref).toString() + '"';
+			if(ref == null || typeof(ref) != "object"){
+				if(ref is String)
+					ref = String(ref).replace('"', '\\"');
+				return ref is String || ref is Function || isNaN(ref) || ref == undefined ? '"' + ref + '"' : ref;
+			}
 
 			var value:*;
-			var out:Object = {};
+			var out:Array = [];
+			var array:Array = [];
 			var classInfo:XML = describeType(ref);
 			var isDict:Boolean  = (classInfo.@name.toString() == "flash.utils::Dictionary");
 			var dynamic:Boolean = (classInfo.@isDynamic.toString() == "true");
 			if(isDict || dynamic){
 				for(var key:* in ref){
-					if(key != "mx_internal_uid"){
-						value = ref[key];
-						if(value is Array){
-							out[key] = [];
-							for(var i:uint = 0; i < value.length; i++)
-								out[key][i] = createProxyObject(value[i]);
-						}else{
-							out[key] = createProxyObject(value);
-						}
+					value = ref[key];
+					if(value is Array){
+						for(var i:uint = 0; i < value.length; i++)
+							array[i] = toJson(createProxyObject(value[i]));
+						out.push('"' + key + '":[' + array.join(', ') + ']');
+					}else{
+						out.push('"' + key + '":' + toJson(createProxyObject(value)));
 					}
 				}
 			}else{
@@ -680,16 +682,21 @@ package
 					if(uri.length == 0 || includeNamespaces){ //ignore http://www.adobe.com/2006/flex/mx/internal
 						value = ref[item.@name];
 						if(value is Array){
-							out[item.@name] = [];
+							array = [];
 							for(var j:uint = 0; j < value.length; j++)
-								out[item.@name][j] = createProxyObject(value[j]);
+								array[j] = toJson(createProxyObject(value[j]));
+							out.push('"' + item.@name + '":[' + array.join(', ') + ']');
 						}else{
-							out[item.@name] = createProxyObject(value);
+							out.push('"' + item.@name + '":' + toJson(createProxyObject(value)));
 						}
 					}
 				}
 			}
-			return out;
+			return '{' + out.join(', ') + '}';
+		}
+		
+		protected function toJson(o:*):*{
+			return o is Array ? '[' + o.join(', ') + ']' : o;
 		}
 
 		protected function validateCommand(object:*, command:String):Boolean{

@@ -21,7 +21,7 @@
 
 			_runner.initButton(clear_btn, clearAll, "Clear  Ctrl+Alt+C");
 			_runner.initButton(spy_events_ckb, inspectEventsHandler, "Inspect Events  Ctrl+Alt+E");
-			_runner.initButton(spy_objects_ckb, inspectObjectsHandler, "Inspect Objects  Ctrl+Alt+O");
+			_runner.attachToolTip(target_lbl, "Drag the Inspector Tool over a component to select it,\nthen release the mouse button", false);
 
 			_eventsDataProvider = new DataProvider();
 			events_lst.labelField = "event";
@@ -94,12 +94,6 @@
 			if(event == null)
 				spy_events_ckb.selected = !spy_events_ckb.selected;
 			_runner.dispatchEvent(new ContentEvent(ContentEvent.EVENTS_KIND, spy_events_ckb.selected));
-		}
-
-		public function inspectObjectsHandler(event:MouseEvent=null):void{
-			if(event == null)
-				spy_objects_ckb.selected = !spy_objects_ckb.selected; 
-			_runner.dispatchEvent(new ContentEvent(ContentEvent.OBJECTS_KIND, spy_objects_ckb.selected));
 		}
 	}
 }
