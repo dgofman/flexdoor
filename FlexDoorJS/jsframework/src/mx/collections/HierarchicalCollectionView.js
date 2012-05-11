@@ -42,11 +42,13 @@ mx_collections_HierarchicalCollectionView.prototype.toString = function() {
 };
 mx_collections_HierarchicalCollectionView.prototype.Initialize = function(object, parent){
 	EventDispatcher.prototype.Initialize.call(this, object, parent);
-	this.source = object.ref.source;
-	if(this.source != null)
-		this.hierarchicalData = this.source.source;
-	if(this.hierarchicalData != null)
-		this.collection = this.hierarchicalData.source;
+	if(object.ref != undefined && typeof(object.ref) == "object"){
+		this.source = object.ref.source;
+		if(this.source != null)
+			this.hierarchicalData = this.source.source;
+		if(this.hierarchicalData != null)
+			this.collection = this.hierarchicalData.source;
+	}
 };
 mx_collections_HierarchicalCollectionView.Get = function(o){
 	var ref = this;
