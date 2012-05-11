@@ -6,7 +6,9 @@ package
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
+	import flash.geom.Point;
 	import flash.text.TextField;
+	import flash.ui.Mouse;
 	import flash.utils.Timer;
 	import flash.utils.clearInterval;
 	import flash.utils.describeType;
@@ -88,18 +90,41 @@ package
 			_queueList = [];
 		}
 
-		private function mouseMoveEventHandler(event:MouseEvent):void{
-			if(_lastSpyComponent != event.target){
-				_lastSpyComponent = event.target;
-				getComponentInfo(_lastSpyComponent, [], [], {});
+		private function mouseEventHandler(event:MouseEvent):void{
+			if(event.type == MouseEvent.MOUSE_MOVE){
+				if(event.stageX >= 0 && event.stageY >= 0 &&
+				   event.stageX < _stage.stageWidth && 
+				   event.stageY < _stage.stageHeight){
+					if(_lastSpyComponent != event.target){
+						_lastSpyComponent = event.target;
+						getComponentInfo(_lastSpyComponent, [], [], {});
+					}
+					return;
+				}
 			}
+			Mouse.show();
+			_content.inspector_mc.visible = false;
+			_content.inspector_mc.stopDrag();
+			removeMouseEventHandlers();
+		}
+		
+		private function removeMouseEventHandlers():void{
+			_stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseEventHandler);
+			_stage.removeEventListener(MouseEvent.MOUSE_UP, mouseEventHandler);
 		}
 
-		public function inspectObjects(active:Boolean):void{
+		public function inspectObjects():void{
 			if(_stage != null){
-				_stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveEventHandler);
-				if(active == true)
-					_stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMoveEventHandler);
+				Mouse.hide();
+				var point:Point = _content.targetPoint;
+				_content.localToGlobal(point);
+				_content.inspector_mc.x = point.x;
+				_content.inspector_mc.y = point.y;
+				_content.inspector_mc.visible = true;
+				_content.inspector_mc.startDrag();
+				removeMouseEventHandlers();
+				_stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseEventHandler);
+				_stage.addEventListener(MouseEvent.MOUSE_UP, mouseEventHandler);
 			}
 		}
 
@@ -325,8 +350,8 @@ package
 				case ContentEvent.EVENTS_KIND:
 					inspectEvents(event.state);
 					break;
-				case ContentEvent.OBJECTS_KIND:
-					inspectObjects(event.state);
+				case ContentEvent.DRAG_KIND:
+					inspectObjects();
 					break;
 				case ContentEvent.CLEAR_KIND:
 					clear();
@@ -334,7 +359,6 @@ package
 				case ContentEvent.CLOSE_KIND:
 					clear();
 					inspectEvents(false);
-					inspectObjects(false);
 					break;
 			}
 		}
@@ -342,9 +366,6 @@ package
 		private function onKeyDownEventHanlder(event:KeyboardEvent):void{
 			if(event.ctrlKey && event.altKey){
 				switch(String.fromCharCode(event.charCode).toUpperCase()){
-					case 'O':
-						_content.inspectObjects();
-						break;
 					case 'E':
 						_content.inspectEvents();
 						break;

@@ -19,9 +19,13 @@
 		public function init(runner:FlexDoorRunner){
 			_runner = runner;
 
+			target_mc.buttonMode = true;
+			target_mc.useHandCursor = true;
+			target_mc.addEventListener(MouseEvent.MOUSE_DOWN, targetMouseEventHandler);
+			
 			_runner.initButton(clear_btn, clearAll, "Clear  Ctrl+Alt+C");
 			_runner.initButton(spy_events_ckb, inspectEventsHandler, "Inspect Events  Ctrl+Alt+E");
-			_runner.attachToolTip(target_lbl, "Drag the Inspector Tool over a component to select it,\nthen release the mouse button", false);
+			_runner.attachToolTip(target_lbl, "Drag the Inspector Tool over a component to select it, \n then release the mouse button", false);
 
 			_eventsDataProvider = new DataProvider();
 			events_lst.labelField = "event";
@@ -67,6 +71,10 @@
 				components_lst.selectedIndex = 0;
 				components_lst.dispatchEvent(new Event(Event.CHANGE));
 			}
+		}
+
+		private function targetMouseEventHandler(event:MouseEvent):void{
+			_runner.dispatchEvent(new ContentEvent(ContentEvent.DRAG_KIND));
 		}
 
 		private function moveItemTop(uid:String):Boolean{
