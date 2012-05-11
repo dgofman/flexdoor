@@ -283,6 +283,9 @@ System.deserialize = function(object, parent){
 				var component = new classType(classType, extendType);
 				if(component instanceof EventDispatcher ||
 					component.Initialize instanceof Function){
+					var json = jQuery.parseJSON(object.ref);
+					if(typeof(json) == "object")
+						object.ref = json;
 					component.Initialize(object, parent);
 				}
 				return component;
