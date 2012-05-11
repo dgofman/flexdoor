@@ -1,6 +1,7 @@
 package
 {
 	import flash.display.Loader;
+	import flash.display.Sprite;
 	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
@@ -37,6 +38,7 @@ package
 
 		private var _loader:Loader;
 		private var _content:*;
+		private var _inspectorRect:Sprite;
 		private var _stage:Stage;
 
 		private var _queueMap:Object;
@@ -82,6 +84,9 @@ package
 			_loader.loadBytes(new _flexdoorSWF()); 
 			_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onComplete);
 			application.systemManager.cursorChildren.addChild(_loader);
+			
+			_inspectorRect = new Sprite();
+			application.systemManager.cursorChildren.addChild(_inspectorRect);
 		}
 
 		private function clear():void{
@@ -96,8 +101,31 @@ package
 				   event.stageX < _stage.stageWidth && 
 				   event.stageY < _stage.stageHeight){
 					if(_lastSpyComponent != event.target){
-						_lastSpyComponent = event.target;
-						getComponentInfo(_lastSpyComponent, [], [], {});
+						
+						var target:* = event.target; 
+						var x:uint = 0;
+						var y:uint = 0;
+						while(target != _stage){
+							var type:XML = describeType(target);
+							if(type.type.(@name == "mx.core::UIComponent").length() > 0 ||
+							   type.extendsClass.(@type == "mx.core::UIComponent").length() > 0){
+								_lastSpyComponent = event.target;
+								
+								var point:Point = new Point(0, 0);
+								point = target.contentToGlobal(point);
+
+								_inspectorRect.graphics.clear();
+								_inspectorRect.graphics.lineStyle(2, 0xFF0000);
+								_inspectorRect.graphics.drawRect(0, 0, event.target.width, event.target.height);
+								_inspectorRect.x = point.x + x;
+								_inspectorRect.y = point.y + y;
+								getComponentInfo(_lastSpyComponent, [], [], {});
+								break;
+							}
+							x += target.x;
+							y += target.y;
+							target = target.parent;
+						}
 					}
 					return;
 				}
@@ -109,6 +137,7 @@ package
 		}
 		
 		private function removeMouseEventHandlers():void{
+			_inspectorRect.graphics.clear();
 			_stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseEventHandler);
 			_stage.removeEventListener(MouseEvent.MOUSE_UP, mouseEventHandler);
 		}
