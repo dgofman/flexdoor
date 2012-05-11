@@ -12,6 +12,7 @@
 	import fl.data.DataProvider;
 	import flash.utils.setTimeout;
 	import flash.text.TextField;
+	import flash.geom.Point;
 
 	public class FlexDoorRunner extends MovieClip
 	{
@@ -59,6 +60,10 @@
 			advancedView.init(this);
 			scriptLoaderView.init(this);
 
+			inspector_mc.mouseEnabled = false;
+			inspector_mc.mouseChildren = false;
+			inspector_mc.visible = false;
+			
 			tooltip_mc.mouseEnabled = false;
 			tooltip_mc.mouseChildren = false;
 			tooltip_mc.visible = false;
@@ -69,7 +74,7 @@
 			_tooltip_lbl.borderColor = 0xCCCCCC;
 			_tooltip_lbl.background = true;
 			_tooltip_lbl.backgroundColor = 0xF5EE77;
-
+			
 			views.inspector_btn.setStyle("icon", _targetSWF);
 			initButton(views.inspector_btn, openInspector, "Inspector");
 			views.advanced_btn.setStyle("icon", _filterSWF);
@@ -112,6 +117,13 @@
 				items.push(item[key]);
 			}
 			return items;
+		}
+
+		public function get targetPoint():Point{
+			var t:MovieClip = inspectorView.target_mc;
+			var x:Number = t.x - ((inspector_mc.width - t.width) / 2);
+			var y:Number = t.y + t.height;
+			return new Point(x + (t.mouseX - inspector_mc.width / 2), y + (t.mouseY - inspector_mc.height / 2));
 		}
 
 		public function clearAll():void{
@@ -203,9 +215,9 @@
 		private function mouseMoveToolTipHandler(event:MouseEvent):void{
 			clearInterval(_tooltipDelayInterval);
 			var x:Number = Math.max(0, mouseX - _tooltip_lbl.width / 2);
-			var y:Number = mouseY + (event.target.y > 30 ? -25 : 25);
+			var y:Number = (event.target.y > 30 ? mouseY - _tooltip_lbl.height - 5 :  mouseY + event.target.height + 3);
 			tooltip_mc.x = Math.min(x, stage.stageWidth - _tooltip_lbl.width);
-			tooltip_mc.y = Math.min(y, stage.stageHeight - _tooltip_lbl.height - 25);
+			tooltip_mc.y = y;
 		}
 
 		public function showListTooltip(event:ListEvent):void{
@@ -240,7 +252,6 @@
 			clearInterval(_tooltipDelayInterval);
 			if(isOver){
 				_tooltipDelayInterval = setInterval(function():void{
-					mouseEventHandler(event);
 					_tooltip_lbl.text = " " + toolTipHandler() + " ";
 					if(_tooltip_lbl.text != "  "){
 						mouseEventHandler(event);

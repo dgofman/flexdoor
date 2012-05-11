@@ -9,10 +9,10 @@ package
 
 		public static const CONTENT_TYPE:String = "contentEvent";
 
-		public static const OBJECTS_KIND:String = "objectsKind";
 		public static const EVENTS_KIND:String = "eventsKind";
 		public static const CLEAR_KIND:String = "clearKind";
 		public static const CLOSE_KIND:String = "closeKind";
+		public static const DRAG_KIND:String  = "dragKind";
 
 		public function ContentEvent(kind:String, state:Boolean=false){
 			super(CONTENT_TYPE);
