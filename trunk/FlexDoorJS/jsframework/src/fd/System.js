@@ -283,7 +283,7 @@ System.deserialize = function(object, parent){
 				var component = new classType(classType, extendType);
 				if(component instanceof EventDispatcher ||
 					component.Initialize instanceof Function){
-					var json = jQuery.parseJSON(object.ref);
+					var json = System.json(object.ref);
 					if(typeof(json) == "object")
 						object.ref = json;
 					component.Initialize(object, parent);
@@ -293,6 +293,10 @@ System.deserialize = function(object, parent){
 		}
 	}
 	return object;
+};
+
+System.json = function(jsonStr){
+	return jQuery.parseJSON(jsonStr);
 };
 
 System.fireEvent = function(target, event){
