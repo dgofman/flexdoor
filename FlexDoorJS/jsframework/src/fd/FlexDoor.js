@@ -459,7 +459,7 @@ FlexDoor.addScriptToHead = function(id, src, text, listener){
 	script.setAttribute("type", "text/javascript");
 	script.id = id;
 	if(text == undefined){
-		script.src =  src + '?' + new Date().getTime();
+		script.src =  src + (src.indexOf('?') == -1 ? '?t=' : '&t=') + new Date().getTime();
 	}else{
 		script.text = text;
 	}
