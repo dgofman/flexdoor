@@ -30,6 +30,8 @@ Assert.assertEquals = function(actual, expected, message) {
 	if(FlexDoor.AUTO_START != true){
 		var flash = Application.application.flash;
 		flash.assertResult(error, str);
+		if(error == true)
+			System.error(str);
 	}else{
 		System.trace(str, error ? "warn" : "log");
 	}
