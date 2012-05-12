@@ -31,7 +31,7 @@ Assert.assertEquals = function(actual, expected, message) {
 		var flash = Application.application.flash;
 		flash.assertResult(error, str);
 		if(error == true)
-			System.error(str);
+			System.warn(str);
 	}else{
 		System.trace(str, error ? "warn" : "log");
 	}
