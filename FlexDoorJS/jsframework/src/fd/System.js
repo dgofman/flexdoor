@@ -181,7 +181,7 @@ System.create = function(extendType, args){
 //listenerId - is not remove event dispatcher hook
 System.dispatchEventHook = function(target, listenerId, type){
 	var flash = Application.application.flash;
-	flash.addAnyEventListener(target.refId, listenerId, type);
+	flash.dispatchEventHook(target.refId, listenerId, type);
 };
 
 System.addEventListener = function(target, type, listenerId, useWeakReference, useCapture, priority){
