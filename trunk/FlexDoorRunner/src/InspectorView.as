@@ -58,37 +58,34 @@
 			});
 		}
 
-		public function addNewEvent(item){
-			events_lst.verticalScrollPosition = 0;
-			_eventsDataProvider.addItemAt(item, 0);
-			moveItemTop(item.uid);
-		}
-
-		public function addComponent(item){
-			components_lst.verticalScrollPosition = 0;
-			if(moveItemTop(item.uid) == false){
-				_componentsDataProvider.addItemAt(item, 0);
-				components_lst.selectedIndex = 0;
-				components_lst.dispatchEvent(new Event(Event.CHANGE));
-			}
-		}
-
 		private function targetMouseEventHandler(event:MouseEvent):void{
 			_runner.dispatchEvent(new ContentEvent(ContentEvent.DRAG_KIND));
 		}
+		
+		public function addNewEvent(item){
+			events_lst.verticalScrollPosition = 0;
+			_eventsDataProvider.addItemAt(item, 0);
+			moveItemTop(item.uid, null);
+		}
 
-		private function moveItemTop(uid:String):Boolean{
+		public function addComponent(item){
+			moveItemTop(item.uid, item);
+		}
+
+		private function moveItemTop(uid:String, item:Object):void{
 			for(var i:Number = 0; i < _componentsDataProvider.length; i++){
 				var data:Object = _componentsDataProvider.getItemAt(i);
 				if(data.uid == uid){
 					components_lst.removeItemAt(i);
-					components_lst.addItemAt(data, 0);
-					components_lst.selectedIndex = 0;
-					components_lst.dispatchEvent(new Event(Event.CHANGE));
-					return true;
+					if(item == null) //add events
+						item = data;
+					break;
 				}
 			}
-			return false;
+			_componentsDataProvider.addItemAt(item, 0);
+			components_lst.verticalScrollPosition = 0;
+			components_lst.selectedIndex = 0;
+			components_lst.dispatchEvent(new Event(Event.CHANGE));
 		}
 
 		public function clearAll(event:MouseEvent=null):void{
