@@ -19,7 +19,7 @@
 		public var views:MovieClip;
 
 		private var inspectorView:InspectorView;
-		private var advancedView:AdvancedView;
+		private var eventFilterView:EventFilterView;
 		private var scriptLoaderView:ScriptLoaderView;
 
 		private var _tooltipDelayInterval:Number;
@@ -44,7 +44,7 @@
 			_so = SharedObject.getLocal("flexdoorRunner");
 
 			inspectorView = views.inspectorView;
-			advancedView = views.advancedView;
+			eventFilterView = views.eventFilterView;
 			scriptLoaderView = views.scriptLoaderView;
 
 			visibleViews(true);
@@ -57,7 +57,7 @@
 
 		protected function init():void{
 			inspectorView.init(this);
-			advancedView.init(this);
+			eventFilterView.init(this);
 			scriptLoaderView.init(this);
 
 			inspector_mc.mouseEnabled = false;
@@ -76,11 +76,11 @@
 			_tooltip_lbl.backgroundColor = 0xF5EE77;
 			
 			views.inspector_btn.setStyle("icon", _targetSWF);
-			initButton(views.inspector_btn, openInspector, "Inspector");
+			initButton(views.inspector_btn, openInspector, "Inspect Components and Events");
 			views.advanced_btn.setStyle("icon", _filterSWF);
-			initButton(views.advanced_btn, openAdvanced, "Filter");
+			initButton(views.advanced_btn, openAdvanced, "Filter Events");
 			views.testcases_btn.setStyle("icon", _folderSWF);
-			initButton(views.testcases_btn, openTestCases, "Loader");
+			initButton(views.testcases_btn, openTestCases, "Load Scripts");
 			views.minimize_btn.setStyle("icon", _minimizeSWF);
 			initButton(views.minimize_btn, minimizeWindow, "Minimize");
 
@@ -110,11 +110,14 @@
 			return _so;
 		}
 
-		public function toArray(dp:DataProvider, key:String="label"):Array{
+		public function toArray(dp:DataProvider, key:String=null):Array{
 			var items:Array = [];
 			for(var i:uint = 0; i < dp.length; i++){
 				var item:Object = dp.getItemAt(i);
-				items.push(item[key]);
+				if(key == null)
+					items.push(item);
+				else
+					items.push(item[key]);
 			}
 			return items;
 		}
@@ -134,20 +137,20 @@
 			inspectorView.inspectEventsHandler();
 		}
 
+		public function addNewEvent(item:Object):void{
+			inspectorView.addNewEvent(item);
+		}
+		
+		public function addComponent(item:Object):void{
+			inspectorView.addComponent(item);
+		}
+
 		public function playPauseTestCases():void{
 			scriptLoaderView.playPauseTestCases();
 		}
 
 		public function stopTestCases():void{
 			scriptLoaderView.stopTestCases();
-		}
-
-		public function addNewEvent(item:Object):void{
-			inspectorView.addNewEvent(item);
-		}
-
-		public function addComponent(item:Object):void{
-			inspectorView.addComponent(item);
 		}
 
 		public function assertResult(error:Boolean, message:String):void{
@@ -161,10 +164,14 @@
 		public function getTestIndex(index:uint, testCaseName:String):int{
 			return scriptLoaderView.getTestIndex(index, testCaseName);
 		}
+		
+		public function getExcludeEvents():Object{
+			return eventFilterView.getExcludeEvents();
+		}
 
 		public function openInspector(event:MouseEvent=null):void{
 			scriptLoaderView.visible = false;
-			advancedView.visible = false;
+			eventFilterView.visible = false;
 			inspectorView.visible = true;
 			this.visible = true;
 		}
@@ -172,13 +179,13 @@
 		public function openAdvanced(event:MouseEvent=null):void{
 			scriptLoaderView.visible = false;
 			inspectorView.visible = false;
-			advancedView.visible = true;
+			eventFilterView.visible = true;
 			this.visible = true;
 		}
 
 		public function openTestCases(event:MouseEvent=null):void{
 			inspectorView.visible = false;
-			advancedView.visible = false;
+			eventFilterView.visible = false;
 			scriptLoaderView.visible = true;
 			this.visible = true;
 		}

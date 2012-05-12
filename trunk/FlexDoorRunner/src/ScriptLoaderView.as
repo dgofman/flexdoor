@@ -261,7 +261,7 @@
 			}
 		}
 
-		public function onFileRefHandler(event:Event):void{
+		private function onFileRefHandler(event:Event):void{
 			event.currentTarget.removeEventListener(Event.SELECT, onFileRefHandler);
 			event.currentTarget.removeEventListener(Event.CANCEL, onFileRefHandler);
 			if(event.type == Event.SELECT){
@@ -320,7 +320,7 @@
 			_selectedKeys[item.jsFile + "::" + item.testName] = value;
 		}
 
-		public function loadTestCases(event:MouseEvent=null):void{
+		private function loadTestCases(event:MouseEvent=null):void{
 			load_testcases_btn.enabled = false;
 			var format = location_cmb.getStyle("textFormat") as TextFormat;
 			var so:SharedObject = _runner.so;
