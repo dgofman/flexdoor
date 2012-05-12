@@ -515,7 +515,7 @@ package
 											   useWeakReference:Boolean, useCapture:Boolean, priority:int):void{
 			var target:Object = _refMap[refId];
 			var listener:Function = deserialize(listenerRef);
-			target.addEventListener(type, listener, useCapture, priority, true);
+			target.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
 
 		protected function js_removeEventListener(refId:Number, type:String, listenerId:uint, useCapture:Boolean):void{
