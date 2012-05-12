@@ -132,7 +132,7 @@ EventDispatcher.prototype.createFunction = function(){
 	return listener;
 };
 
-EventDispatcher.prototype.addAnyEventListener = function(type, listener, target){
+EventDispatcher.prototype.dispatchEventHook = function(listener, target, type){
 	var asFunction = null;
 	if(listener instanceof fd_Function){
 		asFunction = listener;
@@ -142,10 +142,6 @@ EventDispatcher.prototype.addAnyEventListener = function(type, listener, target)
 		});
 	}
 	System.dispatchEventHook(this, this.serialize(asFunction), type);
-};
-
-EventDispatcher.prototype.removeAnyEventListener = function(){
-	System.dispatchEventHook();
 };
 
 EventDispatcher.prototype.addEventListener = function(type, listener, target, useWeakReference, useCapture, priority){

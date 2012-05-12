@@ -177,14 +177,11 @@ System.create = function(extendType, args){
 	return System.deserialize(object);
 };
 
-System.addAnyEventListener = function(target, listenerId, type){
+//type is optional get any event types if type is undefined
+//listenerId - is not remove event dispatcher hook
+System.dispatchEventHook = function(target, listenerId, type){
 	var flash = Application.application.flash;
 	flash.addAnyEventListener(target.refId, listenerId, type);
-};
-
-System.removeAnyEventListener = function(){
-	var flash = Application.application.flash;
-	flash.removeAnyEventListener();
 };
 
 System.addEventListener = function(target, type, listenerId, useWeakReference, useCapture, priority){
