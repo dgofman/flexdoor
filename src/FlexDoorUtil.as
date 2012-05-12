@@ -48,9 +48,7 @@ package
 		[Embed(source="../FlexDoorRunner/flexdoor.swf", mimeType="application/octet-stream")]
 		private var _flexdoorSWF:Class;
 
-		private var _excludeEvents:Object = {
-			
-		};
+		private var _excludeEvents:Object;
 
 		public function FlexDoorUtil(flexDoor:FlexDoor, application:*){
 			_flexDoor = flexDoor;
@@ -154,6 +152,11 @@ package
 				_stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseEventHandler);
 				_stage.addEventListener(MouseEvent.MOUSE_UP, mouseEventHandler);
 			}
+		}
+		
+		public function loadExcludeEvents():void{
+			if(_content != null)
+				_excludeEvents = _content.getExcludeEvents();
 		}
 
 		public function inspectEvents(active:Boolean):void{
@@ -376,6 +379,7 @@ package
 					_content.addEventListener(ContentEvent.CONTENT_TYPE, contentEventHandler);
 
 					_content.openTestCases();
+					loadExcludeEvents();
 				}
 			};
 			var timer:Timer = new Timer(100);
@@ -385,6 +389,9 @@ package
 
 		private function contentEventHandler(event:ContentEvent):void{
 			switch(event.kind){
+				case ContentEvent.APPLY_EVENTS:
+					loadExcludeEvents();
+					break;
 				case ContentEvent.EVENTS_KIND:
 					inspectEvents(event.state);
 					break;

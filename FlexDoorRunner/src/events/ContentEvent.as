@@ -9,6 +9,7 @@ package
 
 		public static const CONTENT_TYPE:String = "contentEvent";
 
+		public static const APPLY_EVENTS:String = "applyEvents";
 		public static const EVENTS_KIND:String = "eventsKind";
 		public static const CLEAR_KIND:String = "clearKind";
 		public static const CLOSE_KIND:String = "closeKind";
