@@ -101,7 +101,6 @@ package
 				   event.stageX < _stage.stageWidth && 
 				   event.stageY < _stage.stageHeight){
 					if(_lastSpyComponent != event.target){
-						
 						var target:* = event.target; 
 						var x:uint = 0;
 						var y:uint = 0;
@@ -210,7 +209,8 @@ package
 				if(c != _application && c != _application.systemManager){
 					var type:XML = describeType(c);
 					var extendsClass:XMLList = <></>;
-					var listData:XMLList = type.implementsInterface.(@type == "mx.controls.listClasses::IDropInListItemRenderer");
+					var iDataRenderer:Boolean = (type.implementsInterface.(@type == "mx.core::IDataRenderer").length() > 0 &&
+												c.data != null && c.owner != null && c.owner.hasOwnProperty("indicesToItemRenderer"));
 					extendsClass += new XML('<extendsClass type="' + type.@name.toString() + '"/>') + type.extendsClass;
 					for(var i:uint = 0; i < extendsClass.length(); i++){
 						var pckgName:String = extendsClass[i].@type.toString();
@@ -228,12 +228,20 @@ package
 							}
 							var parent:* = c.parent;
 							var parentName:String;
-							if(listData.length() > 0 && c.listData != null){
-								parentName = getInfo(c.owner);
-								locatorType = '<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(locator);';
-								components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.indicesToItemRenderer(' + c.listData.rowIndex + ', ' + c.listData.columnIndex + '));');
-								locators.push(':' + c.listData.rowIndex + ',' + c.listData.columnIndex);
-								return variableName;
+							if(iDataRenderer){
+								var rowIndex:int = c.owner.itemRendererToIndex(c);
+								if(rowIndex > -1){
+									var columns:Array = c.owner.columns;
+									for(var colIndex:uint = 0; colIndex < columns.length; colIndex++){
+										if(c == c.owner.mx_internal::indicesToItemRenderer(rowIndex, colIndex)){
+											parentName = getInfo(c.owner);
+											locatorType = '<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(locator);';
+											components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.indicesToItemRenderer(' + rowIndex + ', ' + colIndex + '));');
+											locators.push(':' + rowIndex + ',' + colIndex);
+											return variableName;
+										}
+									}
+								}
 							}
 							if(c.hasOwnProperty('id') && c.id != null){
 								//Try to find a parent reference by id
@@ -326,7 +334,8 @@ package
 		}
 
 		private function findIndexByClassType(target:*, numName:String, funName:String, classType:String):int{
-			if( target.parent.hasOwnProperty(numName) && 
+			if( target.parent != null &&
+				target.parent.hasOwnProperty(numName) && 
 				target.parent.hasOwnProperty(funName) && 
 				target.parent[funName] is Function){
 				var visibleCount:uint = 0;

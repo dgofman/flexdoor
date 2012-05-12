@@ -16,6 +16,7 @@ package
 		public static function get list():Array{
 			return ["flash.events.Event",
 					"flash.events.MouseEvent",
+					"flash.events.EventDispatcher",
 					"mx.collections.HierarchicalCollectionView",
 					"mx.collections.ListCollectionView",
 					"mx.containers.Panel",
