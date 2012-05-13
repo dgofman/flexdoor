@@ -1,19 +1,22 @@
 ﻿package {
 	import fl.controls.listClasses.CellRenderer;
 	import fl.controls.listClasses.ICellRenderer;
+	import fl.events.ListEvent;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
-	import flash.events.DataEvent;
 	import flash.system.System;
 
 	public class EventsListCellRenderer extends CellRenderer implements ICellRenderer{
 
 		[Embed("../assets/filter.swf")]
-		private const _filterSWF:Class;
+		public static const filterSWF:Class;
 
 		[Embed("../assets/copy.swf")]
-		private const _copySWF:Class;
+		public static const copySWF:Class;
 
+		private var _filter:Sprite;
+		private var _copy:Sprite;
+		
 		public function EventsListCellRenderer(){
 			super();
 			mouseChildren = true;
@@ -22,27 +25,45 @@
 
 		override protected function configUI():void {
 			super.configUI();
-			var filter:Sprite = new _filterSWF();
-			filter.x = 2;
-			filter.y = 3;
-			filter.buttonMode = true;
-			filter.addEventListener(MouseEvent.CLICK, excludeEvent, false, 0, true);
-			addChild(filter);
+			_filter = new filterSWF();
+			_filter.x = 2;
+			_filter.y = 3;
+			_filter.buttonMode = true;
+			_filter.addEventListener(MouseEvent.CLICK, excludeEvent, false, 0, true);
+			_filter.addEventListener(MouseEvent.ROLL_OVER, onMouseEventHandler, false, 0, true);
+			_filter.addEventListener(MouseEvent.ROLL_OUT, onMouseEventHandler, false, 0, true);
+			addChild(_filter);
 			
-			var copy:Sprite = new _copySWF();
-			copy.x = 21;
-			copy.y = 2;
-			copy.buttonMode = true;
-			copy.addEventListener(MouseEvent.CLICK, onCopyToClipboard, false, 0, true);
-			addChild(copy);
+			_copy = new copySWF();
+			_copy.x = 21;
+			_copy.y = 2;
+			_copy.buttonMode = true;
+			_copy.addEventListener(MouseEvent.CLICK, on_copyToClipboard, false, 0, true);
+			_copy.addEventListener(MouseEvent.ROLL_OVER, onMouseEventHandler, false, 0, true);
+			_copy.addEventListener(MouseEvent.ROLL_OUT, onMouseEventHandler, false, 0, true);
+			addChild(_copy);
 		}
 
 		private function excludeEvent(event:MouseEvent):void{
-			listData.owner.dispatchEvent(new DataEvent(DataEvent.DATA, false, false, String(listData.index)));
+			listData.owner.dispatchEvent(new ListEvent(ListEvent.ITEM_CLICK, false, false, _listData.column, _listData.row, _listData.index, null));
 		}
 
-		private function onCopyToClipboard(event:MouseEvent):void{
+		private function on_copyToClipboard(event:MouseEvent):void{
 			System.setClipboard(data.event);
+		}
+		
+		private function onMouseEventHandler(event:MouseEvent):void{
+			if(event.type == MouseEvent.ROLL_OVER){
+				var item:Object = data;
+				if(event.target == _filter){
+					item = _filter;
+				}else if(event.target == _copy){
+					item = _copy;
+				}
+				listData.owner.dispatchEvent(new ListEvent(ListEvent.ITEM_ROLL_OVER, false, false, _listData.column, _listData.row, _listData.index, item));
+			}else{
+				listData.owner.dispatchEvent(new ListEvent(ListEvent.ITEM_ROLL_OUT));
+			}
 		}
 
 		override protected function drawBackground():void {

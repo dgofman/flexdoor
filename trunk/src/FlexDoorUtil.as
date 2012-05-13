@@ -164,9 +164,9 @@ package
 				clearInterval(_queueInterval);
 				if(active == true){
 					_uiComponent.mx_internal::dispatchEventHook = function(event:Event, uicomponent:*):void{
-						var eventKey:String = getQualifiedClassName(event) + '_' + event.type;
-						if(_excludeEvents[eventKey] == true) return;
-						var uniqKey:String =  eventKey + '_' + uicomponent.toString();
+						var excludeKey:String = getQualifiedClassName(event) + '_' + event.type;
+						if(_excludeEvents[excludeKey] != undefined) return;
+						var uniqKey:String =  excludeKey + '_' + uicomponent.toString();
 						if(_queueMap[uniqKey] == null){
 							_queueList.unshift({event:event, uicomponent:uicomponent});
 							_queueMap[uniqKey] = true; //do not add the same event types
@@ -197,7 +197,7 @@ package
 
 				if(components.length > 0){
 					var uid:String = (uicomponent.hasOwnProperty("uid") ? uicomponent.uid : uicomponent.toString());
-					_content.addNewEvent({event:JSClasses.eventInfo(event), uid:uid});
+					_content.addNewEvent({event:JSClasses.eventInfo(event), uid:uid, eventClass:getQualifiedClassName(event), type:event.type});
 				}
 			};
 		}

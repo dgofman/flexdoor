@@ -168,6 +168,10 @@
 		public function getExcludeEvents():Object{
 			return eventFilterView.getExcludeEvents();
 		}
+		
+		public function addtExcludeEvent(event:String, type:String):void{
+			eventFilterView.addtExcludeEvent(event, type);
+		}
 
 		public function openInspector(event:MouseEvent=null):void{
 			scriptLoaderView.visible = false;
@@ -229,6 +233,10 @@
 
 		public function showListTooltip(event:ListEvent):void{
 			showTooltip(event, event.type == ListEvent.ITEM_ROLL_OVER, mouseMoveListHandler, function():String{
+				if(event.item is EventsListCellRenderer.filterSWF)
+					return "Exclude Event";
+				if(event.item is EventsListCellRenderer.copySWF)
+					return "Copy to Clipboard";
 				return event.item[event.target.labelField];
 			}, false);
 		}
