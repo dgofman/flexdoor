@@ -34,13 +34,13 @@
 			events_lst.addEventListener(ListEvent.ITEM_ROLL_OVER, _runner.showListTooltip);
 			events_lst.addEventListener(ListEvent.ITEM_ROLL_OUT, _runner.showListTooltip);
 			events_lst.addEventListener(ListEvent.ITEM_CLICK, function(event:ListEvent):void{
-				for(var i:Number = 0; i < _componentsDataProvider.length; i++){
-					var data:Object = _componentsDataProvider.getItemAt(i);
-					if(data.uid == event.item.uid){
-						components_lst.verticalScrollPosition = i * components_lst.rowHeight;
-						components_lst.selectedIndex = i;
-						components_lst.dispatchEvent(new Event(Event.CHANGE));
-						break;;
+				if(event.item == null){
+					var selItem:Object = events_lst.dataProvider.getItemAt(uint(event.rowIndex));
+					_runner.addtExcludeEvent(selItem.eventClass, selItem.type);
+					for(var i:int = events_lst.dataProvider.length - 1; i >= 0;  i--){
+						var item:Object = events_lst.dataProvider.getItemAt(i);
+						if(item.eventClass == selItem.eventClass && item.type == selItem.type)
+							events_lst.dataProvider.removeItemAt(i);
 					}
 				}
 			});

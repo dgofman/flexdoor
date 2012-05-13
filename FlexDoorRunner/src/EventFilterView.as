@@ -39,7 +39,7 @@
 			}else{
 				restoreDefault();
 			}
-
+			
 			events_dg.labelFunction = columnLabelFunction;
 			events_dg.addEventListener(ListEvent.ITEM_CLICK, function(event:ListEvent):void
 			{
@@ -121,6 +121,12 @@
 			applyEvents();
 		}
 		
+		public function addtExcludeEvent(event:String, type:String):void{
+			events_dg.verticalScrollPosition = 0;
+			events_dg.dataProvider.addItemAt({event:event, type:type}, 0);
+			_runner.dispatchEvent(new ContentEvent(ContentEvent.APPLY_EVENTS));
+		}
+
 		public function getExcludeEvents():Object{
 			var events:Object = {};
 			for(var i:uint = 0; i < events_dg.dataProvider.length; i++){
