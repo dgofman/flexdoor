@@ -183,7 +183,6 @@ FlexDoor.prototype.include = function() {
 
 				if(releaseRefId == undefined){ //finalizeFunction called by timeout timer
 					Assert.fail("Test timed out: " + testEvent.functionName);
-					System.warn("Test timed out: " + testEvent.functionName);
 				}
 				
 				var testIndex = testEvent.nextOrder;
