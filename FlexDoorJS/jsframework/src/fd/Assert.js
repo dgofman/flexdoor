@@ -52,9 +52,8 @@ Assert.fail = function(message) {
 	if(FlexDoor.AUTO_START != true){
 		var flash = Application.application.flash;
 		flash.assertResult(true, message);
-	}else{
-		System.error(message);
 	}
+	System.error(message);
 };
 
 function fd_Assert(){};
