@@ -22,12 +22,14 @@ function EventDispatcher()
 }
 EventDispatcher.prototype.Extends = function() {};
 EventDispatcher.prototype.Initialize = function(object, parent){
+	this.parent = parent;
 	this.id = object.id;
 	this.name = object.name;
-	this.refId = object.refId;
 	this.extendTypes = object.extendTypes;
-	this.ref = object.ref;
-	this.parent = parent;
+	this.refId = object.refId;	
+	this.ref = function(){
+		return System.json(object.ref);
+	};
 };
 EventDispatcher.prototype.toString = function() {
 	return "flash.events::EventDispatcher";
