@@ -294,7 +294,7 @@ System.deserialize = function(object, parent){
 };
 
 System.json = function(value){
-	var json = jQuery.parseJSON(jsonStr);
+	var json = jQuery.parseJSON(value);
 	return (typeof(json) == "object" ? json : value);
 };
 
