@@ -168,10 +168,8 @@ FlexDoor.prototype.include = function() {
 					}catch(e){
 						if(e.fileName != undefined && e.lineNumber != undefined){
 							Assert.fail(e.fileName + '#' + e.lineNumber + '\n' + e.message);
-							System.error(e);
 						}else{
 							Assert.fail(e.message);
-							System.error(e.message);
 						}
 						finalizeFunction(testEvent, releaseRefId);
 					}
