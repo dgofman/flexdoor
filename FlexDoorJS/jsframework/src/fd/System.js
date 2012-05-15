@@ -260,7 +260,7 @@ System.deserialize = function(object, parent){
 			if(extendType == "Function")
 				return new fd_Function(object);
 			if(extendType == "Object")
-				return isNaN(object.refId) ? object.ref : object;
+				return isNaN(object.refId) ? System.json(object.ref) : object;
 			var pair = extendType.split("::");
 			var className = pair[0];
 			if(pair.length == 2)
@@ -280,20 +280,22 @@ System.deserialize = function(object, parent){
 				var component = new classType(classType, extendType);
 				if(component instanceof EventDispatcher ||
 					component.Initialize instanceof Function){
-					var json = System.json(object.ref);
-					if(typeof(json) == "object")
-						object.ref = json;
+					object.ref = System.json(object.ref);
 					component.Initialize(object, parent);
 				}
 				return component;
 			}
 		}
+	}else if(object instanceof Array){
+		for(var i = 0; i < object.length; i++)
+			object[i].ref = System.json(object[i].ref);
 	}
 	return object;
 };
 
-System.json = function(jsonStr){
-	return jQuery.parseJSON(jsonStr);
+System.json = function(value){
+	var json = jQuery.parseJSON(jsonStr);
+	return (typeof(json) == "object" ? json : value);
 };
 
 System.fireEvent = function(target, event){
