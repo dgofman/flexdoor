@@ -23,8 +23,10 @@ Locator.CLASS_NAME = "Locator";
 
 Locator.prototype = new EventDispatcher();
 Locator.Get = function(path){
+	var ref = this;
 	var object = System.getLocator(path);
-	return System.deserialize(object);
+	ref = System.deserialize(object);
+	return ref;
 };
 
 function fd_Locator(){};
