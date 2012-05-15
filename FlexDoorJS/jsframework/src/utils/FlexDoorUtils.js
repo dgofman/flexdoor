@@ -95,7 +95,7 @@ FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, column
 	var columns = grid.columns();
 	Assert.assertTrue(columns != null);
 	Assert.assertTrue(columns.length > columnIndex);
-	var dataField = columns[columnIndex].ref().dataField;
+	var dataField = columns[columnIndex].ref.dataField;
 	var itemRenderer = grid.indicesToItemRenderer(rowIndex, columnIndex);
 	
 	if(grid.extendTypes.indexOf("mx.controls::AdvancedDataGrid") != -1){
@@ -174,7 +174,7 @@ FlexDoorUtils.getColumnIndex = function(grid, value, key){
 	var columns = grid.columns();
 	if(columns instanceof Array){
 		for(var  i = 0; i < columns.length; i++){
-			if(columns[i]["ref"] instanceof Function && columns[i].ref()[key] == value)
+			if(columns[i]["ref"] != undefined && columns[i].ref[key] == value)
 				return i;
 		}
 	}
