@@ -25,7 +25,7 @@
 			
 			_runner.initButton(clear_btn, clearAll, "Clear  Ctrl+Alt+C");
 			_runner.initButton(spy_events_ckb, inspectEventsHandler, "Inspect Events  Ctrl+Alt+E");
-			_runner.attachToolTip(target_lbl, "Drag the Inspector Tool over a component to select it, \n then release the mouse button", false);
+			_runner.attachToolTip(target_lbl, "Drag the Inspector Tool over a component to select it, <br> then release the mouse button", false);
 
 			_eventsDataProvider = new DataProvider();
 			events_lst.labelField = "event";

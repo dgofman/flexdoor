@@ -1,6 +1,7 @@
 ﻿package {
 
 	import fl.controls.Button;
+	import fl.controls.TextArea;
 	import flash.events.Event;
 	import fl.events.ListEvent;
 	import flash.events.MouseEvent;
@@ -13,6 +14,8 @@
 	import flash.utils.setTimeout;
 	import flash.text.TextField;
 	import flash.geom.Point;
+	import flash.events.KeyboardEvent;
+	import flash.ui.Keyboard;
 
 	public class FlexDoorRunner extends MovieClip
 	{
@@ -32,7 +35,10 @@
 		[Embed("../assets/minimize.swf")] private const _minimizeSWF:Class;
 		[Embed("../assets/restore.swf")]  private const _restoreSWF:Class;
 
+		private var _tooltip_ta:TextArea;
 		private var _tooltip_lbl:TextField;
+		private var _tooltip_help:TextField;
+		
 		private var _targetButton:Button;
 		private var _filterButton:Button;
 		private var _folderButton:Button;
@@ -68,13 +74,24 @@
 			tooltip_mc.mouseChildren = false;
 			tooltip_mc.visible = false;
 
+			_tooltip_ta = tooltip_mc.tooltip_ta;
+			_tooltip_ta.visible = false;
+
+			_tooltip_help = tooltip_mc.tooltip_help;
+			_tooltip_help.border = true;
+			_tooltip_help.borderColor = 0xCCCCCC;
+			_tooltip_help.background = true;
+			_tooltip_help.backgroundColor = 0xF5EE77;
+
 			_tooltip_lbl = tooltip_mc.tooltip_lbl;
-			_tooltip_lbl.autoSize = "left";
 			_tooltip_lbl.border = true;
 			_tooltip_lbl.borderColor = 0xCCCCCC;
 			_tooltip_lbl.background = true;
 			_tooltip_lbl.backgroundColor = 0xF5EE77;
-			
+
+			tooltip_mc.tooltip_hidden.autoSize = "left";
+			tooltip_mc.tooltip_hidden.visible = false;
+
 			views.inspector_btn.setStyle("icon", _targetSWF);
 			initButton(views.inspector_btn, openInspector, "Inspect Components and Events");
 			views.advanced_btn.setStyle("icon", _filterSWF);
@@ -89,6 +106,11 @@
 
 			bg_mc.addEventListener(MouseEvent.MOUSE_DOWN, dragEventHandler);
 			bg_mc.addEventListener(MouseEvent.MOUSE_UP, dragEventHandler);
+		}
+
+		private function onKeyUpEventHanlder(event:KeyboardEvent):void{
+			if(event.keyCode == Keyboard.F2)
+				toolTipHelper();
 		}
 
 		public function initButton(button:*, eventHandler, toolTip:String):void{
@@ -194,6 +216,27 @@
 			this.visible = true;
 		}
 		
+		public function toolTipHelper(event:MouseEvent=null):void{
+			tooltip_mc.mouseEnabled = tooltip_mc.mouseChildren = (event == null);
+			if(event != null){
+				_tooltip_ta.visible = false;
+				tooltip_mc.visible = false;
+				stage.removeEventListener(MouseEvent.CLICK, toolTipHelper);
+			}else{			
+				clearInterval(_tooltipDelayInterval);
+				_tooltip_ta.htmlText = _tooltip_lbl.htmlText;
+				_tooltip_ta.width = _tooltip_lbl.width + 18; //18 - scrollbar
+				_tooltip_ta.height = _tooltip_lbl.height + _tooltip_help.height;
+				_tooltip_ta.visible = true;
+				_tooltip_lbl.visible = false;
+				_tooltip_help.visible = false;
+				stage.addEventListener(MouseEvent.CLICK, toolTipHelper);
+				stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveListHandler);
+				stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveToolTipHandler);
+				stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyUpEventHanlder);
+			}
+		}
+		
 		private function minimizeWindow(event:MouseEvent=null):void{
 			scaleX = .2;
 			scaleY = .05;
@@ -264,16 +307,39 @@
 		}
 		
 		private function showTooltip(event:Event, isOver:Boolean, mouseEventHandler:Function, toolTipHandler:Function=null, autoHide:Boolean=true):void{
+			if(_tooltip_ta.visible == true) return; //wait when user close a focus tip
+			
 			clearInterval(_tooltipDelayInterval);
 			if(isOver){
 				_tooltipDelayInterval = setInterval(function():void{
-					_tooltip_lbl.text = " " + toolTipHandler() + " ";
+					clearInterval(_tooltipDelayInterval);
+
+					_tooltip_lbl.htmlText = " " + toolTipHandler() + " ";
+					tooltip_mc.tooltip_hidden.text = _tooltip_lbl.text;
+
 					if(_tooltip_lbl.text != "  "){
 						mouseEventHandler(event);
+						
+						var limit:uint = 195;
+						var h:uint = Math.min(limit, tooltip_mc.tooltip_hidden.height);
+						var w:uint = tooltip_mc.tooltip_hidden.width;
+						
+						_tooltip_lbl.width = w;
+						_tooltip_lbl.height = h;
+						_tooltip_lbl.visible = true;
+						
+						if(_tooltip_lbl.height == limit){
+							_tooltip_help.y = h;
+							_tooltip_help.width = w - 3;
+							_tooltip_help.visible = true;
+							stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUpEventHanlder);
+						}else{
+							_tooltip_help.visible = false;
+						}
 						tooltip_mc.visible = true;
 						stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseEventHandler);
 						if(autoHide)
-							setTimeout(showTooltip, 1500, event, false, mouseEventHandler);
+							_tooltipDelayInterval = setInterval(showTooltip, 1500, event, false, mouseEventHandler);
 					}
 				}, 500);
 			}else{
