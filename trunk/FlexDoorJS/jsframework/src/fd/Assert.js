@@ -29,7 +29,7 @@ Assert.assertEquals = function(actual, expected, message) {
 
 	if(FlexDoor.AUTO_START != true){
 		var flash = Application.application.flash;
-		flash.assertResult(error, str);
+		flash.assertResult(error, '<font color="#' + (error ? 'FF0000' : '00FF00') + '">' + str + '</font>');
 		if(error == true)
 			System.warn(str);
 	}else{
