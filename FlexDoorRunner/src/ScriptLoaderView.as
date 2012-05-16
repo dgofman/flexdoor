@@ -137,7 +137,7 @@
 			}
 			
 			local_rb.selected = (so.data.remoteAccess == false);
-			remote_rb.selected = !local_rb.selected;
+			remote_rb.selected = (so.data.remoteAccess == true);
 
 			play_pause_btn.setStyle("upIcon", "PlayButtonNormal");
 			play_pause_btn.setStyle("downIcon", "PlayButtonDown");
@@ -451,7 +451,7 @@
 				if(item.toolTip == null)
 					item.toolTip = message;
 				else
-					item.toolTip += '\n\n' + message;
+					item.toolTip += ' <br><br> ' + message;
 				
 				dp.replaceItem(item, testcases_dg.selectedItem);
 			}
