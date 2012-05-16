@@ -24,16 +24,16 @@ Assert.CLASS_NAME = "Assert";
 //Static Functions
 Assert.assertEquals = function(actual, expected, message) {
 	var error = (actual != expected);
-	var str = (error ? (message != undefined ? message : "failed") : "okay") +
-				" - Expected: " + expected + (error ? ", Result: " + actual : "");
+	var str1 = (error ? (message != undefined ? message : "failed") : "okay");
+	var str2 =	" - Expected: " + expected + (error ? ", Result: " + actual : "");
 
 	if(FlexDoor.AUTO_START != true){
 		var flash = Application.application.flash;
-		flash.assertResult(error, '<font color="#' + (error ? 'FF0000' : '00FF00') + '">' + str + '</font>');
+		flash.assertResult(error, '<font color="#' + (error ? 'C80000' : '008000') + '">' + str1 + '</font>' + str2);
 		if(error == true)
-			System.warn(str);
+			System.warn(str1 + str2);
 	}else{
-		System.trace(str, error ? "warn" : "log");
+		System.trace(str1 + str2, error ? "warn" : "log");
 	}
 };
 
