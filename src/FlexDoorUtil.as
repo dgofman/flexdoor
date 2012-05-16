@@ -94,7 +94,7 @@ package
 		}
 
 		private function mouseEventHandler(event:MouseEvent):void{
-			if(event.type == MouseEvent.MOUSE_MOVE){
+			if(event && event.type == MouseEvent.MOUSE_MOVE){
 				if(event.stageX >= 0 && event.stageY >= 0 &&
 				   event.stageX < _stage.stageWidth && 
 				   event.stageY < _stage.stageHeight){
@@ -130,27 +130,34 @@ package
 			Mouse.show();
 			_content.inspector_mc.visible = false;
 			_content.inspector_mc.stopDrag();
+			_inspectorRect.graphics.clear();
 			removeMouseEventHandlers();
 		}
 		
 		private function removeMouseEventHandlers():void{
-			_inspectorRect.graphics.clear();
 			_stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseEventHandler);
 			_stage.removeEventListener(MouseEvent.MOUSE_UP, mouseEventHandler);
 		}
 
 		public function inspectObjects():void{
-			if(_stage != null){
+			inspectLiveObjects(true, 9);
+			if(_stage != null)
+				_stage.addEventListener(MouseEvent.MOUSE_UP, mouseEventHandler);
+		}
+		
+		public function inspectLiveObjects(active:Boolean, offset:uint=35):void{
+			if(active == true && _stage != null){
 				Mouse.hide();
 				var point:Point = _content.targetPoint;
 				_content.localToGlobal(point);
-				_content.inspector_mc.x = point.x;
+				_content.inspector_mc.x = point.x + offset;
 				_content.inspector_mc.y = point.y;
 				_content.inspector_mc.visible = true;
 				_content.inspector_mc.startDrag();
 				removeMouseEventHandlers();
 				_stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseEventHandler);
-				_stage.addEventListener(MouseEvent.MOUSE_UP, mouseEventHandler);
+			}else{
+				mouseEventHandler(null);
 			}
 		}
 		
@@ -204,7 +211,6 @@ package
 
 		private function getComponentInfo(uicomponent:*, components:Array, locators:Array, includes:Object):void{
 			var uniqNames:Object = {};
-			var locatorType:String = "";
 
 			function getInfo(c:*, childRef:*=null, childId:String=null):String{
 				var classType:String;
@@ -212,8 +218,11 @@ package
 				if(c != _application && c != _application.systemManager){
 					var type:XML = describeType(c);
 					var extendsClass:XMLList = <></>;
-					var iDataRenderer:Boolean = (type.implementsInterface.(@type == "mx.core::IDataRenderer").length() > 0 &&
-												c.data != null && c.owner != null && c.owner.hasOwnProperty("indicesToItemRenderer"));
+					var iDataRenderer:Boolean = false;
+					try{
+						iDataRenderer = (type.implementsInterface.(@type == "mx.core::IDataRenderer").length() > 0 &&
+										c.data != null && c.owner != null && c.owner.mx_internal::indicesToItemRenderer is Function);
+					}catch(e:ReferenceError){}
 					extendsClass += new XML('<extendsClass type="' + type.@name.toString() + '"/>') + type.extendsClass;
 					for(var i:uint = 0; i < extendsClass.length(); i++){
 						var pckgName:String = extendsClass[i].@type.toString();
@@ -238,7 +247,6 @@ package
 									for(var colIndex:uint = 0; colIndex < columns.length; colIndex++){
 										if(c == c.owner.mx_internal::indicesToItemRenderer(rowIndex, colIndex)){
 											parentName = getInfo(c.owner);
-											locatorType = '<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(locator);';
 											components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.indicesToItemRenderer(' + rowIndex + ', ' + colIndex + '));');
 											locators.push(':' + rowIndex + ',' + colIndex);
 											return variableName;
@@ -266,26 +274,25 @@ package
 									visibleCount = findIndexByClassType(c, "numChildren", "getChildAt", classType);
 								locators.push('!');
 								if(visibleCount > 0){
-									components.push('<font color="#7F0055">var</font> ' + variableName + ' = <font color="#7F0055">this</font>.app.getPopupWindow("' + classType + '", ' + visibleCount + ');');
+									components.push('<font color="#7F0055">var</font> ' + variableName + ' = <font color="#7F0055">this</font>.app.getPopupWindow(<font color="#2A00FF">"' + classType + '"</font>, ' + visibleCount + ');');
 									locators.push('#' + classType + ',' + visibleCount);
 								}else{
-									components.push('<font color="#7F0055">var</font> ' + variableName + ' = <font color="#7F0055">this</font>.app.getPopupWindow("' + classType + '");');
+									components.push('<font color="#7F0055">var</font> ' + variableName + ' = <font color="#7F0055">this</font>.app.getPopupWindow(<font color="#2A00FF">"' + classType + '"</font>);');
 									locators.push('#' + classType);
 								}
 							}else{
-								locatorType = '<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(locator);';
 								try{
 									if(c.id != null && parent[c.id]){
 										if(parent[c.id] is Array){
 											for(var j:uint = 0; j < parent[c.id].length; j++){
 												if(parent[c.id][j] == c){
-													components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.find("' + c.id + '", ' + j + '));');
+													components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.find(<font color="#2A00FF">"' + c.id + '"</font>, ' + j + '));');
 													locators.push(c.id + "," + j);
 													break;
 												}
 											}
 										}else{
-											components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.find("' + c.id + '"));');
+											components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.find(<font color="#2A00FF">"' + c.id + '"</font>));');
 											locators.push(c.id);
 										}
 										return variableName;
@@ -299,16 +306,16 @@ package
 								
 								if(visibleCount != -1){
 									if(visibleCount > 0){
-										components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByType("' + classType + '", ' + visibleCount + '));');
+										components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByType(<font color="#2A00FF">"' + classType + '"</font>, ' + visibleCount + '));');
 										locators.push('#' + classType + ',' + visibleCount);
 									}else{
-										components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByType("' + classType + '"));');
+										components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByType(<font color="#2A00FF">"' + classType + '"</font>));');
 										locators.push('#' + classType);
 									}
 									return variableName;
 								}
 								
-								components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByName("' + c.name + '"));');
+								components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByName(<font color="#2A00FF">"' + c.name + '"</font>));');
 								locators.push('@' + c.name);
 							}
 							return variableName;
@@ -323,7 +330,9 @@ package
 
 			if(components.length > 0){
 				var code:String = '<font color="#3F7F5F">//' + uicomponent.toString() + '</font>\n\n' +
-								  '<font color="#7F0055">var</font> locator = Locator.Get("/' + locators.join('/') + '");\n' + locatorType + '\n\n';
+								  '<b>LOCATOR:</b>\n\n' + 
+								  '<i>Locator.Get</i>(<font color="#2A00FF">"/' + locators.join('/') + '"</font>);\n\n' +
+								  '<b>TREE:</b>\n\n'; 
 				var packages:Array = [];
 				for(var pckg:String in includes)
 					packages.push('<font color="#2A00FF">"' + pckg + '"</font>');
@@ -398,6 +407,9 @@ package
 				case ContentEvent.DRAG_KIND:
 					inspectObjects();
 					break;
+				case ContentEvent.LIVE_DRAG_KIND:
+					inspectLiveObjects(event.state);
+					break;
 				case ContentEvent.CLEAR_KIND:
 					clear();
 					break;
@@ -413,6 +425,9 @@ package
 				switch(String.fromCharCode(event.charCode).toUpperCase()){
 					case 'E':
 						_content.inspectEvents();
+						break;
+					case 'L':
+						_content.liveDragHandler();
 						break;
 					case 'C':
 						_content.clearAll();

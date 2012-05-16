@@ -159,6 +159,10 @@
 			inspectorView.inspectEventsHandler();
 		}
 
+		public function liveDragHandler():void{
+			inspectorView.liveDragHandler();
+		}
+
 		public function addNewEvent(item:Object):void{
 			inspectorView.addNewEvent(item);
 		}
@@ -350,6 +354,8 @@
 
 		private function dragEventHandler(event:MouseEvent):void{
 			if(event.type == MouseEvent.MOUSE_DOWN && stage.hitTestObject(bg_mc)){
+				inspectorView.live_drag_ckb.selected = false;
+				dispatchEvent(new ContentEvent(ContentEvent.LIVE_DRAG_KIND, false));
 				this.startDrag();
 			}else{
 				this.stopDrag();
