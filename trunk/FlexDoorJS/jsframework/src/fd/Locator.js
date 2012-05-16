@@ -22,8 +22,11 @@ function Locator() {
 Locator.CLASS_NAME = "Locator";
 
 Locator.prototype = new EventDispatcher();
-Locator.Get = function(path){
+Locator.Get = function(){
 	var ref = this;
+	var path = arguments[0];
+	for(var i = 1; i < arguments.length; i++)
+		path += arguments[i];
 	var object = System.getLocator(path);
 	ref = System.deserialize(object);
 	return ref;
