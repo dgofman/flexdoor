@@ -14,6 +14,7 @@ package
 		public static const CLEAR_KIND:String = "clearKind";
 		public static const CLOSE_KIND:String = "closeKind";
 		public static const DRAG_KIND:String  = "dragKind";
+		public static const LIVE_DRAG_KIND:String  = "liveDragKind";
 
 		public function ContentEvent(kind:String, state:Boolean=false){
 			super(CONTENT_TYPE);

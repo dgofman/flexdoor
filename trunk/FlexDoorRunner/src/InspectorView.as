@@ -25,6 +25,7 @@
 			
 			_runner.initButton(clear_btn, clearAll, "Clear  Ctrl+Alt+C");
 			_runner.initButton(spy_events_ckb, inspectEventsHandler, "Inspect Events  Ctrl+Alt+E");
+			_runner.initButton(live_drag_ckb, liveDragHandler, "Live Drag  Ctrl+Alt+D");
 			_runner.attachToolTip(target_lbl, "Drag the Inspector Tool over a component to select it, <br> then release the mouse button", false);
 
 			_eventsDataProvider = new DataProvider();
@@ -59,7 +60,8 @@
 		}
 
 		private function targetMouseEventHandler(event:MouseEvent):void{
-			_runner.dispatchEvent(new ContentEvent(ContentEvent.DRAG_KIND));
+			if(live_drag_ckb.selected == false)
+				_runner.dispatchEvent(new ContentEvent(ContentEvent.DRAG_KIND));
 		}
 		
 		public function addNewEvent(item){
@@ -99,6 +101,12 @@
 			if(event == null)
 				spy_events_ckb.selected = !spy_events_ckb.selected;
 			_runner.dispatchEvent(new ContentEvent(ContentEvent.EVENTS_KIND, spy_events_ckb.selected));
+		}
+		
+		public function liveDragHandler(event:MouseEvent=null):void{
+			if(event == null)
+				live_drag_ckb.selected = !live_drag_ckb.selected;
+			_runner.dispatchEvent(new ContentEvent(ContentEvent.LIVE_DRAG_KIND, live_drag_ckb.selected));
 		}
 	}
 }
