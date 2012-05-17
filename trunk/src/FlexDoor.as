@@ -580,7 +580,7 @@ package
 
 		protected function serialize(ref:Object, includeRef:Boolean=true):Object{
 			if(ref == null) return null;
-			var out:Object = {};
+			var out:Object = {extendTypes:["Object"]};
 			if(ref is Error){
 				out.extendTypes = ["Error", ref.name];
 				out.errorID = ref.errorID;
@@ -627,7 +627,7 @@ package
 			//validate if object already exists
 			for(id  in _refMap){
 				if(_refMap[id] == ref){
-					out.refId = id;
+					out._refId = id;
 					return out;
 				}
 			}
@@ -637,7 +637,7 @@ package
 				if(_refMap[id] == null)
 					break;
 			}
-			out.refId = id;
+			out._refId = id;
 			_refMap[id] = ref;
 			return out;
 		}

@@ -22,9 +22,9 @@ function EventDispatcher()
 }
 EventDispatcher.prototype.Extends = function() {};
 EventDispatcher.prototype.Initialize = function(object, parent){
+	this._refId = object._refId;
 	this._id = object.id;
 	this._name = object.name;
-	this._refId = object.refId;
 	this._extendTypes = object.extendTypes;
 	this._parent = parent;
 	this.ref = object.ref;
