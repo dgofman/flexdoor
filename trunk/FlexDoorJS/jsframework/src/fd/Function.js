@@ -20,8 +20,8 @@
 function fd_Function(object) 
 {
 	UIComponent.call(this, fd_Function, "Function");
-	this.refId = object.refId;
-	this.isEventListener = false;
+	this._refId = object.refId;
+	this._isEventListener = false;
 
 	this.Initialize = function(classType, funtionName){
 		this.classType = classType;
@@ -29,7 +29,7 @@ function fd_Function(object)
 	};
 
 	this.destroy = function(){
-		System.releaseIds([this.refId]);
+		System.releaseIds([this._refId]);
 		if( this.classType instanceof Function && 
 			this.classType[this.funtionName] instanceof Function){
 			this.classType[this.funtionName] = null;

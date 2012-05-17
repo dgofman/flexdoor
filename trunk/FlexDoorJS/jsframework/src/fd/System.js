@@ -119,7 +119,7 @@ System.findById = function(refId, includeRef){
 System.find = function(parent, id, index, visibleOnly, includeRef){
 	includeRef = (includeRef == undefined ? true : includeRef);
 	var flash = Application.application.flash;
-	var object = flash.find(parent.refId, id, index, visibleOnly, includeRef);
+	var object = flash.find(parent._refId, id, index, visibleOnly, includeRef);
 	return System.deserialize(object, parent);
 };
 
@@ -132,26 +132,26 @@ System.getClass = function(className){
 System.getChildByName = function(parent, name, includeRef){
 	includeRef = (includeRef == undefined ? true : includeRef);
 	var flash = Application.application.flash;
-	var object = flash.getChildByName(parent.refId, name, includeRef);
+	var object = flash.getChildByName(parent._refId, name, includeRef);
 	return System.deserialize(object, parent);
 };
 
 System.getChildByType = function(parent, classType, index, visibleOnly, includeRef){
 	includeRef = (includeRef == undefined ? true : includeRef);
 	var flash = Application.application.flash;
-	var object = flash.getChildByType(parent.refId, classType, index, visibleOnly, includeRef);
+	var object = flash.getChildByType(parent._refId, classType, index, visibleOnly, includeRef);
 	return System.deserialize(object, parent);
 };
 
 System.setter = function(target, command, value){
 	var flash = Application.application.flash;
-	flash.setter(target.refId, command, value);
+	flash.setter(target._refId, command, value);
 };
 
 System.getter = function(target, command, includeRef){
 	includeRef = (includeRef == undefined ? true : includeRef);
 	var flash = Application.application.flash;
-	var object = flash.getter(target.refId, command, includeRef);
+	var object = flash.getter(target._refId, command, includeRef);
 	return System.deserialize(object);
 };
 
@@ -159,14 +159,14 @@ System.execute = function(target, command, values, includeRef){
 	includeRef = (includeRef == undefined ? true : includeRef);
 	if(values != null && !(values instanceof Array)) values = [values];
 	var flash = Application.application.flash;
-	var object = flash.execute(target.refId, command, values, includeRef);
+	var object = flash.execute(target._refId, command, values, includeRef);
 	return System.deserialize(object);
 };
 
 System.refValue = function(target, keys, includeRef){
 	includeRef = (includeRef == undefined ? true : includeRef);
 	var flash = Application.application.flash;
-	var object = flash.refValue(target.refId, keys, includeRef);
+	var object = flash.refValue(target._refId, keys, includeRef);
 	return System.deserialize(object);
 };
 
@@ -181,22 +181,22 @@ System.create = function(extendType, args){
 //listenerId - is not remove event dispatcher hook
 System.dispatchEventHook = function(target, listenerId, type){
 	var flash = Application.application.flash;
-	flash.dispatchEventHook(target.refId, listenerId, type);
+	flash.dispatchEventHook(target._refId, listenerId, type);
 };
 
 System.addEventListener = function(target, type, listenerId, useWeakReference, useCapture, priority){
 	var flash = Application.application.flash;
-	flash.addEventListener(target.refId, type, listenerId, useWeakReference, useCapture, priority);
+	flash.addEventListener(target._refId, type, listenerId, useWeakReference, useCapture, priority);
 };
 
 System.removeEventListener = function(target, type, listenerId, useCapture){
 	var flash = Application.application.flash;
-	flash.removeEventListener(target.refId, type, listenerId, useCapture);
+	flash.removeEventListener(target._refId, type, listenerId, useCapture);
 };
 
 System.dispatchEvent = function(target, event){
 	var flash = Application.application.flash;
-	return flash.dispatchEvent(target.refId, event.refId);
+	return flash.dispatchEvent(target._refId, event._refId);
 };
 
 System.refIds = function(){
@@ -213,7 +213,7 @@ System.releaseIds = function(ids, except){
 System.releaseItems = function(){
 	var ids = [];
 	for(var i = 0; i < arguments.length; i++)
-		ids.push(arguments[i].refId);
+		ids.push(arguments[i]._refId);
 	return System.releaseIds(ids);
 };
 
@@ -242,31 +242,31 @@ System.createFunction = function(classType, functionName){
 
 System.serialize = function(object){
 	if( object instanceof fd_Function ){
-		return {type:"FUNCTION_TYPE", refId:object.refId};
+		return {type:"FUNCTION_TYPE", refId:object._refId};
 	}else if( object instanceof EventDispatcher ||
 		object instanceof flash_events_Event || 
 		(object != undefined && typeof(object) == "object" && 
-			!isNaN(object.refId) && object.extendTypes instanceof Array)){
-		return {type:"CLASS_TYPE", refId:object.refId};
+			!isNaN(object._refId) && object._extendTypes instanceof Array)){
+		return {type:"CLASS_TYPE", refId:object._refId};
 	}else{
 		return object;
 	}
 };
 
 System.deserialize = function(object, parent){
-	if(object != null && object["extendTypes"] != undefined){
+	if(object != null && object["extendTypes"] instanceof Array){
 		for(var i = 0; object.extendTypes.length; i++){
 			var extendType = object.extendTypes[i];
 			if(extendType == "Function")
 				return new fd_Function(object);
 			if(extendType == "Object")
-				return isNaN(object.refId) ? System.json(object.ref) : object;
+				return isNaN(object._refId) ? System.json(object.ref) : object;
 			var pair = extendType.split("::");
 			var className = pair[0];
 			if(pair.length == 2)
 				className = pair[1];
 			if(className == "Error"){
-				System.warn(object.stackTrace);
+				Assert.fail(object.stackTrace);
 				var classType = FlexDoor.classType(object.extendTypes[1]);
 				if(classType == null) classType = Error;
 				throw new classType(object.message);

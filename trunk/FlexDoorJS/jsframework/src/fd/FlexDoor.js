@@ -94,7 +94,7 @@ FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
 
 	var flash =  System.getFlash(flashPlayerId);
 	if(flash == undefined)
-		throw new Error("You must provide a valid Flash Player Object ID");
+		Assert.fail("You must provide a valid Flash Player Object ID");
 
 	Application.prototype.Extends();
 	var appObject = flash.application();
@@ -201,7 +201,7 @@ FlexDoor.prototype.include = function() {
 						var items = nextTestEvent.testArgs.source;
 						for(var i = 0; i < items.length; i++){
 							if(items[i] instanceof EventDispatcher)
-								releaseRefId.push(items[i].refId);
+								releaseRefId.push(items[i]._refId);
 						}
 					}
 					System.releaseIds(releaseRefId, true);
@@ -321,7 +321,7 @@ FlexDoor.executeFunction = function(className, functionName, args){
 	var classType = window[className];
 	if(classType instanceof Function && classType[functionName] instanceof Function){
 		var func = classType[functionName];
-		if(func.refFunc instanceof fd_Function && func.refFunc.isEventListener){
+		if(func.refFunc instanceof fd_Function && func.refFunc._isEventListener){
 			setTimeout(function(){
 				func.call(classType, args);
 			}, 1);

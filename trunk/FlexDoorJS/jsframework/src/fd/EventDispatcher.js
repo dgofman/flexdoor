@@ -22,12 +22,12 @@ function EventDispatcher()
 }
 EventDispatcher.prototype.Extends = function() {};
 EventDispatcher.prototype.Initialize = function(object, parent){
-	this.id = object.id;
-	this.name = object.name;
-	this.refId = object.refId;
-	this.extendTypes = object.extendTypes;
+	this._id = object.id;
+	this._name = object.name;
+	this._refId = object.refId;
+	this._extendTypes = object.extendTypes;
+	this._parent = parent;
 	this.ref = object.ref;
-	this.parent = parent;
 };
 EventDispatcher.prototype.toString = function() {
 	return "flash.events::EventDispatcher";
@@ -38,11 +38,11 @@ EventDispatcher.prototype.toString = function() {
 EventDispatcher.Get = function(o, classType){
 	var ref = this;
 	if(o == undefined)
-		throw new Error("TypeError: Error #101: Cannot access a property or method of a null object reference");
+		Assert.fail("TypeError: Error #101: Cannot access a property or method of a null object reference");
 	if( (classType != undefined && o instanceof classType) || o instanceof EventDispatcher ){
 		ref = o;
 	}else{
-		throw new Error("TypeError: Error #102: Type Coercion failed: cannot convert " + o.toString() + " to " + classType.FLEX_TYPE);
+		Assert.fail("TypeError: Error #102: Type Coercion failed: cannot convert " + o.toString() + " to " + classType.FLEX_TYPE);
 	}
 	return ref;
 };
@@ -159,7 +159,7 @@ EventDispatcher.prototype.addEventListener = function(type, listener, target, us
 			listener.apply(target, arguments);
 		});
 	}
-	asFunction.isEventListener = true;
+	asFunction._isEventListener = true;
 	System.addEventListener(this, type, this.serialize(asFunction), useCapture, priority, useWeakReference);
 };
 
@@ -167,7 +167,7 @@ EventDispatcher.prototype.removeEventListener = function(type, listener, useCapt
 	if(listener instanceof Function && listener.refFunc instanceof fd_Function){
 		if(useCapture == undefined) useCapture = false;
 		var func = $Function.Get(listener.refFunc);
-		System.removeEventListener(this, type, func.refId, useCapture);
+		System.removeEventListener(this, type, func._refId, useCapture);
 		func.destroy();
 	}
 };
