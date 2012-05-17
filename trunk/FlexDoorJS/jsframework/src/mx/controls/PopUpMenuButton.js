@@ -38,8 +38,14 @@ function mx_controls_PopUpMenuButton(classType, extendType)
 		return this.property("showRoot", arguments);
 	};
 	
+	this.getPopUp = function(){
+		return this.execute("mx_internal::getPopUp");
+	};
+	
 	this.selectedIndex = function(index){
-		this.fireEvent($MenuEvent.Create($MenuEvent.ITEM_CLICK, index));
+		var popup = this.getPopUp();
+		if(popup != null)
+			popup.fireEvent($MenuEvent.Create($MenuEvent.ITEM_CLICK, index));
 	};
 }
 
