@@ -20,7 +20,7 @@
 function fd_Function(object) 
 {
 	UIComponent.call(this, fd_Function, "Function");
-	this._refId = object.refId;
+	this._refId = object._refId;
 	this._isEventListener = false;
 
 	this.Initialize = function(classType, funtionName){
