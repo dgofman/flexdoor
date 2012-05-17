@@ -23,18 +23,18 @@ function flash_events_Event(classType, extendType)
 	UIComponent.call(this, classType, extendType);
 
 	this.destory = function(){
-		System.releaseIds([this.refId]);
+		System.releaseIds([this._refId]);
 	};
 }
 flash_events_Event.prototype = new Object();
 
 flash_events_Event.prototype.Initialize = function(object){
-	this.refId = object.refId;
+	this._refId = object.refId;
+	this._extendTypes = object.extendTypes;
 	this.type = object.ref.type;
 	this.target = object.target;
 	this.currentTarget = object.currentTarget;
 	this.ref = object.ref;
-	this.extendTypes = object.extendTypes;
 };
 flash_events_Event.Get = function(o){
 	var ref = this;

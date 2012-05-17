@@ -98,7 +98,7 @@ FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, column
 	var dataField = columns[columnIndex].ref.dataField;
 	var itemRenderer = grid.indicesToItemRenderer(rowIndex, columnIndex);
 	
-	if(grid.extendTypes.indexOf("mx.controls::AdvancedDataGrid") != -1){
+	if(grid._extendTypes.indexOf("mx.controls::AdvancedDataGrid") != -1){
 		testCase.fireEvent(grid, $AdvancedDataGridEvent.Create($AdvancedDataGridEvent.ITEM_EDIT_BEGINNING, rowIndex, columnIndex, 
 																				dataField, null, itemRenderer));
 	}else{
@@ -113,7 +113,7 @@ FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, column
 
 		preEventCallBack.apply(testCase, [itemEditor]);//call test function
 
-		if(grid.extendTypes.indexOf("mx.controls::AdvancedDataGrid") != -1){
+		if(grid._extendTypes.indexOf("mx.controls::AdvancedDataGrid") != -1){
 			testCase.fireEvent(grid, $AdvancedDataGridEvent.Create($AdvancedDataGridEvent.ITEM_EDIT_END, rowIndex, columnIndex, 
 																		dataField, AdvancedDataGridEventReason.OTHER, itemRenderer));
 		}else{
