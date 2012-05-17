@@ -48,7 +48,7 @@ mx_controls_PopUpMenuButton.prototype.Import = function(){
 };
 mx_controls_PopUpMenuButton.prototype.Extends = function(){
 	mx_controls_PopUpButton.prototype.Extends();
-	mx_controls_PopUpMenuButton.prototype = new mx_controls_Button(mx_controls_PopUpMenuButton);
+	mx_controls_PopUpMenuButton.prototype = new mx_controls_PopUpButton(mx_controls_PopUpMenuButton);
 };
 mx_controls_PopUpMenuButton.Get = function(o){
 	var ref = this;
