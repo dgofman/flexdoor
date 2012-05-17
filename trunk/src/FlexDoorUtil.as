@@ -243,15 +243,17 @@ package
 							if(iDataRenderer){
 								var rowIndex:int = c.owner.itemRendererToIndex(c);
 								if(rowIndex > -1){
-									var columns:Array = c.owner.columns;
-									for(var colIndex:uint = 0; colIndex < columns.length; colIndex++){
-										if(c == c.owner.mx_internal::indicesToItemRenderer(rowIndex, colIndex)){
-											parentName = getInfo(c.owner);
-											components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.indicesToItemRenderer(' + rowIndex + ', ' + colIndex + '));');
-											locators.push(':' + rowIndex + ',' + colIndex);
-											return variableName;
+									var colIndex:uint = 0;
+									if(c.owner.hasOwnProperty("columns")){//DataGrid
+										for(colIndex = 0; colIndex < c.owner.columns.length; colIndex++){
+											if(c == c.owner.mx_internal::indicesToItemRenderer(rowIndex, colIndex))
+												break;
 										}
 									}
+									parentName = getInfo(c.owner);
+									components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.indicesToItemRenderer(' + rowIndex + ', ' + colIndex + '));');
+									locators.push(':' + rowIndex + ',' + colIndex);
+									return variableName;
 								}
 							}
 							if(c.hasOwnProperty('id') && c.id != null){

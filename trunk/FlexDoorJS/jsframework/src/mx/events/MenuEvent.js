@@ -48,7 +48,7 @@ mx_events_MenuEvent.Get = function(o){
 function $MenuEvent() {}
 $MenuEvent.Get = mx_events_MenuEvent.Get;
 $MenuEvent.Is = function(target) { return target instanceof mx_events_MenuEvent; };
-$MenuEvent.Create = function(type, itemRenderer, item, label, menuBar, menu, index, bubbles, cancelable){
+$MenuEvent.Create = function(type, index, itemRenderer, item, label, menuBar, menu, bubbles, cancelable){
 	if(index == undefined) index = -1;
 	return System.create("mx.events::MenuEvent", 
 			$Event.Params(type, bubbles, cancelable, menuBar, menu, item, itemRenderer, label, index));
