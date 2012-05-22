@@ -56,6 +56,17 @@ package
 	[SWF(backgroundColor="#FFFFFF")]
 	public class FlexDoor extends Sprite
 	{
+		private static const NULL:uint      = 0;
+		private static const ERROR:uint     = 1;
+		private static const OBJECT:uint    = 2;
+		private static const ARRAY:uint     = 3;
+		private static const EVENT:uint     = 4;
+		private static const CLASS:uint     = 5;
+		private static const FUNCTION:uint  = 6;
+		private static const REFERENCE:uint = 7;
+		private static const ANY:uint       = 8;
+
+		
 		protected var _application:*;
 		protected var _loader:Loader;
 
@@ -254,16 +265,21 @@ package
 			return serialize(_application.systemManager);
 		}
 
-		protected function js_findById(refId:Number, includeRef:Boolean=true):Object{
-			return serialize(_refMap[refId], includeRef);
+		protected function js_findById(refId:Number, keepRef:Boolean=false):Object{
+			try{
+				return serialize(getRef(refId), keepRef);
+			}catch(e:Error){
+				return serializeError(e);
+			}
+			return null;
 		}
 
 		/**
 		 *  Locator /id 
 		 */
-		protected function js_find(refId:Number, id:String, index:uint, visibleOnly:Boolean, includeRef:Boolean=true):*{
+		protected function js_find(refId:Number, id:String, index:uint, visibleOnly:Boolean, keepRef:Boolean=false):*{
 			try{
-				var target:* = _refMap[refId];
+				var target:* = getRef(refId);
 				var o:* = target[id];
 				var visibleCount:uint = 0;
 				if(o is Array){
@@ -271,34 +287,44 @@ package
 						if(visibleOnly == true && o[i].visible != true)
 							continue;
 						if(visibleCount == index)
-							return serialize(o[i], includeRef);
+							return serialize(o[i], keepRef);
 						visibleCount++;
 					}
-					return serialize(o[0], includeRef);
+					return serialize(o[0], keepRef);
 				}
-				return serialize(o, includeRef);
-			}catch(e:Error){ 
-				return js_childByName(refId, id, includeRef);
+				return serialize(o, keepRef);
+			}catch(e:Error){
+				return serializeError(e);
 			}
 		}
 
 		/**
 		 *  Locator /@name
 		 */
-		protected function js_childByName(refId:Number, name:String, includeRef:Boolean=true):Object{
-			var target:DisplayObjectContainer = _refMap[refId];
-			return serialize(target.getChildByName(name), includeRef);
+		protected function js_childByName(refId:Number, name:String, keepRef:Boolean=false):Object{
+			try{
+				var target:DisplayObjectContainer = getRef(refId);
+				return serialize(target.getChildByName(name), keepRef);
+			}catch(e:Error){
+				return serializeError(e);
+			}
+			return null;
 		}
 
 		/**
 		 *  Locator /#type:index
 		 */
-		protected function js_childByType(refId:Number, classType:String, index:uint, visibleOnly:Boolean, includeRef:Boolean=true):Object{
-			var target:* = _refMap[refId];
-			var child:* = findChildByClassType(target, "numElements", "getElementAt", classType, index, visibleOnly);
-			if(child == null)
-				child = findChildByClassType(target, "numChildren", "getChildAt", classType, index, visibleOnly);
-			return serialize(child, includeRef);
+		protected function js_childByType(refId:Number, classType:String, index:uint, visibleOnly:Boolean, keepRef:Boolean=false):Object{
+			try{
+				var target:* = getRef(refId);
+				var child:* = findChildByClassType(target, "numElements", "getElementAt", classType, index, visibleOnly);
+				if(child == null)
+					child = findChildByClassType(target, "numChildren", "getChildAt", classType, index, visibleOnly);
+				return serialize(child, keepRef);
+			}catch(e:Error){
+				return serializeError(e);
+			}
+			return null;
 		}
 
 		protected function js_locator(path:String):Object{
@@ -337,7 +363,7 @@ package
 							break;
 					}
 				}catch(e:Error){
-					return serialize(e, false);
+					return serializeError(e);
 				}
 			}
 			return serialize(child);
@@ -373,62 +399,70 @@ package
 		 */
 		protected function js_setter(refId:Number, command:String, value:*):void{
 			try{
-				var target:Object = _refMap[refId];
+				var target:Object = getRef(refId);
 				if(validateCommand(target, command)){
 					var actualValue:* = deserialize(value);
 					target[command] = actualValue;
 				}
 			}catch(e:Error){
-				trace(e.getStackTrace());
-				if(_fdUtil != null)
-					_fdUtil.assertResult(true, e.message);
+				serializeError(e);
 			}
 		}
 
 		/**
 		 *  Locator /-command
 		 */
-		protected function js_getter(refId:Number, command:String, includeRef:Boolean=true):*{
+		protected function js_getter(refId:Number, command:String, keepRef:Boolean=false):*{
 			try{
-				var target:Object = _refMap[refId];
+				var target:Object = getRef(refId);
 				if(validateCommand(target, command))
-					return serialize(target[command], includeRef);
+					return serialize(target[command], keepRef);
 				return serialize(new Error("Error 1011: Reference or command is invalid"), false);
 			}catch(e:Error){
-				return serialize(e, false);
+				return serializeError(e);
 			}
 		}
 
-		protected function js_execute(refId:Number, command:String, values:Array, includeRef:Boolean=true):Object{
-			var target:* = _refMap[refId];
-			var pair:Array = command.split("::");
-			if(validateCommand(target, (pair.length == 2 ? pair[1] : pair[0]))){
-				try{
-					var ret:*;
-					var func:Function = getFunction(target, pair);
-					if(values != null && values.length > 0){
-						ret = func.apply(target, deserializeAll(values));
-					}else{
-						ret = func();
+		protected function js_execute(refId:Number, command:String, values:Array, keepRef:Boolean=false):Object{
+			try{
+				var target:* = getRef(refId);
+				var pair:Array = command.split("::");
+				if(validateCommand(target, (pair.length == 2 ? pair[1] : pair[0]))){
+					try{
+						var ret:*;
+						var func:Function = getFunction(target, pair);
+						if(values != null && values.length > 0){
+							ret = func.apply(target, deserializeAll(values));
+						}else{
+							ret = func();
+						}
+						return serialize(ret, keepRef);
+					}catch(e:Error){
+						return serializeError(e);
 					}
-					return serialize(ret, includeRef);
-				}catch(e:Error){
-					return serialize(e, false);
 				}
+				return serialize(new Error("Error 1012: Cannot execute a command: " + command), false);
+			}catch(e:Error){
+				return serializeError(e);
 			}
-			return serialize(new Error("Error 1012: Cannot execute a command: " + command), false);
+			return null;
 		}
 
-		protected function js_refValue(refId:Number, keys:Array, includeRef:Boolean=true):Object{
-			var target:* = _refMap[refId];
-			for(var i:uint = 0; i < keys.length; i++){
-				try{
-					target = target[keys[i]];
-				}catch(e:Error){
-					return serialize(e, false);
+		protected function js_refValue(refId:Number, keys:Array, keepRef:Boolean=false):Object{
+			try{
+				var target:* = getRef(refId);
+				for(var i:uint = 0; i < keys.length; i++){
+					try{
+						target = target[keys[i]];
+					}catch(e:Error){
+						return serializeError(e);
+					}
 				}
+				return serialize(target, keepRef);
+			}catch(e:Error){
+				return serializeError(e);
 			}
-			return serialize(target, includeRef);
+			return null;
 		}
 
 		protected function getFunction(target:*, pair:Array):Function{
@@ -464,10 +498,14 @@ package
 		}
 
 		protected function js_create(className:String, args:Array):Object{
-			var classRef:Class = js_class(className, false) as Class;
-			if(classRef != null){
-				var obj:* = create(classRef, deserializeAll(args));
-				return serialize(obj);
+			try{
+				var classRef:Class = js_class(className, false) as Class;
+				if(classRef != null){
+					var obj:* = create(classRef, deserializeAll(args));
+					return serialize(obj);
+				}
+			}catch(e:Error){
+				return serializeError(e);
 			}
 			return null;
 		}
@@ -492,48 +530,58 @@ package
 			return obj;
 		}
 
-		protected function js_dispatchEventHook(refId:Number=NaN, listenerRef:Object=null, type:String=null):void{
+		protected function js_dispatchEventHook(refId:Number=NaN, listenerRef:Array=null, type:String=null):void{
 			var uiComponent:* = getClassByName("mx.core::UIComponent");
 			if(uiComponent != null){
 				if(isNaN(refId) && listenerRef == null){
 					uiComponent.mx_internal::dispatchEventHook = _dispatchEventHook;
 				}else{
-					var target:* = _refMap[refId];
-					var listener:Function = deserialize(listenerRef);
-					_dispatchEventHook = uiComponent.mx_internal::dispatchEventHook;
-					uiComponent.mx_internal::dispatchEventHook = function(event:Event, uicomponent:*):void{
-						if(target == uicomponent){
-							if(type == null || type == event.type)
-								listenerRef(serialize(event, false));
-						}
-					};
+					try{
+						var target:* = getRef(refId);
+						var listener:Function = deserialize(listenerRef);
+						_dispatchEventHook = uiComponent.mx_internal::dispatchEventHook;
+						uiComponent.mx_internal::dispatchEventHook = function(event:Event, uicomponent:*):void{
+							if(target == uicomponent){
+								if(type == null || type == event.type)
+									listener(serialize(event, false));
+							}
+						};
+					}catch(e:Error){
+						serializeError(e);
+					}
 				}
 			}
 		}
 
-		protected function js_addEventListener(refId:Number, type:String, listenerRef:Object, 
+		protected function js_addEventListener(refId:Number, type:String, listenerRef:Array, 
 											   useWeakReference:Boolean, useCapture:Boolean, priority:int):void{
-			var target:Object = _refMap[refId];
-			var listener:Function = deserialize(listenerRef);
-			target.addEventListener(type, listener, useCapture, priority, useWeakReference);
+			try{
+				var target:Object = getRef(refId);
+				var listener:Function = deserialize(listenerRef);
+				target.addEventListener(type, listener, useCapture, priority, useWeakReference);
+			}catch(e:Error){
+				serializeError(e);
+			}
 		}
 
 		protected function js_removeEventListener(refId:Number, type:String, listenerId:uint, useCapture:Boolean):void{
-			var target:Object = _refMap[refId];
-			var listener:Function = _refMap[listenerId];
-			if(target && listener is Function)
-				target.removeEventListener(type, listener, useCapture);
+			try{
+				var target:Object = getRef(refId);
+				var listener:Function = getRef(listenerId);
+				if(target && listener is Function)
+					target.removeEventListener(type, listener, useCapture);
+			}catch(e:Error){
+				serializeError(e);
+			}
 		}
 
 		protected function js_dispatchEvent(refId:Number, eventRefId:uint):Boolean{
-			var target:Object = _refMap[refId];
-			var event:Event = _refMap[eventRefId];
-			if(target && event != null){
-				try{
-					return EventDispatcher(target).dispatchEvent(event);
-				}catch(e:Error){
-					return serialize(e, false);
-				}
+			try{
+				var target:Object = getRef(refId);
+				var event:Event =  getRef(eventRefId);
+				return EventDispatcher(target).dispatchEvent(event);
+			}catch(e:Error){
+				return serializeError(e);
 			}
 			return false;
 		}
@@ -549,7 +597,111 @@ package
 		protected function js_getTestIndex(index:uint, testCaseName:String):int{
 			return _fdUtil.getTestIndex(index, testCaseName);
 		}
+		
+		protected function serializeError(e:Error):Object{
+			trace(e.getStackTrace());
+			if(_fdUtil != null)
+				_fdUtil.assertResult(true, e.message);
+			return serialize(e);
+		}
 
+		protected function getRef(id:uint):*{
+			if(_refMap[id] == null)
+				throw new Error("The reference id is invalid or object was destroyed.");
+			return _refMap[id].ref;
+		}
+
+		protected function serialize(ref:Object, keepRef:Boolean=false):Array{
+			if(ref == null) return [NULL, null];
+			
+			var id:*;
+			//validate if object already exists
+			for(id in _refMap){
+				var cacheRef:* = _refMap[id]; 
+				if(cacheRef.ref == ref)
+					return [cacheRef.outType, cacheRef.out];
+			}
+			
+			var out:Object = {};
+			var outType:uint;
+			if(keepRef == true){
+				outType = REFERENCE;
+			}else if(ref is Error){
+				out.extendTypes = [ref.name];
+				out.errorID = ref.errorID;
+				out.message = ref.message;
+				out.stackTrace = Error(ref).getStackTrace();
+				return [ERROR, out];
+			}else if(ref is Function){
+				outType = FUNCTION;
+			}else if(ref is Array){
+				for(var a:uint = 0; a < ref.length; a++)
+					ref[a] = serialize(ref[a])[1];
+				return [ARRAY, ref];
+			}else if(typeof(ref) != "object"){
+				return [OBJECT, ref]; //Number, uint, int, String, Boolean
+			}else if(ref is Class){
+				outType = CLASS;
+			}else{
+				if(ref is Event){
+					outType = EVENT;
+					out.target = serialize(ref.target);
+					out.currentTarget = serialize(ref.currentTarget);
+					out.type = ref.type;
+				}else{
+					outType = ANY;
+					if(ref.hasOwnProperty('id'))
+						out.id = ref.id;
+					if(ref.hasOwnProperty('name'))
+						out.name = ref.name;
+				}
+				
+				var type:XML = describeType(ref);
+				var extendTypes:Array = [type.@name.toString()];
+				for(var i:uint = 0; i < type.extendsClass.length(); i++)
+					extendTypes.push(type.extendsClass[i].@type.toString());
+
+				if(extendTypes.length < 2 || extendTypes[0] == "Object")
+					return [OBJECT, ref];
+
+				out.extendTypes = extendTypes;
+				out.ref = createProxyObject(ref);
+			}
+
+			//get next available id
+			for(id = 0; id < uint.MAX_VALUE; id++){
+				if(_refMap[id] == null)
+					break;
+			}
+			out.refId = id;
+			_refMap[id] = {ref:ref, outType:outType, out:out};
+			return [outType, out];
+		}
+		
+		protected function serializeAll(params:*):*{
+			if(params is Array){
+				for(var i:uint = 0; i < params.length; i++)
+					params[i] = serialize(params[i]);
+			}
+			return params;
+		}
+		
+		protected function deserialize(ref:Object):*{
+			if(ref is Array && ref.length == 3 && ref[0] == "FLEXDOOR_SERIALIZE"){
+				var type:uint = ref[1];
+				var arg:*  = ref[2];
+				switch(type){
+					case ANY:
+					case CLASS:
+					case FUNCTION:
+						return getRef(arg);
+					default:
+						return arg;
+				}
+			}
+			return ref;
+		}
+		
 		protected function deserializeAll(params:Array):Array{
 			if(params is Array){
 				for(var i:uint = 0; i < params.length; i++)
@@ -558,96 +710,14 @@ package
 			return params;
 		}
 
-		protected function deserialize(ref:*):*{
-			if(ref is Object && Object(ref).hasOwnProperty("type")
-							 && Object(ref).hasOwnProperty("refId")){
-				if(ref.type == "CLASS_TYPE"){
-					return _refMap[ref.refId];
-				}else if(ref.type == "FUNCTION_TYPE"){
-					return _refMap[ref.refId];
-				}
-			}
-			return ref;
-		}
-
-		protected function serializeAll(params:*):*{
-			if(params is Array){
-				for(var i:uint = 0; i < params.length; i++)
-					params[i] = serialize(params[i]);
-			}
-			return params;
-		}
-
-		protected function serialize(ref:Object, includeRef:Boolean=true):Object{
-			if(ref == null) return null;
-			var out:Object = {extendTypes:["Object"]};
-			if(ref is Error){
-				out.extendTypes = ["Error", ref.name];
-				out.errorID = ref.errorID;
-				out.message = ref.message;
-				out.stackTrace = Error(ref).getStackTrace();
-				trace(out.stackTrace);
-				return out;
-			}else if(ref is Array){
-				if(includeRef == true){
-					for(var a:uint = 0; a < ref.length; a++)
-						ref[a] = serialize(ref[a], includeRef);
-					return ref;
-				}
-			}else if(!(ref is Function) && (typeof(ref) != "object")){
-				return ref; //Number, uint, int, String, Boolean
-			}else{
-				if(ref is Event){
-					out.target = serialize(ref.target, includeRef);
-					out.currentTarget = serialize(ref.currentTarget, includeRef);
-					out.type = ref.type;
-				}else{
-					if(ref.hasOwnProperty('id'))
-						out.id = ref.id;
-					if(ref.hasOwnProperty('name'))
-						out.name = ref.name;
-				}
-				
-				if(!(ref is Class)){
-					var type:XML = describeType(ref);
-					var extendTypes:Array = [type.@name.toString()];
-					for(var i:uint = 0; i < type.extendsClass.length(); i++)
-						extendTypes.push(type.extendsClass[i].@type.toString());
-	
-					if(extendTypes.length < 2 || extendTypes[0] == "Object")
-						return ref;
-	
-					out.extendTypes = extendTypes;
-					if(includeRef == true)
-						out.ref = createProxyObject(ref);
-				}
-			}
-
-			var id:*;
-			//validate if object already exists
-			for(id  in _refMap){
-				if(_refMap[id] == ref){
-					out._refId = id;
-					return out;
-				}
-			}
-
-			//get next available id
-			for(id = 0; id < uint.MAX_VALUE; id++){
-				if(_refMap[id] == null)
-					break;
-			}
-			out._refId = id;
-			_refMap[id] = ref;
-			return out;
-		}
-		
 		protected function createProxyObject(ref:*, includeNamespaces:Boolean=false):*{
 			if(ref is DisplayObject)
 				return '"' + DisplayObject(ref).toString() + '"';
 			if(ref == null || typeof(ref) != "object"){
-				if(ref is String)
-					ref = String(ref).replace('"', '\\"');
+				if(ref is String){
+					ref = String(ref).split(/\\/).join('\\\\\\\\');
+					ref = String(ref).replace(/"/g, '\\\\"');
+				}
 				return ref is String || ref is Function || isNaN(ref) || ref == undefined ? '"' + ref + '"' : ref;
 			}
 
@@ -700,12 +770,7 @@ package
 		}
 
 		protected function validateCommand(object:*, command:String):Boolean{
-			if(object == null){
-				serialize(new Error("The reference id is invalid or object was destroyed."), false);
-			}else if(object.hasOwnProperty(command) || object[command] != undefined){
-				return true;
-			}
-			return false;
+			return (object.hasOwnProperty(command) || object[command] != undefined);
 		}
 
 		protected function create(classRef:Class, args:Array):*{

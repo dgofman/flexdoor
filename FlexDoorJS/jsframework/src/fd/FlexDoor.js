@@ -90,28 +90,41 @@ FlexDoor.prototype.async = function(event, delay, timeout){
 FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
 {
 	System.info(testCaseTitle);
+	this.flashPlayerId = flashPlayerId;
 	this.testCaseTitle = testCaseTitle;
-
-	var flash =  System.getFlash(flashPlayerId);
-	if(flash == undefined)
-		Assert.fail("You must provide a valid Flash Player Object ID");
-
-	Application.prototype.Extends();
-	var appObject = flash.application();
-	this.app = new Application(Application, appObject.extendTypes[1], flash);
-	this.app.Initialize(appObject, flash);
-
-	var sysObject = flash.systemManager();
-	var systemManager = new EventDispatcher();
-	systemManager.Initialize(sysObject, this.app);
-	this.app.systemManager = systemManager;
 };
 
 FlexDoor.prototype.include = function() {
+	var flash =  System.getFlash(this.flashPlayerId);
+	if(flash == undefined)
+		Assert.fail("You must provide a valid Flash Player Object ID");
+	
+	var args = flash.application();
+	if(args.length == 2){
+		var files = System.getParams(arguments);
+		var extendTypes = args[1].extendTypes;
+		for(var i = 0; i < extendTypes.length; i++){
+			if(extendTypes[i] == "spark.components::Application"){
+				files.unshift("spark.components::Application");
+				break;
+			}
+		}
+		this.initializeApplication(args, files);
+	}else{
+		Assert.fail("Invalid serialization arguments");
+	}
+};
+
+FlexDoor.prototype.initializeApplication = function(args, files){	
 	var testCase = this;
 	var refIds = null;
-
-	var runTestCase = function(){
+	
+	FlexDoor.includeAll(testCase, files, function(){
+		var flash =  System.getFlash(this.flashPlayerId);
+		this.app = System.deserialize(args, this);
+		this.app.systemManager = System.deserialize(flash.systemManager(), this.app);
+		this.app.flash = flash;
+		
 		refIds = System.refIds();
 
 		if(testCase instanceof FlexDoor.ACTIVE_TESTCASE.prototype.constructor){
@@ -229,9 +242,7 @@ FlexDoor.prototype.include = function() {
 				runTest(testEvent);
 			}
 		};
-	};
-
-	FlexDoor.includeAll(testCase, arguments, runTestCase);
+	});
 };
 
 FlexDoor.includeAll = function(instance, files, callback) {
@@ -317,7 +328,8 @@ if(FlexDoor.LIB_PATH == undefined){
 	}
 }
 
-FlexDoor.executeFunction = function(className, functionName, args){
+FlexDoor.executeFunction = function(className, functionName, params){
+	var args = System.deserialize(params, this);
 	var classType = window[className];
 	if(classType instanceof Function && classType[functionName] instanceof Function){
 		var func = classType[functionName];

@@ -109,17 +109,15 @@ System.getLocator = function(path){
 	return System.deserialize(object);
 };
 
-System.findById = function(refId, includeRef){
-	includeRef = (includeRef == undefined ? true : includeRef);
+System.findById = function(refId, keepRef){
 	var flash = Application.application.flash;
 	var object = flash.findById(refId);
-	return System.deserialize(object, includeRef);
+	return System.deserialize(object, keepRef);
 };
 
-System.find = function(parent, id, index, visibleOnly, includeRef){
-	includeRef = (includeRef == undefined ? true : includeRef);
+System.find = function(parent, id, index, visibleOnly, keepRef){
 	var flash = Application.application.flash;
-	var object = flash.find(parent._refId, id, index, visibleOnly, includeRef);
+	var object = flash.find(parent._refId, id, index, visibleOnly, keepRef);
 	return System.deserialize(object, parent);
 };
 
@@ -129,17 +127,15 @@ System.getClass = function(className){
 	return System.deserialize(object);
 };
 
-System.getChildByName = function(parent, name, includeRef){
-	includeRef = (includeRef == undefined ? true : includeRef);
+System.getChildByName = function(parent, name, keepRef){
 	var flash = Application.application.flash;
-	var object = flash.getChildByName(parent._refId, name, includeRef);
+	var object = flash.getChildByName(parent._refId, name, keepRef);
 	return System.deserialize(object, parent);
 };
 
-System.getChildByType = function(parent, classType, index, visibleOnly, includeRef){
-	includeRef = (includeRef == undefined ? true : includeRef);
+System.getChildByType = function(parent, classType, index, visibleOnly, keepRef){
 	var flash = Application.application.flash;
-	var object = flash.getChildByType(parent._refId, classType, index, visibleOnly, includeRef);
+	var object = flash.getChildByType(parent._refId, classType, index, visibleOnly, keepRef);
 	return System.deserialize(object, parent);
 };
 
@@ -148,25 +144,22 @@ System.setter = function(target, command, value){
 	flash.setter(target._refId, command, value);
 };
 
-System.getter = function(target, command, includeRef){
-	includeRef = (includeRef == undefined ? true : includeRef);
+System.getter = function(target, command, keepRef){
 	var flash = Application.application.flash;
-	var object = flash.getter(target._refId, command, includeRef);
+	var object = flash.getter(target._refId, command, keepRef);
 	return System.deserialize(object);
 };
 
-System.execute = function(target, command, values, includeRef){
-	includeRef = (includeRef == undefined ? true : includeRef);
+System.execute = function(target, command, values, keepRef){
 	if(values != null && !(values instanceof Array)) values = [values];
 	var flash = Application.application.flash;
-	var object = flash.execute(target._refId, command, values, includeRef);
+	var object = flash.execute(target._refId, command, values, keepRef);
 	return System.deserialize(object);
 };
 
-System.refValue = function(target, keys, includeRef){
-	includeRef = (includeRef == undefined ? true : includeRef);
+System.refValue = function(refId, keys, keepRef){
 	var flash = Application.application.flash;
-	var object = flash.refValue(target._refId, keys, includeRef);
+	var object = flash.refValue(refId, keys, keepRef);
 	return System.deserialize(object);
 };
 
@@ -241,56 +234,69 @@ System.createFunction = function(classType, functionName){
 };
 
 System.serialize = function(object){
-	if( object instanceof fd_Function ){
-		return {type:"FUNCTION_TYPE", refId:object._refId};
-	}else if( object instanceof EventDispatcher ||
-		object instanceof flash_events_Event || 
-		(object != undefined && typeof(object) == "object" && 
-			!isNaN(object._refId) && object._extendTypes instanceof Array)){
-		return {type:"CLASS_TYPE", refId:object._refId};
-	}else{
-		return object;
-	}
-};
-
-System.deserialize = function(object, parent){
-	if(object != null && object["extendTypes"] instanceof Array){
-		for(var i = 0; object.extendTypes.length; i++){
-			var extendType = object.extendTypes[i];
-			if(extendType == "Function")
-				return new fd_Function(object);
-			if(extendType == "Object")
-				return isNaN(object._refId) ? System.json(object.ref) : object;
-			var pair = extendType.split("::");
-			var className = pair[0];
-			if(pair.length == 2)
-				className = pair[1];
-			if(className == "Error"){
-				Assert.fail(object.stackTrace);
-				var classType = FlexDoor.classType(object.extendTypes[1]);
-				if(classType == null) classType = Error;
-				throw new classType(object.message);
-			}
-			var classType = FlexDoor.classType(extendType);
-			if(classType != undefined){
-				if(classType.prototype.Extends != undefined &&
-				 !(classType.prototype instanceof UIComponent)){
-					classType.prototype.Extends();
-				}
-				var component = new classType(classType, extendType);
-				if(component instanceof EventDispatcher ||
-					component.Initialize instanceof Function){
-					object.ref = System.json(object.ref);
-					component.Initialize(object, parent);
-				}
-				return component;
-			}
-		}
-	}else if(object instanceof Array){
-		for(var i = 0; i < object.length; i++)
-			object[i].ref = System.json(object[i].ref);
+	var serialize = "FLEXDOOR_SERIALIZE";
+	if(object instanceof fd_Function){
+		return [serialize, fd_System.FUNCTION, object._refId];
+	}else if(object instanceof fd_System.Class){
+		return [serialize, fd_System.CLASS, object._refId];
+	}else if(object instanceof EventDispatcher ||
+			 object instanceof flash_events_Event){
+		return [serialize, fd_System.ANY, object._refId];
 	}
 	return object;
+};
+
+System.deserialize = function(params, parent){
+	if(!(params instanceof Array))
+		throw new Error("Invalid the deserializable argument");
+	var type   = params[0];
+	var object = params[1];
+	switch(type){
+		case fd_System.NULL:
+		case fd_System.OBJECT:
+			return object;
+		case fd_System.REFERENCE:
+			return object.refId;
+		case fd_System.CLASS:
+			return new fd_System.Class(object);
+		case fd_System.FUNCTION:
+			return new fd_Function(object);
+		case fd_System.ERROR:
+			var classType = FlexDoor.classType(object.extendTypes[0]);
+			if(classType == null) classType = Error;
+			throw new classType(object.message);
+			break;
+		case fd_System.ARRAY:
+			for(var i = 0; i < object.length; i++)
+				object[i].ref = System.json(object[i].ref);
+			return object;
+		case fd_System.EVENT:
+		case fd_System.ANY:
+			for(var i = 0; object.extendTypes.length; i++){
+				var extendType = object.extendTypes[i];
+				var pair = extendType.split("::");
+				var className = pair[0];
+				if(pair.length == 2)
+					className = pair[1];
+				var classType = FlexDoor.classType(extendType);
+				if(classType != undefined && classType.prototype != undefined){
+					if(classType.prototype.Extends != undefined &&
+					 !(classType.prototype instanceof UIComponent)){
+						classType.prototype.Extends();
+					}
+					var component = new classType(classType, extendType);
+					if(component instanceof EventDispatcher ||
+						component.Initialize instanceof Function){
+						object.ref = System.json(object.ref);
+						component.Initialize(object, parent);
+					}
+					return component;
+				}
+			}
+			return object;
+		default:
+			throw new Error("Invalid serialization type");
+	}
 };
 
 System.json = function(value){
@@ -324,3 +330,15 @@ System.trace = function(message, level) {
 };
 
 function fd_System(){};
+fd_System.Class = function(object){
+	this._refId = object.refId;
+};
+fd_System.NULL      = 0;
+fd_System.ERROR     = 1;
+fd_System.OBJECT    = 2;
+fd_System.ARRAY     = 3;
+fd_System.EVENT     = 4;
+fd_System.CLASS     = 5;
+fd_System.FUNCTION  = 6;
+fd_System.REFERENCE = 7;
+fd_System.ANY       = 8;

@@ -17,32 +17,25 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function Application(classType, extendType)
+function spark_components_Application(classType, extendType)
 {
-	UIComponent.call(this, classType, extendType);
-	Application.application = this;
-
-	this.getSystemManager = function(){
-		return this.systemManager;
-	};
-
-	this.getPopupWindow = function(extendType, index, visibleOnly){
-		return this.systemManager.getChildByType(extendType, index, visibleOnly);
-	};
+	/* extendType - spark.components::Application */
+	Application.call(this, classType, extendType);
 }
 
-Application.prototype.Import = function(){
-	return ["mx.core::Container"];
+spark_components_Application.prototype.Import = function(){
+	return ["spark.components::SkinnableContainer"];
 };
-Application.prototype.Extends = function(){
-	Container.prototype.Extends();
-	Application.prototype = new Container(Application);
+spark_components_Application.prototype.Extends = function(){
+	spark_components_SkinnableContainer.prototype.Extends();
+	spark_components_Application.prototype = new spark_components_SkinnableContainer(spark_components_Application);
 };
-Application.Get = function(o){
+spark_components_Application.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, Application);
+	ref = UIComponent.Get(o, spark_components_Application);
 	return ref;
 };
-Application.Is = function(target) { return target instanceof Application; };
 
-function mx_core_Application(){};
+function $$Application() {}
+$$Application.Get = spark_components_Application.Get;
+$$Application.Is = function(target) { return target instanceof spark_components_Application; };

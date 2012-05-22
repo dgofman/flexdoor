@@ -32,9 +32,8 @@ Locator.Get = function(){
 	for(var i = 1; i < arguments.length; i++)
 		value += arguments[i];
 	this.path = value;
-	
-	var object = System.getLocator(this.path);
-	ref = System.deserialize(object);
+	ref = System.getLocator(this.path);
+
 	return ref;
 };
 

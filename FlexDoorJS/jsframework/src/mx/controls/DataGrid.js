@@ -56,8 +56,8 @@ function mx_controls_DataGrid(classType, extendType)
 			if(lockedColumns > 0){ //calculate a columnIndex
 				if(col < lockedColumns){
 					var listBaseContentHolder = this.dataGridLockedColumns();
-					var listItems = System.getter(listBaseContentHolder, "listItems", false);
-					var renderer = this.refValue(listItems, row, col);
+					var listItemsRefId = System.getter(listBaseContentHolder, "listItems", true);
+					var renderer = this.refValue(listItemsRefId, row, col);
 					return renderer;
 				}else{
 					col -= lockedColumns;
