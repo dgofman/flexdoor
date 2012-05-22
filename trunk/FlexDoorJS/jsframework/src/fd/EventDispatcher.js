@@ -22,7 +22,7 @@ function EventDispatcher()
 }
 EventDispatcher.prototype.Extends = function() {};
 EventDispatcher.prototype.Initialize = function(object, parent){
-	this._refId = object._refId;
+	this._refId = object.refId;
 	this._id = object.id;
 	this._name = object.name;
 	this._extendTypes = object.extendTypes;
@@ -98,8 +98,8 @@ EventDispatcher.prototype.execute = function(command){
 	return System.execute(this, command, System.getParams(arguments, 1, true));
 };
 
-EventDispatcher.prototype.refValue = function(refObject){
-	return System.refValue(refObject, System.getParams(arguments, 1));
+EventDispatcher.prototype.refValue = function(refId){
+	return System.refValue(refId, System.getParams(arguments, 1));
 };
 
 EventDispatcher.prototype.create = function(className){
@@ -153,8 +153,6 @@ EventDispatcher.prototype.addEventListener = function(type, listener, target, us
 		asFunction = listener;
 	}else{
 		asFunction = this.createFunction(function(){
-			for(var i = 0; i < arguments.length; i++)
-				arguments[i] = System.deserialize(arguments[i], this);
 			listener.refFunc = asFunction;
 			listener.apply(target, arguments);
 		});
