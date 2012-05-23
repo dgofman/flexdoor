@@ -44,8 +44,11 @@ function mx_controls_PopUpMenuButton(classType, extendType)
 	
 	this.selectedIndex = function(index){
 		var popup = this.getPopUp();
-		if(popup != null)
+		if(popup != null){
+			if(index == undefined)
+				return popup.selectedIndex();
 			popup.fireEvent($MenuEvent.Create($MenuEvent.ITEM_CLICK, index));
+		}
 	};
 }
 

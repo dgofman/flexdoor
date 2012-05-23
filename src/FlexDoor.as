@@ -32,6 +32,7 @@ package
 	import flash.events.EventDispatcher;
 	import flash.events.SecurityErrorEvent;
 	import flash.events.TimerEvent;
+	import flash.events.UncaughtErrorEvent;
 	import flash.external.ExternalInterface;
 	import flash.net.URLRequest;
 	import flash.net.URLVariables;
@@ -163,7 +164,13 @@ package
 				}else{
 					_fdUtil = new FlexDoorUtil(this, _application);
 				}
+
+				_application.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
 			}
+		}
+
+		protected function uncaughtErrorHandler(e:UncaughtErrorEvent):void{
+			serializeError(e.error);
 		}
 
 		protected function addJavaScript(src:String):void{
@@ -601,7 +608,7 @@ package
 		protected function serializeError(e:Error):Object{
 			trace(e.getStackTrace());
 			if(_fdUtil != null)
-				_fdUtil.assertResult(true, e.message);
+				_fdUtil.assertResult(true, e.toString());
 			return serialize(e);
 		}
 
@@ -635,9 +642,10 @@ package
 			}else if(ref is Function){
 				outType = FUNCTION;
 			}else if(ref is Array){
-				for(var a:uint = 0; a < ref.length; a++)
-					ref[a] = serialize(ref[a])[1];
-				return [ARRAY, ref];
+				var array:Array = [];
+				for(var j:uint = 0; j < ref.length; j++)
+					array[j] = serialize(ref[j])[1];
+				return [ARRAY, array];
 			}else if(typeof(ref) != "object"){
 				return [OBJECT, ref]; //Number, uint, int, String, Boolean
 			}else if(ref is Class){

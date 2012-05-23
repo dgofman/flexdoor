@@ -20,6 +20,7 @@
 	import flash.net.SharedObject;
 	import flash.utils.clearInterval;
 	import flash.utils.setInterval;
+	import flash.events.IOErrorEvent;
 
 	public class ScriptLoaderView extends MovieClip
 	{
@@ -229,12 +230,14 @@
 					var urlLoader:URLLoader = new URLLoader();
 					urlLoader.dataFormat = URLLoaderDataFormat.TEXT;
 					urlLoader.addEventListener(Event.COMPLETE, onComplete);
+					urlLoader.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
 					urlLoader.load(request);
 
 					var testcases:Array = null;
 					var index:uint = 0;
 					function onComplete(e:Event) {
 						e.currentTarget.removeEventListener(Event.COMPLETE, onComplete);
+						e.currentTarget.removeEventListener(IOErrorEvent.IO_ERROR, errorHandler);
 						var data:String = String(e.currentTarget.data);
 						if(testcases == null){
 							_testCases = [];
@@ -259,6 +262,11 @@
 					};
 				}
 			}
+		}
+
+		private function errorHandler(e:IOErrorEvent):void {
+			e.currentTarget.removeEventListener(IOErrorEvent.IO_ERROR, errorHandler);
+			_runner.alertView.error(e.text);
 		}
 
 		private function onFileRefHandler(event:Event):void{
@@ -348,7 +356,8 @@
 					var testcase:Object = _testCases[index];
 					if(_selectedKeys[testcase.testCaseName + "::undefined"] != false){
 						if(format.color != EMPTY_COLOR && remote_rb.selected){
-							var uri:String = location_cmb.value.substring(0, location_cmb.value.indexOf("properties.txt"));
+							var uri:String = location_cmb.value.substring(0, location_cmb.value.lastIndexOf("/") + 1);
+							trace(uri);
 							externalCall("createScript", testcase.testCaseName, uri + testcase.jsFile);
 							attachJsScript(index + 1);
 						}else if(format.color != EMPTY_COLOR && isValidProtocol(location_cmb.value)){

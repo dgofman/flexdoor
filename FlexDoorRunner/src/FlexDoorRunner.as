@@ -24,11 +24,12 @@
 		private var inspectorView:InspectorView;
 		private var eventFilterView:EventFilterView;
 		private var scriptLoaderView:ScriptLoaderView;
-
+		
 		private var _tooltipDelayInterval:Number;
 		private var _isInitialized:Boolean;
 		private var _so:SharedObject;
 
+		[Embed("../assets/about.png")]  private const _aboutPNG:Class;
 		[Embed("../assets/filter.swf")] private const _filterSWF:Class;
 		[Embed("../assets/folder.swf")] private const _folderSWF:Class;
 		[Embed("../assets/target.swf")] private const _targetSWF:Class;
@@ -65,6 +66,7 @@
 			inspectorView.init(this);
 			eventFilterView.init(this);
 			scriptLoaderView.init(this);
+			alertView.init(this);
 
 			inspector_mc.mouseEnabled = false;
 			inspector_mc.mouseChildren = false;
@@ -100,6 +102,8 @@
 			initButton(views.testcases_btn, openTestCases, "Load Scripts");
 			views.minimize_btn.setStyle("icon", _minimizeSWF);
 			initButton(views.minimize_btn, minimizeWindow, "Minimize");
+			views.about_btn.setStyle("icon", _aboutPNG);
+			initButton(views.about_btn, aboutView, "About");
 
 			restore_btn.addEventListener(MouseEvent.CLICK, restoreWindow);
 			restore_btn.visible = false;
@@ -113,7 +117,7 @@
 				toolTipHelper();
 		}
 
-		public function initButton(button:*, eventHandler, toolTip:String):void{
+		public function initButton(button:*, eventHandler, toolTip:String=null):void{
 			if(eventHandler != null)
 				button.addEventListener(MouseEvent.CLICK, eventHandler);
 			if(toolTip != null){
@@ -240,7 +244,11 @@
 				stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyUpEventHanlder);
 			}
 		}
-		
+
+		private function aboutView(event:MouseEvent):void{
+			alertView.about();
+		}
+
 		private function minimizeWindow(event:MouseEvent=null):void{
 			scaleX = .2;
 			scaleY = .05;
@@ -334,7 +342,7 @@
 						
 						if(_tooltip_lbl.height == limit){
 							_tooltip_help.y = h;
-							_tooltip_help.width = w - 3;
+							_tooltip_help.width = w;
 							_tooltip_help.visible = true;
 							stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUpEventHanlder);
 						}else{
