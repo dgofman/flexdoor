@@ -488,21 +488,28 @@
 			if(play_pause_btn.selected == false)
 				return -1; //pause tests
 
+			var newIndex:int = index + 1;
 			if(index == 0 && testcases_dg.selectedItem != null){
-				return testcases_dg.selectedItem["testIndex"]; //get selected test index
-			}
-			var dp:DataProvider = testcases_dg.dataProvider;
-			for(var i:uint = testcases_dg.selectedIndex + 1; i < dp.length; i++){
-				testcases_dg.selectedIndex = i;
-				var item:Object = testcases_dg.selectedItem;
-				if(item["testCaseName"] == testCaseName && item["testName"] != null && item["include"] != false){
-					testcases_dg.verticalScrollPosition = ((i - 5) * testcases_dg.rowHeight);
-					return item["testIndex"];  //returns next available test index
-				}else if(item["testCaseName"] != testCaseName){
-					break;
+				newIndex = testcases_dg.selectedItem["testIndex"]; //get selected test index
+			}else{
+				var dp:DataProvider = testcases_dg.dataProvider;
+				for(var i:uint = testcases_dg.selectedIndex + 1; i < dp.length; i++){
+					testcases_dg.selectedIndex = i;
+					var item:Object = testcases_dg.selectedItem;
+					if(item["testCaseName"] == testCaseName && item["testName"] != null && item["include"] != false){
+						testcases_dg.verticalScrollPosition = ((i - 5) * testcases_dg.rowHeight);
+						newIndex = item["testIndex"];  //returns next available test index
+						break;
+					}else if(item["testCaseName"] != testCaseName){
+						break;
+					}
 				}
 			}
-			return index + 1;
+			if(testcases_dg.selectedItem != null){
+				delete testcases_dg.selectedItem.errors;
+				delete testcases_dg.selectedItem.success;
+			}
+			return newIndex;
 		}
 
 		private function externalCall(command:String, ...params):uint{

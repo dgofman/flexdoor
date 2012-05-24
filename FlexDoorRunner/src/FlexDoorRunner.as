@@ -109,7 +109,6 @@
 			restore_btn.visible = false;
 
 			bg_mc.addEventListener(MouseEvent.MOUSE_DOWN, dragEventHandler);
-			bg_mc.addEventListener(MouseEvent.MOUSE_UP, dragEventHandler);
 		}
 
 		private function onKeyUpEventHanlder(event:KeyboardEvent):void{
@@ -361,13 +360,20 @@
 		}
 
 		private function dragEventHandler(event:MouseEvent):void{
-			if(event.type == MouseEvent.MOUSE_DOWN && stage.hitTestObject(bg_mc)){
-				inspectorView.live_drag_ckb.selected = false;
-				dispatchEvent(new ContentEvent(ContentEvent.LIVE_DRAG_KIND, false));
-				this.startDrag();
-			}else{
-				this.stopDrag();
+			if(stage.hitTestObject(bg_mc)){
+				if(event.type == MouseEvent.MOUSE_DOWN){
+					inspectorView.live_drag_ckb.selected = false;
+					bg_mc.addEventListener(MouseEvent.MOUSE_UP, dragEventHandler);
+					stage.addEventListener(MouseEvent.MOUSE_MOVE, dragEventHandler);
+					dispatchEvent(new ContentEvent(ContentEvent.LIVE_DRAG_KIND, false));
+					this.startDrag();
+				}
+				if(event.type != MouseEvent.MOUSE_UP)
+					return;
 			}
+			this.stopDrag();
+			bg_mc.removeEventListener(MouseEvent.MOUSE_UP, dragEventHandler);
+			stage.removeEventListener(MouseEvent.MOUSE_MOVE, dragEventHandler);
 		}
 		
 		public function externalCall(command:String, ...params):void{
