@@ -29,6 +29,8 @@
 		private var _testCases:Array;
 		private var _selectedKeys:Object;
 		private var _validateInterval:Number;
+		
+		private var _startTime:Date;
 
 		private static const EMPTY_COLOR:Number = 0x999999;
 
@@ -380,6 +382,8 @@
 		}
 
 		public function playPauseTestCases(event:MouseEvent=null):void{
+			if(_startTime == null)
+				_startTime = new Date();
 			if(event == null)
 				play_pause_btn.selected = !play_pause_btn.selected;
 			if(play_pause_btn.enabled && play_pause_btn.selected == true){
@@ -398,6 +402,26 @@
 				overlay_mc.visible = false;
 				play_pause_btn.selected = false;
 				testcases_dg.selectedIndex = -1;
+
+				var tests:uint = 0;
+				var passed:uint = 0;
+				var failed:uint = 0;
+				var dp:DataProvider = testcases_dg.dataProvider;
+				for(var i:uint = 0; i < dp.length; i++){
+					var item:Object = dp.getItemAt(i);
+					if(item["testName"] != null && item["include"] != false){
+						if(item.errors != undefined)
+							failed += item.errors;
+						if(item.passed != undefined)
+							passed += item.passed;
+						tests++;
+					}
+					
+				}
+				_runner.alertView.finish(
+						"<b>Completed in</b> " + Number(new Date().time - _startTime.time) + " milliseconds<br>" +
+						tests + " <b>tests</b> of " + passed + " <b>passed</b>, " + failed + " <b>failed</b>");
+				_startTime = null;
 			}
 		}
 
@@ -441,8 +465,8 @@
 					return "X";
 				}
 			}
-			if(column.dataField == "state" && data.errors != undefined && data.success != undefined){
-				return data.errors + "/" + data.success;
+			if(column.dataField == "state" && data.errors != undefined && data.passed != undefined){
+				return data.errors + "/" + data.passed;
 			}
 			return (data[column.dataField] != null ? data[column.dataField] : "");
 		}
@@ -453,10 +477,10 @@
 			if(item != null){
 				if(item.errors == undefined)
 					item.errors = 0;
-				if(item.success == undefined)
-					item.success = 0;
+				if(item.passed == undefined)
+					item.passed = 0;
 					
-				item[error ? 'errors' : 'success']++;
+				item[error ? 'errors' : 'passed']++;
 				if(item.toolTip == null)
 					item.toolTip = message;
 				else
@@ -507,7 +531,7 @@
 			}
 			if(testcases_dg.selectedItem != null){
 				delete testcases_dg.selectedItem.errors;
-				delete testcases_dg.selectedItem.success;
+				delete testcases_dg.selectedItem.passed;
 			}
 			return newIndex;
 		}

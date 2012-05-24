@@ -41,6 +41,12 @@
 			visible = true;
 		}
 
+		public function finish(value:String):void{
+			title_lbl.htmlText = "<b>Result</b>";
+			details_txt.htmlText = value;
+			visible = true;
+		}
+
 		private function mouseEvent(event:MouseEvent):void{
 			visible = false;
 		}
