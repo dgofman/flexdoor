@@ -24,18 +24,20 @@
 		}
 
 		public function about():void{
-			title_lbl.text = "About";
-			details_txt.text = "Flex Door 3.1\nAuthor: David Gofman";
-			
+			title_lbl.htmlText = "<b>About</b>";
+			var details:Array = ["<b>FlexDoor</b> version 3.1"];
+			details.push("<b>Author:</b> David Gofman");
+
 			var date:Date = readCompilationDate();
 			if(date != null)
-				details_txt.appendText("\nModified: " + date.toLocaleString());
+				details.push("<b>Modified:</b> " + date.toLocaleString());
+			details_txt.htmlText = details.join("<br>");
 			visible = true;
 		}
 
 		public function error(value:String):void{
-			title_lbl.text = "Error";
-			details_txt.text = value;
+			title_lbl.htmlText = "<b>Error</b>";
+			details_txt.htmlText = value;
 			visible = true;
 		}
 

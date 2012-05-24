@@ -75,7 +75,7 @@ FlexDoor.prototype.waitFor = function(func, delay, timeout){
 };
 
 FlexDoor.prototype.callNextTest = function(type_TestEvent){
-	if(type_TestEvent == undefined) type_TestEvent = TestEvent.ASYNCHRONOUS; 
+	if(type_TestEvent == undefined) type_TestEvent = this.asyncEventType; 
 	this.dispatchEvent(type_TestEvent);
 };
 
@@ -84,7 +84,8 @@ FlexDoor.prototype.sync = function(event, delay, timeout){
 };
 
 FlexDoor.prototype.async = function(event, delay, timeout){
-	TestEvent.Get(event).set({type:TestEvent.ASYNCHRONOUS, delay:delay, timeout:timeout});
+	this.asyncEventType = TestEvent.ASYNCHRONOUS + '_' + event.functionName;
+	TestEvent.Get(event).set({type:this.asyncEventType, delay:delay, timeout:timeout});
 };
 
 FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
@@ -152,9 +153,11 @@ FlexDoor.prototype.initializeApplication = function(args, files){
 
 						testEvent.addAsyncEventListener = function(eventType){
 							//call finalizeFunction after dispatchEvent
-							testCase.addEventListener(eventType, function(){
+							var asyncEventHandler = function(){
+								testCase.removeEventListener(eventType, asyncEventHandler);
 								System.timer(null, testCase.delegate(finalizeFunction, testEvent, releaseRefId), testEvent.delay);
-							});
+							};
+							testCase.addEventListener(eventType, asyncEventHandler);
 						};
 
 						var args = [testEvent];
@@ -190,8 +193,6 @@ FlexDoor.prototype.initializeApplication = function(args, files){
 			};
 
 			var finalizeFunction = function(testEvent, releaseRefId){
-				testCase.removeEventListener(testEvent.type, finalizeFunction);
-
 				System.killTimers();
 
 				if(releaseRefId == undefined){ //finalizeFunction called by timeout timer
@@ -212,8 +213,12 @@ FlexDoor.prototype.initializeApplication = function(args, files){
 				if(releaseRefId != undefined){
 					if(nextTestEvent.testArgs instanceof ARGS){
 						var items = nextTestEvent.testArgs.source;
+						var exisitngIds = {};
+						for(var i = 0; i < releaseRefId.length; i++)
+							exisitngIds[releaseRefId[i]] = true;
 						for(var i = 0; i < items.length; i++){
-							if(items[i] instanceof EventDispatcher)
+							if( items[i] instanceof EventDispatcher &&
+								exisitngIds[releaseRefId[items[i]._refId]] != true)
 								releaseRefId.push(items[i]._refId);
 						}
 					}
@@ -281,11 +286,11 @@ FlexDoor.includeAll = function(instance, files, callback) {
 					validateAllClasses();
 					
 					//Validate if all classes are loaded
-					FlexDoor.TIME_INTERVAL = setInterval(function(files){
+					var interval = setInterval(function(files){
+						clearInterval(interval);
 						for(var className in files){
 							System.warn("Class not loaded: " + className);
 						}
-						clearInterval(FlexDoor.TIME_INTERVAL);
 					}, 15000, FlexDoor.LOAD_FILES);
 				}, 500);
 			}
