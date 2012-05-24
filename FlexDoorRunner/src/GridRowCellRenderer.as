@@ -19,7 +19,7 @@
 			if(value != null){
 				if(!isNaN(value.errors) && value.errors > 0){
 					_color = 0xF58878;
-				}else if(!isNaN(value.success) && value.success > 0){
+				}else if(!isNaN(value.passed) && value.passed > 0){
 					_color = 0xCCFF99;
 				}else{
 					_color = 0xFFFFFF;

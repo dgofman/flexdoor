@@ -13,7 +13,3 @@ Sample5TestCase.prototype.test_1 = function(event) {
 	
 	Assert.assertEquals(itemRenderer1.text(), itemRenderer2.text());
 };
-
-Sample5TestCase.prototype.test_2 = function(event) {
-	alert("DONE!");
-};
