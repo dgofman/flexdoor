@@ -448,6 +448,10 @@ function UIComponent(classType, extendType)
 		return this.property("tabFocusEnabled", arguments);
 	};
 	
+	this.tabIndex = function(){ /* getter and setter */
+		return this.property("tabIndex", arguments);
+	};
+
 	this.toolTip = function(){ /* getter and setter */
 		return this.property("toolTip", arguments);
 	};
