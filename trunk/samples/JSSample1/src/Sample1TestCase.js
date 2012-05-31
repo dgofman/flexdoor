@@ -39,9 +39,9 @@ Sample1TestCase.prototype.test_1 = function(event) {
 	//Get instance by extend class type
 	view = $TitleWindow.Get(this.app.getChildByType(extectedType));
 
-	Assert.assertTrue(view instanceof Container);
-	Assert.assertTrue(view instanceof mx_containers_Panel);
-	Assert.assertTrue(view instanceof mx_containers_TitleWindow);
+	Assert.assertTrue(Container.Is(view));
+	Assert.assertTrue($Panel.Is(view));
+	Assert.assertTrue($TitleWindow.Is(view));
 	Assert.assertType(view, extectedType);
 
 	//Get instance by class name type
