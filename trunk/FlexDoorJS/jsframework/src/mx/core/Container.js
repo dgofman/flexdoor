@@ -141,6 +141,7 @@ function Container(classType, extendType)
 		return this.getter("viewMetricsAndPadding");
 	};
 	
+	//API's
 	this.getChildAt = function(index) {
 		return this.execute("getChildAt", index);
 	};
