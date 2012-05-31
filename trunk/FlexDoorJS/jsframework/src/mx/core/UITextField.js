@@ -21,10 +21,80 @@ function UITextField(classType, extendType)
 {
 	UIComponent.call(this, classType, extendType);
 
+	this.enableIME = function() {
+		return this.getter("enableIME");
+	};
+	
+	this.htmlText = function() { /* getter and setter */
+		return this.property("htmlText", arguments, function(value){
+			this.fireEvent($Event.Create($Event.CHANGE));
+		});
+	};
+	
+	this.ignorePadding = function(){ /* getter and setter */
+		return this.property("ignorePadding", arguments);
+	};
+	
+	this.imeMode = function(){ /* getter and setter */
+		return this.property("imeMode", arguments);
+	};
+	
+	this.nonZeroTextHeight = function() {
+		return this.getter("nonZeroTextHeight");
+	};
+	
 	this.text = function() { /* getter and setter */
 		return this.property("text", arguments, function(value){
 			this.fireEvent($Event.Create($Event.CHANGE));
 		});
+	};
+	
+	this.textColor = function(){ /* getter and setter */
+		return this.property("textColor", arguments);
+	};
+	
+	this.textHeight = function(){ /* getter and setter */
+		return this.property("textHeight", arguments);
+	};
+	
+	this.textWidth = function(){ /* getter and setter */
+		return this.property("textWidth", arguments);
+	};
+	
+	this.textInteractionMode = function(){ /* getter and setter */
+		return this.property("textInteractionMode", arguments);
+	};
+	
+	//API's
+	this.getTextStyles = function() {
+		return this.execute("getTextStyles");
+	};
+	
+	this.getUITextFormat = function() {
+		return this.execute("getUITextFormat");
+	};
+	
+	this.insertXMLText = function(beginIndex, endIndex, richText, pasting) {
+		if(pasting === undefined) pasting = false;
+		this.execute("insertXMLText", beginIndex, endIndex, richText, pasting);
+	};
+	
+	this.replaceText = function(beginIndex, endIndex, newText) {
+		this.execute("replaceText", beginIndex, endIndex, newText);
+	};
+	
+	this.setColor = function(color) {
+		this.execute("setColor", color);
+	};
+	
+	this.setTextFormat = function(format, beginIndex, endIndex) {
+		if(beginIndex === undefined) beginIndex = -1;
+		if(endIndex === undefined) endIndex = -1;
+		this.execute("setTextFormat", format, beginIndex, endIndex);
+	};
+	
+	this.truncateToFit = function(truncationIndicator) {
+		return this.execute("truncateToFit", truncationIndicator);
 	};
 }
 
