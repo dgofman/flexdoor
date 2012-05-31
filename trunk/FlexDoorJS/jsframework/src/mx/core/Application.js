@@ -22,6 +22,43 @@ function Application(classType, extendType)
 	UIComponent.call(this, classType, extendType);
 	Application.application = this;
 
+	this.pageTitle = function(){ /* public var */
+		return this.property("pageTitle", arguments);
+	};
+	
+	this.parameters = function(){
+		return this.getter("parameters");
+	};
+	
+	this.preloader = function(){ /* public var */
+		return this.property("preloader", arguments);
+	};
+	
+	this.preloaderChromeColor = function(){ /* public var */
+		return this.property("preloaderChromeColor", arguments);
+	};
+	
+	this.resetHistory = function(){ /* public var */
+		return this.property("resetHistory", arguments);
+	};
+	
+	this.scriptRecursionLimit = function(){ /* public var */
+		return this.property("scriptRecursionLimit", arguments);
+	};
+	
+	this.scriptTimeLimit = function(){ /* public var */
+		return this.property("scriptTimeLimit", arguments);
+	};
+	
+	this.usePreloader = function(){ /* public var */
+		return this.property("usePreloader", arguments);
+	};
+	
+	this.viewSourceURL = function() { /* getter and setter */
+		return this.property("viewSourceURL", arguments);
+	};
+	
+	//API's
 	this.getSystemManager = function(){
 		return this.systemManager;
 	};
