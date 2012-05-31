@@ -17,41 +17,21 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_ComboBox(classType, extendType) 
+function mx_controls_VideoDisplay(classType, extendType) 
 {
-	/* extendType - mx.controls::ComboBox */
+	/* extendType - mx.controls::VideoDisplay */
 	UIComponent.call(this, classType, extendType);
-
-	this.open = function(){
-		this.execute("open");
-	};
-
-	this.close = function(){
-		this.execute("close");
-	};
-
-	this.isOpen = function(){
-		return this.getter("isShowingDropdown");
-	};
-
-	this.dropdown = function(){
-		return this.getter("dropdown");
-	};
 }
 
-mx_controls_ComboBox.prototype.Import = function(){
-	return ["mx.controls::ComboBase"];
+mx_controls_VideoDisplay.prototype.Extends = function(){
+	mx_controls_VideoDisplay.prototype = new UIComponent(mx_controls_VideoDisplay);
 };
-mx_controls_ComboBox.prototype.Extends = function(){
-	mx_controls_ComboBase.prototype.Extends();
-	mx_controls_ComboBox.prototype = new mx_controls_ComboBase(mx_controls_ComboBox);
-};
-mx_controls_ComboBox.Get = function(o){
+mx_controls_VideoDisplay.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, mx_controls_ComboBox);
+	ref = UIComponent.Get(o, mx_controls_VideoDisplay);
 	return ref;
 };
 
-function $ComboBox() {}
-$ComboBox.Get = mx_controls_ComboBox.Get;
-$ComboBox.Is = function(target) { return target instanceof mx_controls_ComboBox; };
+function $VideoDisplay() {}
+$VideoDisplay.Get = mx_controls_VideoDisplay.Get;
+$VideoDisplay.Is = function(target) { return target instanceof mx_controls_VideoDisplay; };
