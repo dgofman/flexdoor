@@ -22,6 +22,11 @@ function mx_controls_listClasses_ListBase(classType, extendType)
 	/* extendType - mx.controls.listClasses::ListBase */
 	UIComponent.call(this, classType, extendType);
 
+	this.dragMoveEnabled = function(){ /* getter and setter */
+		return this.property("dragMoveEnabled", arguments);
+	};
+
+	//API's
 	this.dragAndDropIndices = function(target, indices, action, dropIndex){
 		System.dragAndDropIndices(this, target, indices, action, dropIndex);
 	};
