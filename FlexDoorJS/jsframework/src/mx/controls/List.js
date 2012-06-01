@@ -53,10 +53,11 @@ function mx_controls_List(classType, extendType)
 }
 
 mx_controls_List.prototype.Import = function(){
-	return ["mx.events::ListEvent"];
+	return ["mx.events::ListEvent", "mx.controls.listClasses::ListBase"];
 };
 mx_controls_List.prototype.Extends = function(){
-	mx_controls_List.prototype = new UIComponent(mx_controls_List);
+	mx_controls_listClasses_ListBase.prototype.Extends();
+	mx_controls_List.prototype = new mx_controls_listClasses_ListBase(mx_controls_List);
 };
 mx_controls_List.Get = function(o){
 	var ref = this;
