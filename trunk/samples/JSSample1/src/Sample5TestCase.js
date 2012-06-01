@@ -17,5 +17,5 @@ Sample5TestCase.prototype.test_1 = function(event) {
 Sample5TestCase.prototype.test_2 = function(event) {
 	var source = $DataGrid.Get(Locator.Get("/sampleView,0/dataGrid"));
 	var target = $DataGrid.Get(Locator.Get("/sampleView,1/dataGrid"));
-	source.dragAndDropIndices(target, [2,3,4], $DragManager.MOVE, 2);
+	source.dragAndDropIndices(target, [2,3,4], 2);
 };
