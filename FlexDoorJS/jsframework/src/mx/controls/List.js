@@ -34,26 +34,13 @@ function mx_controls_List(classType, extendType)
 		return this.execute("mx_internal::indicesToItemRenderer", row, col);
 	};
 
-	this.selectedIndex = function(){  /* getter and setter */
-		return this.property("selectedIndex", arguments, function(value){
-			this.fireEvent($ListEvent.Create($ListEvent.CHANGE, value, 0, this.indexToItemRenderer(value)));
-		});
-	};
-
-	this.selectedItem = function(){  /* getter and setter */
-		return this.property("selectedItem", arguments, function(value){
-			var rowIndex = this.selectedIndex();
-			this.fireEvent($ListEvent.Create($ListEvent.CHANGE, rowIndex, 0, this.indexToItemRenderer(rowIndex)));
-		});
-	};
-
 	this.dataProvider = function(){ /* getter and setter */
 		return this.property("dataProvider", arguments);
 	};
 }
 
 mx_controls_List.prototype.Import = function(){
-	return ["mx.events::ListEvent", "mx.controls.listClasses::ListBase"];
+	return ["mx.controls.listClasses::ListBase"];
 };
 mx_controls_List.prototype.Extends = function(){
 	mx_controls_listClasses_ListBase.prototype.Extends();

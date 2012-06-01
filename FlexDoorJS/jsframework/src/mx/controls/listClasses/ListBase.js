@@ -26,6 +26,25 @@ function mx_controls_listClasses_ListBase(classType, extendType)
 		return this.property("dragMoveEnabled", arguments);
 	};
 
+	this.selectedIndices = function(){  /* getter and setter */
+		return this.property("selectedIndices", arguments, function(value){
+			this.fireEvent($ListEvent.Create($ListEvent.CHANGE, value, 0, this.indexToItemRenderer(value)));
+		});
+	};
+
+	this.selectedIndex = function(){  /* getter and setter */
+		return this.property("selectedIndex", arguments, function(value){
+			this.fireEvent($ListEvent.Create($ListEvent.CHANGE, value, 0, this.indexToItemRenderer(value)));
+		});
+	};
+
+	this.selectedItem = function(){  /* getter and setter */
+		return this.property("selectedItem", arguments, function(value){
+			var rowIndex = this.selectedIndex();
+			this.fireEvent($ListEvent.Create($ListEvent.CHANGE, rowIndex, 0, this.indexToItemRenderer(rowIndex)));
+		});
+	};
+	
 	//API's
 	this.dragAndDropIndices = function(target, indices, action, dropIndex){
 		System.dragAndDropIndices(this, target, indices, action, dropIndex);
@@ -36,7 +55,7 @@ mx_controls_listClasses_ListBase.prototype.Extends = function(){
 	mx_controls_listClasses_ListBase.prototype = new UIComponent(mx_controls_listClasses_ListBase);
 };
 mx_controls_listClasses_ListBase.prototype.Import = function(){
-	return ["mx.events::DragEvent", "mx.managers::DragManager"];
+	return ["mx.events::ListEvent", "mx.events::DragEvent", "mx.managers::DragManager"];
 };
 mx_controls_listClasses_ListBase.Get = function(o){
 	var ref = this;
