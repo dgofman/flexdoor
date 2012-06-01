@@ -23,7 +23,7 @@ function mx_events_DragEvent(classType, extendType)
 	UIComponent.call(this, classType, extendType);
 
 	this.Initialize = function(object){
-		flash_events_MouseEvent.prototype.Initialize(object);
+		flash_events_Event.prototype.Initialize(object);
 		this.dragInitiator = this.ref.dragInitiator;
 		this.dragSource = this.ref.dragSource;
 		this.action = this.ref.action;
