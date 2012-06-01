@@ -310,7 +310,7 @@ System.fireEvent = function(target, event){
 	return result;
 };
 
-System.dragAndDropIndices = function(source, target, indices, action, dropIndex){
+System.dragAndDropIndices = function(source, target, indices, dropIndex, action){
 	if(action == undefined)
 		action = (source.dragMoveEnabled() ? $DragManager.MOVE: $DragManager.COPY);
 
