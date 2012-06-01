@@ -24,9 +24,9 @@ function mx_events_DragEvent(classType, extendType)
 
 	this.Initialize = function(object){
 		flash_events_Event.prototype.Initialize(object);
-		this.dragInitiator = this.ref.dragInitiator;
-		this.dragSource = this.ref.dragSource;
-		this.action = this.ref.action;
+		this.dragInitiator = object.ref.dragInitiator;
+		this.dragSource = object.ref.dragSource;
+		this.action = object.ref.action;
 	};
 }
 
