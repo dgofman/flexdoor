@@ -30,7 +30,7 @@
 		<mx:DataGrid id="dataGrid" width="100%" height="100%" dataProvider="{[1,2,3,4,5]}"
 					 itemClick="itemClickHandler(event)"
 					 change="changeHandler(event)"
-					 click="clickHandler(event)">
+					 click="clickHandler(event)" dragEnabled="true" dropEnabled="true" dragMoveEnabled="true">
 			<mx:columns>
 				<mx:DataGridColumn headerText="Column 1"/>
 				<mx:DataGridColumn headerText="Column 2"/>
