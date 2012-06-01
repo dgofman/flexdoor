@@ -23,6 +23,8 @@ package
 
 	public class FlexDoorUtil
 	{
+		public static var instance:FlexDoorUtil;
+
 		private static var _flexDoor:FlexDoor;
 		private static var _textField:TextField;
 
@@ -51,6 +53,8 @@ package
 		private var _excludeEvents:Object;
 
 		public function FlexDoorUtil(flexDoor:FlexDoor, application:*){
+			instance = this;
+
 			_flexDoor = flexDoor;
 			_application = application;
 
@@ -116,7 +120,7 @@ package
 								_inspectorRect.graphics.drawRect(0, 0, event.target.width, event.target.height);
 								_inspectorRect.x = point.x + x;
 								_inspectorRect.y = point.y + y;
-								getComponentInfo(_lastSpyComponent, [], [], {});
+								printComponentInfo(_lastSpyComponent, [], [], {});
 								break;
 							}
 							x += target.x;
@@ -200,7 +204,7 @@ package
 				var eventType:XML = describeType(event);
 				includes[eventType.@name.toString()] = 0;
 
-				getComponentInfo(uicomponent, components, locators, includes);
+				printComponentInfo(uicomponent, components, locators, includes);
 
 				if(components.length > 0){
 					var uid:String = (uicomponent.hasOwnProperty("uid") ? uicomponent.uid : uicomponent.toString());
@@ -209,7 +213,7 @@ package
 			};
 		}
 
-		private function getComponentInfo(uicomponent:*, components:Array, locators:Array, includes:Object):void{
+		public function getComponentInfo(uicomponent:*, components:Array, locators:Array, includes:Object):void{
 			var uniqNames:Object = {};
 
 			function getInfo(c:*, childRef:*=null, childId:String=null):String{
@@ -329,12 +333,16 @@ package
 				return null;
 			};
 			getInfo(uicomponent);
+		}
 
+		private function printComponentInfo(uicomponent:*, components:Array, locators:Array, includes:Object):void{
+			getComponentInfo(uicomponent, components, locators, includes);
+			
 			if(components.length > 0){
 				var code:String = '<font color="#3F7F5F">//' + uicomponent.toString() + '</font>\n\n' +
-								  '<b>LOCATOR:</b>\n\n' + 
-								  '<i>Locator.Get</i>(<font color="#2A00FF">"/' + locators.join('/') + '"</font>);\n\n' +
-								  '<b>TREE:</b>\n\n'; 
+					'<b>LOCATOR:</b>\n\n' + 
+					'<i>Locator.Get</i>(<font color="#2A00FF">"/' + locators.join('/') + '"</font>);\n\n' +
+					'<b>TREE:</b>\n\n'; 
 				var packages:Array = [];
 				for(var pckg:String in includes)
 					packages.push('<font color="#2A00FF">"' + pckg + '"</font>');
