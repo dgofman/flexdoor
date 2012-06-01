@@ -319,17 +319,20 @@ System.dragAndDropIndices = function(source, target, indices, action, dropIndex)
 	var dragEvent = $DragEvent.Create($DragEvent.DRAG_START, null, source);
 	dragEvent.setter("buttonDown", true);
 	source.dispatchEvent(dragEvent);
+	dragEvent.destory();
 
 	var dragProxy = $DragManager.dragProxy();
+	var mouseMove = $MouseEvent.Create($MouseEvent.MOUSE_MOVE);
 	var renderer = null;
 	if(dropIndex != undefined)
-		renderer = dataGrid2.indexToItemRenderer(dropIndex);
+		renderer = target.indexToItemRenderer(dropIndex);
 	
 	if(renderer != null){
-		renderer.dispatchEvent($MouseEvent.Create($MouseEvent.MOUSE_MOVE));
+		renderer.dispatchEvent(mouseMove);
 	}else{
-		dragProxy.dispatchEvent($MouseEvent.Create($MouseEvent.MOUSE_MOVE));
+		dragProxy.dispatchEvent(mouseMove);
 	}
+	mouseMove.destory();
 
 	dragProxy.setter("target", target);
 	dragProxy.setter("action", action);
