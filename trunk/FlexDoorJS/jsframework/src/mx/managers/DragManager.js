@@ -17,28 +17,29 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_listClasses_ListBase(classType, extendType) 
+function mx_managers_DragManager(classType, extendType) 
 {
-	/* extendType - mx.controls.listClasses::ListBase */
+	/* extendType - mx.managers::DragManager */
 	UIComponent.call(this, classType, extendType);
-
-	this.dragAndDropIndices = function(target, indices, action, dropIndex){
-		System.dragAndDropIndices(this, target, indices, action, dropIndex);
-	};
 }
+mx_managers_DragManager.prototype = new Object();
 
-mx_controls_listClasses_ListBase.prototype.Extends = function(){
-	mx_controls_listClasses_ListBase.prototype = new UIComponent(mx_controls_listClasses_ListBase);
-};
-mx_controls_listClasses_ListBase.prototype.Import = function(){
-	return ["mx.events::DragEvent", "mx.managers::DragManager"];
-};
-mx_controls_listClasses_ListBase.Get = function(o){
+mx_managers_DragManager.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, mx_controls_listClasses_ListBase);
+	ref = UIComponent.Get(o, mx_managers_DragManager);
 	return ref;
 };
 
-function $ListBase() {}
-$ListBase.Get = mx_controls_listClasses_ListBase.Get;
-$ListBase.Is = function(target) { return target instanceof mx_controls_listClasses_ListBase; };
+function $DragManager() {}
+$DragManager.Get = mx_managers_DragManager.Get;
+$DragManager.Is = function(target) { return target instanceof mx_managers_DragManager; };
+
+$DragManager.NONE = "none";
+$DragManager.COPY = "copy";
+$DragManager.MOVE = "move";
+$DragManager.LINK = "link";
+
+$DragManager.dragProxy = function(){
+	var manager = System.getClass("mx.managers::DragManager");
+	return System.getter(manager, "dragProxy");
+};
