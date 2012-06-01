@@ -424,7 +424,7 @@ package
 				var target:Object = getRef(refId);
 				if(validateCommand(target, command))
 					return serialize(target[command], keepRef);
-				return serialize(new Error("Error 1011: Reference or command is invalid"), false);
+				return serialize(new Error("Error 1011: Reference or command is invalid: " + target + "::" + command), false);
 			}catch(e:Error){
 				return serializeError(e);
 			}
@@ -448,7 +448,7 @@ package
 						return serializeError(e);
 					}
 				}
-				return serialize(new Error("Error 1012: Cannot execute a command: " + command), false);
+				return serialize(new Error("Error 1012: Cannot execute a command: " + target + "::" + command), false);
 			}catch(e:Error){
 				return serializeError(e);
 			}
@@ -778,7 +778,7 @@ package
 		}
 
 		protected function validateCommand(object:*, command:String):Boolean{
-			return (object.hasOwnProperty(command) || object[command] != undefined);
+			return (object.hasOwnProperty(command) || object[command] !== undefined);
 		}
 
 		protected function create(classRef:Class, args:Array):*{
