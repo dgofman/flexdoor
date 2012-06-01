@@ -17,9 +17,9 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function UITextField(classType, extendType) 
+function UITextField(classType) 
 {
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 
 	this.enableIME = function() {
 		return this.getter("enableIME");

@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_ColorPicker(classType, extendType) 
+function mx_controls_ColorPicker(classType) 
 {
 	/* extendType - mx.controls::ColorPicker */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 }
 
 mx_controls_ColorPicker.prototype.Import = function(){

@@ -17,13 +17,13 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_events_MenuEvent(classType, extendType) 
+function mx_events_MenuEvent(classType) 
 {
 	/* extendType - mx.events::MenuEvent */
-	UIComponent.call(this, classType, extendType);
+	flash_events_Event.call(this, classType);
 
 	this.Initialize = function(object){
-		flash_events_Event.prototype.Initialize(object);
+		flash_events_Event.prototype.Initialize.call(this, object);
 		this.menuBar = this.ref.menuBar;
 		this.menu = this.ref.menu;
 		this.item = this.ref.item;

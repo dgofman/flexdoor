@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_Group(classType, extendType) 
+function spark_components_Group(classType) 
 {
 	/* extendType - spark.components::Group */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 }
 
 spark_components_Group.prototype.Import = function(){

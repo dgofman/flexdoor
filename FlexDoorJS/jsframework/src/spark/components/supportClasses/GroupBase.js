@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_supportClasses_GroupBase(classType, extendType) 
+function spark_components_supportClasses_GroupBase(classType) 
 {
 	/* extendType - spark.components.supportClasses::GroupBase */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 }
 
 spark_components_supportClasses_GroupBase.prototype = new UIComponent(spark_components_supportClasses_GroupBase);

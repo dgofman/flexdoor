@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_MenuBar(classType, extendType) 
+function mx_controls_MenuBar(classType) 
 {
 	/* extendType - mx.controls::MenuBar */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 }
 
 mx_controls_MenuBar.prototype.Extends = function(){

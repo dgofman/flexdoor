@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_CheckBox(classType, extendType) 
+function mx_controls_CheckBox(classType) 
 {
 	/* extendType - mx.controls::CheckBox */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 
 	this.selected = function(){ /* getter and setter */
 		return this.property("selected", arguments);

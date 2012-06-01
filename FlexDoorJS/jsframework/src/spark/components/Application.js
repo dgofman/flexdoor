@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_Application(classType, extendType)
+function spark_components_Application(classType)
 {
 	/* extendType - spark.components::Application */
-	Application.call(this, classType, extendType);
+	Application.call(this, classType);
 }
 
 spark_components_Application.prototype.Import = function(){

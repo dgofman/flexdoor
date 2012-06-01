@@ -17,13 +17,13 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_events_DragEvent(classType, extendType) 
+function mx_events_DragEvent(classType) 
 {
 	/* extendType - mx.events::DragEvent */
-	UIComponent.call(this, classType, extendType);
+	flash_events_Event.call(this, classType);
 
 	this.Initialize = function(object){
-		flash_events_Event.prototype.Initialize(object);
+		flash_events_Event.prototype.Initialize.call(this, object);
 		this.dragInitiator = object.ref.dragInitiator;
 		this.dragSource = object.ref.dragSource;
 		this.action = object.ref.action;

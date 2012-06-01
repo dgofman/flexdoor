@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_listClasses_ListBase(classType, extendType) 
+function mx_controls_listClasses_ListBase(classType) 
 {
 	/* extendType - mx.controls.listClasses::ListBase */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 
 	this.dragMoveEnabled = function(){ /* getter and setter */
 		return this.property("dragMoveEnabled", arguments);

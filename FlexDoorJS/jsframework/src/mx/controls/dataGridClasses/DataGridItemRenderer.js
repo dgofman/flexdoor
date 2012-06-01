@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_dataGridClasses_DataGridItemRenderer(classType, extendType) 
+function mx_controls_dataGridClasses_DataGridItemRenderer(classType) 
 {
 	/* extendType - mx.controls.dataGridClasses::DataGridItemRenderer */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 
 	this.data = function() { /* getter and setter */
 		return this.property("data", arguments);

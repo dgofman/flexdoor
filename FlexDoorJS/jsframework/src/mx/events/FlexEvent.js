@@ -17,14 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_events_FlexEvent(classType, extendType) 
+function mx_events_FlexEvent(classType) 
 {
 	/* extendType - mx.events::FlexEvent */
-	UIComponent.call(this, classType, extendType);
-
-	this.Initialize = function(object){
-		flash_events_Event.prototype.Initialize(object);
-	};
+	flash_events_Event.call(this, classType);
 }
 
 mx_events_FlexEvent.prototype.Import = function(){

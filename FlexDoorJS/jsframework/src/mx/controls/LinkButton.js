@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_LinkButton(classType, extendType) 
+function mx_controls_LinkButton(classType) 
 {
 	/* extendType - mx.controls::LinkButton */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 }
 
 mx_controls_LinkButton.prototype.Import = function(){

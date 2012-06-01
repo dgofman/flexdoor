@@ -17,16 +17,13 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function UIComponent(classType, extendType) 
+function UIComponent(classType) 
 {
 	if(classType == undefined)
 		throw new Error("Class Type is undefined");
 
-	classType.FLEX_TYPE = extendType;
-	classType.prototype.constructor = classType;
-	classType.prototype.toString  = function(){
-		return extendType;
-	};
+	/* extendType - mx.core::UIComponent */
+	EventDispatcher.call(this, classType);
 
 	this.accessibilityDescription = function(){ /* getter and setter */
 		return this.property("accessibilityDescription", arguments);

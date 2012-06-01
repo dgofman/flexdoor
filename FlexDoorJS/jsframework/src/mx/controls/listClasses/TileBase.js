@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_listClasses_TileBase(classType, extendType) 
+function mx_controls_listClasses_TileBase(classType) 
 {
 	/* extendType - mx.controls.listClasses::TileBase */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 }
 
 mx_controls_listClasses_TileBase.prototype.Extends = function(){

@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_containers_Box(classType, extendType) 
+function mx_containers_Box(classType) 
 {
 	/* extendType - mx.containers::Box */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 }
 
 mx_containers_Box.prototype.Import = function(){

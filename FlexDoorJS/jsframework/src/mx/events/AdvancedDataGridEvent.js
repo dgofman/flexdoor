@@ -17,13 +17,13 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_events_AdvancedDataGridEvent(classType, extendType) 
+function mx_events_AdvancedDataGridEvent(classType) 
 {
 	/* extendType - mx.events::AdvancedDataGridEvent */
-	UIComponent.call(this, classType, extendType);
+	flash_events_Event.call(this, classType);
 
 	this.Initialize = function(object){
-		flash_events_Event.prototype.Initialize(object);
+		flash_events_Event.prototype.Initialize.call(this, object);
 		this.columnIndex = this.ref.columnIndex;
 		this.rowIndex = this.ref.rowIndex;
 		this.reason = this.ref.reason;

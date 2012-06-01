@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_RadioButtonGroup(classType, extendType) 
+function mx_controls_RadioButtonGroup(classType) 
 {
 	/* extendType - mx.controls::RadioButtonGroup */
-	UIComponent.call(this, classType, extendType);
+	EventDispatcher.call(this, classType);
 }
 
 mx_controls_RadioButtonGroup.prototype = new EventDispatcher();

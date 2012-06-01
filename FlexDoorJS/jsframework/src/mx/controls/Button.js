@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_Button(classType, extendType) 
+function mx_controls_Button(classType) 
 {
 	/* extendType - mx.controls::Button */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 
 	this.label = function(){ /* getter and setter */
 		return this.property("label", arguments);

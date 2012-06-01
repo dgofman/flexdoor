@@ -513,11 +513,11 @@ FlexDoor.include("jQuery", "jquery/jquery-latest.js", function(){
 		"fd::Assert",
 		"fd::TestEvent",
 		"fd::Function",
-		"fd::EventDispatcher",
-		"flash.events::Event"], 
+		"fd::EventDispatcher"], 
 		function(){
 			FlexDoor.includeAll(this, [
-			    "fd::Locator",
+				"fd::Locator",
+				"flash.events::Event",
 				"mx.core::UIComponent",
 				"mx.core::Container",
 				"mx.core::Application",

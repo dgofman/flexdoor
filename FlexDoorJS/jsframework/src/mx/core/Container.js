@@ -17,9 +17,9 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function Container(classType, extendType) 
+function Container(classType) 
 {
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 
 	this.autoLayout = function(){ /* getter and setter */
 		return this.property("autoLayout", arguments);
