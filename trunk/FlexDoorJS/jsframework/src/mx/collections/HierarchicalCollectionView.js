@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
  
-function mx_collections_HierarchicalCollectionView(classType, extendType) 
+function mx_collections_HierarchicalCollectionView(classType) 
 {
 	/* extendType - mx.collections::HierarchicalCollectionView */
-	UIComponent.call(this, classType, extendType);
+	EventDispatcher.call(this, classType);
 
 	this.filterFunction = function(){ /* getter and setter */
 		return this.property("filterFunction", 

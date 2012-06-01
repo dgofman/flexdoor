@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_List(classType, extendType) 
+function mx_controls_List(classType) 
 {
 	/* extendType - mx.controls::List */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 
 	this.indexToItemRenderer = function(index){
 		return this.execute("indexToItemRenderer", index);

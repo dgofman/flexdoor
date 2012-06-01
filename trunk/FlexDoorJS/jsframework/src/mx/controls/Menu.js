@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_Menu(classType, extendType) 
+function mx_controls_Menu(classType) 
 {
 	/* extendType - mx.controls::Menu */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 	
 	this.parentMenu = function(){/* getter and setter */
 		return this.property("parentMenu", arguments);

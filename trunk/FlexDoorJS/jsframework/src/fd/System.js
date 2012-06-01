@@ -284,7 +284,7 @@ System.deserialize = function(params, parent){
 					 !(classType.prototype instanceof UIComponent)){
 						classType.prototype.Extends();
 					}
-					var component = new classType(classType, extendType);
+					var component = new classType(classType);
 					if(component instanceof EventDispatcher ||
 						component.Initialize instanceof Function){
 						object.ref = System.json(object.ref);
@@ -316,9 +316,8 @@ System.dragAndDropIndices = function(source, target, indices, action, dropIndex)
 
 	source.selectedIndices(indices); //array
 
-	var dragEvent = $DragEvent.Create($DragEvent.DRAG_START);
-	dragEvent.dragInitiator = source;
-	dragEvent.buttonDown = true;
+	var dragEvent = $DragEvent.Create($DragEvent.DRAG_START, null, source);
+	dragEvent.setter("buttonDown", true);
 	source.dispatchEvent(dragEvent);
 
 	var dragProxy = $DragManager.dragProxy();
@@ -327,14 +326,14 @@ System.dragAndDropIndices = function(source, target, indices, action, dropIndex)
 		renderer = dataGrid2.indexToItemRenderer(dropIndex);
 	
 	if(renderer != null){
-		renderer.dispatchEvent($MouseEvent.Create(MouseEvent.MOUSE_MOVE));
+		renderer.dispatchEvent($MouseEvent.Create($MouseEvent.MOUSE_MOVE));
 	}else{
-		dragProxy.dispatchEvent($MouseEvent.Create(MouseEvent.MOUSE_MOVE));
+		dragProxy.dispatchEvent($MouseEvent.Create($MouseEvent.MOUSE_MOVE));
 	}
 
-	dragProxy.target = target;
-	dragProxy.action = action;
-	dragProxy.dispatchEvent($MouseEvent.Create(MouseEvent.MOUSE_UP));
+	dragProxy.setter("target", target);
+	dragProxy.setter("action", action);
+	dragProxy.dispatchEvent($MouseEvent.Create($MouseEvent.MOUSE_UP));
 };
 
 System.log = function(message) {

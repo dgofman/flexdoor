@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_Button(classType, extendType) 
+function spark_components_Button(classType) 
 {
 	/* extendType - spark.components::Button */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 
 	this.label = function(){ /* getter and setter */
 		return this.property("label", arguments);

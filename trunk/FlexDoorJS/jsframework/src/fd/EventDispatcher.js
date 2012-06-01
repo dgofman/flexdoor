@@ -17,8 +17,19 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function EventDispatcher() 
+function EventDispatcher(classType) 
 {
+	if(classType != undefined){
+		var extendType = /(\w+)\(/.exec(classType.toString())[1];
+		var pkgs = extendType.split("_");
+		if(pkgs.length > 0)
+			extendType = pkgs.splice(0, pkgs.length - 1).join('.') + '::' + pkgs[pkgs.length - 1];
+		classType.CLASS_TYPE = extendType;
+		classType.prototype.constructor = classType;
+		classType.prototype.toString  = function(){
+			return extendType;
+		};
+	}
 }
 EventDispatcher.prototype.Extends = function() {};
 EventDispatcher.prototype.Initialize = function(object, parent){
@@ -29,10 +40,6 @@ EventDispatcher.prototype.Initialize = function(object, parent){
 	this._parent = parent;
 	this.ref = object.ref;
 };
-EventDispatcher.prototype.toString = function() {
-	return "flash.events::EventDispatcher";
-};
-
 
 //Class Functions
 EventDispatcher.Get = function(o, classType){
@@ -42,7 +49,7 @@ EventDispatcher.Get = function(o, classType){
 	if( (classType != undefined && o instanceof classType) || o instanceof EventDispatcher ){
 		ref = o;
 	}else{
-		Assert.fail("TypeError: Error #102: Type Coercion failed: cannot convert " + o.toString() + " to " + classType.FLEX_TYPE);
+		Assert.fail("TypeError: Error #102: Type Coercion failed: cannot convert " + o.toString() + " to " + classType.CLASS_TYPE);
 	}
 	return ref;
 };

@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_supportClasses_SkinnableComponent(classType, extendType) 
+function spark_components_supportClasses_SkinnableComponent(classType) 
 {
 	/* extendType - spark.components.supportClasses::SkinnableComponent */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 }
 
 spark_components_supportClasses_SkinnableComponent.prototype = new UIComponent(spark_components_supportClasses_SkinnableComponent);

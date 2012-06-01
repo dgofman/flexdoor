@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_Alert(classType, extendType) 
+function mx_controls_Alert(classType) 
 {
 	/* extendType - mx.controls::Alert */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 	
 	this.buttonOK = function(){
 		return this.alertForm.getChildByName("OK");

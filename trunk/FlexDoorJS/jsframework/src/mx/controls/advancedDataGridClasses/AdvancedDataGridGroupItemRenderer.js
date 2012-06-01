@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_advancedDataGridClasses_AdvancedDataGridGroupItemRenderer(classType, extendType) 
+function mx_controls_advancedDataGridClasses_AdvancedDataGridGroupItemRenderer(classType) 
 {
 	/* extendType - mx.controls.advancedDataGridClasses::AdvancedDataGridGroupItemRenderer */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 }
 
 mx_controls_advancedDataGridClasses_AdvancedDataGridGroupItemRenderer.prototype.Import = function(){

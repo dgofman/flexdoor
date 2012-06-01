@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_TileList(classType, extendType) 
+function mx_controls_TileList(classType) 
 {
 	/* extendType - mx.controls::TileList */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 }
 
 mx_controls_TileList.prototype.Import = function(){

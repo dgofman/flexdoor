@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_TextInput(classType, extendType) 
+function mx_controls_TextInput(classType) 
 {
 	/* extendType - mx.controls::TextInput */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 }
 
 mx_controls_TextInput.prototype.Import = function(){

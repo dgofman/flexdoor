@@ -17,16 +17,16 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function flash_events_Event(classType, extendType) 
+function flash_events_Event(classType) 
 {
 	/* extendType - flash.events::Event */
-	UIComponent.call(this, classType, extendType);
+	EventDispatcher.call(this, classType);
 
 	this.destory = function(){
 		System.releaseIds([this._refId]);
 	};
 }
-flash_events_Event.prototype = new Object();
+flash_events_Event.prototype = new EventDispatcher();
 
 flash_events_Event.prototype.Initialize = function(object){
 	this._refId = object.refId;

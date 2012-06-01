@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_scrollClasses_ScrollBar(classType, extendType) 
+function mx_controls_scrollClasses_ScrollBar(classType) 
 {
 	/* extendType - mx.controls.scrollClasses::ScrollBar */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 }
 
 mx_controls_scrollClasses_ScrollBar.prototype.Extends = function(){

@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_AdvancedDataGrid(classType, extendType) 
+function mx_controls_AdvancedDataGrid(classType) 
 {
 	/* extendType - mx.controls::AdvancedDataGrid */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 	
 	this.expandItem = function(item, open, animate, dispatchEvent){
 		if(open == undefined) open = true;

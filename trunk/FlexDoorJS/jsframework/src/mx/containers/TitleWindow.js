@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_containers_TitleWindow(classType, extendType) 
+function mx_containers_TitleWindow(classType) 
 {
 	/* extendType - mx.containers::TitleWindow */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 }
 
 mx_containers_TitleWindow.prototype.Import = function(){

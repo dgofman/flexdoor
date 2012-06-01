@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_DateField(classType, extendType) 
+function mx_controls_DateField(classType) 
 {
 	/* extendType - mx.controls::DateField */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 }
 
 mx_controls_DateField.prototype.Import = function(){

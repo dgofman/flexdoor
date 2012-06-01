@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_managers_DragManager(classType, extendType) 
+function mx_managers_DragManager(classType) 
 {
 	/* extendType - mx.managers::DragManager */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 }
 mx_managers_DragManager.prototype = new Object();
 

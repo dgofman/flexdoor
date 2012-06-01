@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_ComboBox(classType, extendType) 
+function mx_controls_ComboBox(classType) 
 {
 	/* extendType - mx.controls::ComboBox */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 
 	this.open = function(){
 		this.execute("open");

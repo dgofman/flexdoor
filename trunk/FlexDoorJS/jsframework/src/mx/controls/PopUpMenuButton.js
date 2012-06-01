@@ -17,10 +17,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_PopUpMenuButton(classType, extendType) 
+function mx_controls_PopUpMenuButton(classType) 
 {
 	/* extendType - mx.controls::PopUpMenuButton */
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 
 	this.dataProvider = function(){ /* getter and setter */
 		return this.property("dataProvider", arguments);

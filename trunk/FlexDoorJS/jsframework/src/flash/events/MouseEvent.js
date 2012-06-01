@@ -17,18 +17,14 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function flash_events_MouseEvent(classType, extendType) 
+function flash_events_MouseEvent(classType) 
 {
 	/* extendType - flash.events::MouseEvent */
-	UIComponent.call(this, classType, extendType);
+	flash_events_Event.call(this, classType);
 }
 
-flash_events_MouseEvent.prototype.Import = function(){
-	return ["flash.events::Event"];
-};
-flash_events_MouseEvent.prototype.Extends = function(){
-	flash_events_MouseEvent.prototype = new flash_events_Event(flash_events_MouseEvent);
-};
+flash_events_MouseEvent.prototype = new flash_events_Event(flash_events_MouseEvent);
+
 flash_events_MouseEvent.Get = function(o){
 	var ref = this;
 	ref = UIComponent.Get(o, flash_events_MouseEvent);

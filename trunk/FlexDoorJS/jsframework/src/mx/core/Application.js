@@ -17,9 +17,9 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function Application(classType, extendType)
+function Application(classType)
 {
-	UIComponent.call(this, classType, extendType);
+	UIComponent.call(this, classType);
 	Application.application = this;
 
 	this.pageTitle = function(){ /* public var */
