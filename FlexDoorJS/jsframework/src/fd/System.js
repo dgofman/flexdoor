@@ -310,6 +310,33 @@ System.fireEvent = function(target, event){
 	return result;
 };
 
+System.dragAndDropIndices = function(source, target, indices, action, dropIndex){
+	if(action == undefined)
+		action = (source.dragMoveEnabled() ? $DragManager.MOVE: $DragManager.COPY);
+
+	source.selectedIndices = indices; //array
+
+	var dragEvent = $DragEvent.Create($DragEvent.DRAG_START);
+	dragEvent.dragInitiator = source;
+	dragEvent.buttonDown = true;
+	source.dispatchEvent(dragEvent);
+
+	var dragProxy = $DragManager.dragProxy;
+	var renderer = null;
+	if(dropIndex != undefined)
+		renderer = dataGrid2.indexToItemRenderer(dropIndex);
+	
+	if(renderer != null){
+		renderer.dispatchEvent($MouseEvent.Create(MouseEvent.MOUSE_MOVE));
+	}else{
+		dragProxy.dispatchEvent($MouseEvent.Create(MouseEvent.MOUSE_MOVE));
+	}
+
+	dragProxy.target = target;
+	dragProxy.action = action;
+	dragProxy.dispatchEvent($MouseEvent.Create(MouseEvent.MOUSE_UP));
+};
+
 System.log = function(message) {
 	System.trace(message, "log");
 };
