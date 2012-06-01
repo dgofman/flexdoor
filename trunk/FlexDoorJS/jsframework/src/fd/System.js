@@ -314,14 +314,14 @@ System.dragAndDropIndices = function(source, target, indices, action, dropIndex)
 	if(action == undefined)
 		action = (source.dragMoveEnabled() ? $DragManager.MOVE: $DragManager.COPY);
 
-	source.selectedIndices = indices; //array
+	source.selectedIndices(indices); //array
 
 	var dragEvent = $DragEvent.Create($DragEvent.DRAG_START);
 	dragEvent.dragInitiator = source;
 	dragEvent.buttonDown = true;
 	source.dispatchEvent(dragEvent);
 
-	var dragProxy = $DragManager.dragProxy;
+	var dragProxy = $DragManager.dragProxy();
 	var renderer = null;
 	if(dropIndex != undefined)
 		renderer = dataGrid2.indexToItemRenderer(dropIndex);
