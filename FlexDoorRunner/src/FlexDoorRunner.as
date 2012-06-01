@@ -68,6 +68,8 @@
 			scriptLoaderView.init(this);
 			alertView.init(this);
 
+			complete_lbl.mouseEnabled = false;
+
 			inspector_mc.mouseEnabled = false;
 			inspector_mc.mouseChildren = false;
 			inspector_mc.visible = false;
@@ -106,7 +108,7 @@
 			initButton(views.about_btn, aboutView, "About");
 
 			restore_btn.addEventListener(MouseEvent.CLICK, restoreWindow);
-			restore_btn.visible = false;
+			restoreWindow()
 
 			bg_mc.addEventListener(MouseEvent.MOUSE_DOWN, dragEventHandler);
 		}
@@ -251,12 +253,17 @@
 		private function minimizeWindow(event:MouseEvent=null):void{
 			scaleX = .2;
 			scaleY = .05;
+			complete_lbl.scaleX = 20;
+			complete_lbl.scaleY = 20;
+			alertView.visible = false;
 			visibleViews(false);
 		}
 
-		private function restoreWindow(event:MouseEvent):void{
+		private function restoreWindow(event:MouseEvent=null):void{
 			scaleX = 1;
 			scaleY = 1;
+			complete_lbl.visible = false;
+			alertView.visible = alertView.enabled;
 			visibleViews(true);
 		}
 

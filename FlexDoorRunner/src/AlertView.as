@@ -13,7 +13,7 @@
 	
 		public function AlertView(){
 			super();
-			visible = false;
+			show = false;
 		}
 
 		public function init(runner:FlexDoorRunner){
@@ -32,23 +32,34 @@
 			if(date != null)
 				details.push("<b>Modified:</b> " + date.toLocaleString());
 			details_txt.htmlText = details.join("<br>");
-			visible = true;
+			show = true;
 		}
 
 		public function error(value:String):void{
 			title_lbl.htmlText = "<b>Error</b>";
 			details_txt.htmlText = value;
-			visible = true;
+			show = true;
 		}
 
 		public function finish(value:String):void{
 			title_lbl.htmlText = "<b>Result</b>";
 			details_txt.htmlText = value;
-			visible = true;
+			show = true;
 		}
 
 		private function mouseEvent(event:MouseEvent):void{
-			visible = false;
+			show = false;
+		}
+
+		private function set show(b:Boolean):void{
+			visible = b;
+			enabled = b;
+			if(b == true){
+				if(_runner.scaleX != 1 || _runner.scaleY != 1){
+					visible = false;
+					_runner.complete_lbl.visible = true;
+				}
+			}
 		}
 
 		private function readCompilationDate(serialNumber:ByteArray = null):Date
