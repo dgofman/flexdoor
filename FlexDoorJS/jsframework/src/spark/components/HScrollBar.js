@@ -17,19 +17,25 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_IconPlacement(classType) 
+function spark_components_HScrollBar(classType) 
 {
-	/* extendType - spark.components::IconPlacement */
-	EventDispatcher.call(this, classType);
+	/* extendType - spark.components::HScrollBar */
+	UIComponent.call(this, classType);
 }
 
-spark_components_IconPlacement.prototype = new EventDispatcher();
-spark_components_IconPlacement.Get = function(o){
+spark_components_HScrollBar.prototype.Import = function(){
+	return ["spark.components.supportClasses::ScrollBarBase"];
+};
+spark_components_HScrollBar.prototype.Extends = function(){
+	spark_components_supportClasses_ScrollBarBase.prototype.Extends();
+	spark_components_HScrollBar.prototype = new spark_components_supportClasses_ScrollBarBase(spark_components_HScrollBar);
+};
+spark_components_HScrollBar.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, spark_components_IconPlacement);
+	ref = UIComponent.Get(o, spark_components_HScrollBar);
 	return ref;
 };
 
-function $$IconPlacement() {}
-$$IconPlacement.Get = spark_components_IconPlacement.Get;
-$$IconPlacement.Is = function(target) { return target instanceof spark_components_IconPlacement; };
+function $$HScrollBar() {}
+$$HScrollBar.Get = spark_components_HScrollBar.Get;
+$$HScrollBar.Is = function(target) { return target instanceof spark_components_HScrollBar; };
