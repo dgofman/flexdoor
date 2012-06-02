@@ -17,25 +17,19 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_HSlider(classType) 
+function spark_components_IconPlacement(classType) 
 {
-	/* extendType - spark.components::HSlider */
-	UIComponent.call(this, classType);
+	/* extendType - spark.components::IconPlacement */
+	EventDispatcher.call(this, classType);
 }
 
-spark_components_HSlider.prototype.Import = function(){
-	return ["spark.components.supportClasses::SliderBase"];
-};
-spark_components_HSlider.prototype.Extends = function(){
-	spark_components_supportClasses_SliderBase.prototype.Extends();
-	spark_components_HSlider.prototype = new spark_components_supportClasses_SliderBase(spark_components_HSlider);
-};
-spark_components_HSlider.Get = function(o){
+spark_components_IconPlacement.prototype = new EventDispatcher();
+spark_components_IconPlacement.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, spark_components_HSlider);
+	ref = UIComponent.Get(o, spark_components_IconPlacement);
 	return ref;
 };
 
-function $$HSlider() {}
-$$HSlider.Get = spark_components_HSlider.Get;
-$$HSlider.Is = function(target) { return target instanceof spark_components_HSlider; };
+function $$IconPlacement() {}
+$$IconPlacement.Get = spark_components_IconPlacement.Get;
+$$IconPlacement.Is = function(target) { return target instanceof spark_components_IconPlacement; };
