@@ -39,4 +39,3 @@ spark_components_supportClasses_ToggleButtonBase.Get = function(o){
 function $$ToggleButtonBase() {}
 $$ToggleButtonBase.Get = spark_components_supportClasses_ToggleButtonBase.Get;
 $$ToggleButtonBase.Is = function(target) { return target instanceof spark_components_supportClasses_ToggleButtonBase; };
-$$ToggleButtonBase.prototype = new UIComponent($$ToggleButtonBase);

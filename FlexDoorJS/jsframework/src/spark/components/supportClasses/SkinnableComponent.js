@@ -33,4 +33,3 @@ spark_components_supportClasses_SkinnableComponent.Get = function(o){
 function $$SkinnableComponent() {}
 $$SkinnableComponent.Get = spark_components_supportClasses_SkinnableComponent.Get;
 $$SkinnableComponent.Is = function(target) { return target instanceof spark_components_supportClasses_SkinnableComponent; };
-$$SkinnableComponent.prototype = new UIComponent($$SkinnableComponent);

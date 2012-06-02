@@ -36,7 +36,7 @@ function mx_collections_HierarchicalCollectionView(classType)
 	};
 }
 
-mx_collections_HierarchicalCollectionView.prototype = new EventDispatcher();
+mx_collections_HierarchicalCollectionView.prototype = new EventDispatcher(mx_collections_HierarchicalCollectionView);
 mx_collections_HierarchicalCollectionView.prototype.toString = function() {
 	return (this.source ? this.source.toString() : []);
 };

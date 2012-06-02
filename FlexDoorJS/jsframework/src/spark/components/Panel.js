@@ -28,11 +28,11 @@ function spark_components_Panel(classType)
 }
 
 spark_components_Panel.prototype.Import = function(){
-	return ["spark.components.supportClasses::SkinnableComponent"];
+	return ["spark.components::SkinnableContainer"];
 };
 spark_components_Panel.prototype.Extends = function(){
-	spark_components_supportClasses_SkinnableComponent.prototype.Extends();
-	spark_components_Panel.prototype = new spark_components_supportClasses_SkinnableComponent(spark_components_Panel);
+	spark_components_SkinnableContainer.prototype.Extends();
+	spark_components_Panel.prototype = new spark_components_SkinnableContainer(spark_components_Panel);
 };
 spark_components_Panel.Get = function(o){
 	var ref = this;
