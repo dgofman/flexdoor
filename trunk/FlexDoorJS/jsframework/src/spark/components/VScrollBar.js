@@ -17,19 +17,25 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_supportClasses_TextBase(classType) 
+function spark_components_VScrollBar(classType) 
 {
-	/* extendType - spark.components.supportClasses::TextBase */
+	/* extendType - spark.components::VScrollBar */
 	UIComponent.call(this, classType);
 }
 
-spark_components_supportClasses_TextBase.prototype = new UITextField(spark_components_supportClasses_TextBase);
-spark_components_supportClasses_TextBase.Get = function(o){
+spark_components_VScrollBar.prototype.Import = function(){
+	return ["spark.components.supportClasses::ScrollBarBase"];
+};
+spark_components_VScrollBar.prototype.Extends = function(){
+	spark_components_supportClasses_ScrollBarBase.prototype.Extends();
+	spark_components_VScrollBar.prototype = new spark_components_supportClasses_ScrollBarBase(spark_components_VScrollBar);
+};
+spark_components_VScrollBar.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, spark_components_supportClasses_TextBase);
+	ref = UIComponent.Get(o, spark_components_VScrollBar);
 	return ref;
 };
 
-function $$TextBase() {}
-$$TextBase.Get = spark_components_supportClasses_TextBase.Get;
-$$TextBase.Is = function(target) { return target instanceof spark_components_supportClasses_TextBase; };
+function $$VScrollBar() {}
+$$VScrollBar.Get = spark_components_VScrollBar.Get;
+$$VScrollBar.Is = function(target) { return target instanceof spark_components_VScrollBar; };

@@ -17,19 +17,25 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_supportClasses_TextBase(classType) 
+function spark_components_TextArea(classType) 
 {
-	/* extendType - spark.components.supportClasses::TextBase */
+	/* extendType - spark.components::TextArea */
 	UIComponent.call(this, classType);
 }
 
-spark_components_supportClasses_TextBase.prototype = new UITextField(spark_components_supportClasses_TextBase);
-spark_components_supportClasses_TextBase.Get = function(o){
+spark_components_TextArea.prototype.Import = function(){
+	return ["spark.components.supportClasses::TextBase"];
+};
+spark_components_TextArea.prototype.Extends = function(){
+	spark_components_supportClasses_TextBase.prototype.Extends();
+	spark_components_TextArea.prototype = new spark_components_supportClasses_TextBase(spark_components_TextArea);
+};
+spark_components_TextArea.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, spark_components_supportClasses_TextBase);
+	ref = UIComponent.Get(o, spark_components_TextArea);
 	return ref;
 };
 
-function $$TextBase() {}
-$$TextBase.Get = spark_components_supportClasses_TextBase.Get;
-$$TextBase.Is = function(target) { return target instanceof spark_components_supportClasses_TextBase; };
+function $$TextArea() {}
+$$TextArea.Get = spark_components_TextArea.Get;
+$$TextArea.Is = function(target) { return target instanceof spark_components_TextArea; };

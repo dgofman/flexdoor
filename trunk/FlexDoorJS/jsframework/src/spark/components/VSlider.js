@@ -17,19 +17,25 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_supportClasses_TextBase(classType) 
+function spark_components_VSlider(classType) 
 {
-	/* extendType - spark.components.supportClasses::TextBase */
+	/* extendType - spark.components::VSlider */
 	UIComponent.call(this, classType);
 }
 
-spark_components_supportClasses_TextBase.prototype = new UITextField(spark_components_supportClasses_TextBase);
-spark_components_supportClasses_TextBase.Get = function(o){
+spark_components_VSlider.prototype.Import = function(){
+	return ["spark.components.supportClasses::SliderBase"];
+};
+spark_components_VSlider.prototype.Extends = function(){
+	spark_components_supportClasses_SliderBase.prototype.Extends();
+	spark_components_VSlider.prototype = new spark_components_supportClasses_SliderBase(spark_components_VSlider);
+};
+spark_components_VSlider.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, spark_components_supportClasses_TextBase);
+	ref = UIComponent.Get(o, spark_components_VSlider);
 	return ref;
 };
 
-function $$TextBase() {}
-$$TextBase.Get = spark_components_supportClasses_TextBase.Get;
-$$TextBase.Is = function(target) { return target instanceof spark_components_supportClasses_TextBase; };
+function $$VSlider() {}
+$$VSlider.Get = spark_components_VSlider.Get;
+$$VSlider.Is = function(target) { return target instanceof spark_components_VSlider; };

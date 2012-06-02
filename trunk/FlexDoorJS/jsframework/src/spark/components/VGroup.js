@@ -17,19 +17,25 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_supportClasses_TextBase(classType) 
+function spark_components_VGroup(classType) 
 {
-	/* extendType - spark.components.supportClasses::TextBase */
+	/* extendType - spark.components::VGroup */
 	UIComponent.call(this, classType);
 }
 
-spark_components_supportClasses_TextBase.prototype = new UITextField(spark_components_supportClasses_TextBase);
-spark_components_supportClasses_TextBase.Get = function(o){
+spark_components_VGroup.prototype.Import = function(){
+	return ["spark.components::Group"];
+};
+spark_components_VGroup.prototype.Extends = function(){
+	spark_components_Group.prototype.Extends();
+	spark_components_VGroup.prototype = new spark_components_Group(spark_components_VGroup);
+};
+spark_components_VGroup.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, spark_components_supportClasses_TextBase);
+	ref = UIComponent.Get(o, spark_components_VGroup);
 	return ref;
 };
 
-function $$TextBase() {}
-$$TextBase.Get = spark_components_supportClasses_TextBase.Get;
-$$TextBase.Is = function(target) { return target instanceof spark_components_supportClasses_TextBase; };
+function $$VGroup() {}
+$$VGroup.Get = spark_components_VGroup.Get;
+$$VGroup.Is = function(target) { return target instanceof spark_components_VGroup; };
