@@ -99,7 +99,7 @@ function UITextField(classType)
 }
 
 UITextField.prototype.Extends = function(){
-	UITextField.prototype = new UIComponent(UITextField);
+	UITextField.prototype = new UIComponent(mx_core_UITextField);
 };
 UITextField.Get = function(o){
 	var ref = this;
