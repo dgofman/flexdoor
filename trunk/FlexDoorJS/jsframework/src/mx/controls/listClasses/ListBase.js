@@ -47,7 +47,7 @@ function mx_controls_listClasses_ListBase(classType)
 	
 	//API's
 	this.dragAndDropIndices = function(target, indices, action, dropIndex){
-		System.dragAndDropIndices(this, target, indices, action, dropIndex);
+		$DragManager.dragAndDropIndices(this, target, indices, action, dropIndex);
 	};
 }
 

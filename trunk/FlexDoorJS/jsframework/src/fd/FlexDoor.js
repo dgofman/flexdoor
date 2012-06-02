@@ -521,7 +521,8 @@ FlexDoor.include("jQuery", "jquery/jquery-latest.js", function(){
 				"mx.core::UIComponent",
 				"mx.core::Container",
 				"mx.core::Application",
-				"mx.core::UITextField"],
+				"mx.core::UITextField",
+				"mx.managers::DragManager"],
 				function(){
 					$(document).ready(function(){
 						FlexDoor.INIT_PHASE++;

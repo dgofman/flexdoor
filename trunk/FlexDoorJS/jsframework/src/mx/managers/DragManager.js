@@ -20,9 +20,9 @@
 function mx_managers_DragManager(classType) 
 {
 	/* extendType - mx.managers::DragManager */
-	UIComponent.call(this, classType);
+	EventDispatcher.call(this, classType);
 }
-mx_managers_DragManager.prototype = new Object();
+mx_managers_DragManager.prototype = new EventDispatcher(mx_managers_DragManager);
 
 mx_managers_DragManager.Get = function(o){
 	var ref = this;
@@ -42,4 +42,34 @@ $DragManager.LINK = "link";
 $DragManager.dragProxy = function(){
 	var manager = System.getClass("mx.managers::DragManager");
 	return System.getter(manager, "dragProxy");
+};
+
+
+$DragManager.dragAndDropIndices = function(source, target, indices, dropIndex, action){
+	if(action == undefined)
+		action = (source.dragMoveEnabled() ? $DragManager.MOVE: $DragManager.COPY);
+
+	source.selectedIndices(indices); //array
+
+	var dragEvent = $DragEvent.Create($DragEvent.DRAG_START, null, source);
+	dragEvent.setter("buttonDown", true);
+	source.dispatchEvent(dragEvent);
+	dragEvent.destory();
+
+	var dragProxy = $DragManager.dragProxy();
+	var mouseMove = $MouseEvent.Create($MouseEvent.MOUSE_MOVE);
+	var renderer = null;
+	if(dropIndex != undefined)
+		renderer = target.indexToItemRenderer(dropIndex);
+	
+	if(renderer != null){
+		renderer.dispatchEvent(mouseMove);
+	}else{
+		dragProxy.dispatchEvent(mouseMove);
+	}
+	mouseMove.destory();
+
+	dragProxy.setter("target", target);
+	dragProxy.setter("action", action);
+	dragProxy.dispatchEvent($MouseEvent.Create($MouseEvent.MOUSE_UP));
 };

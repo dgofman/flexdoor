@@ -310,35 +310,6 @@ System.fireEvent = function(target, event){
 	return result;
 };
 
-System.dragAndDropIndices = function(source, target, indices, dropIndex, action){
-	if(action == undefined)
-		action = (source.dragMoveEnabled() ? $DragManager.MOVE: $DragManager.COPY);
-
-	source.selectedIndices(indices); //array
-
-	var dragEvent = $DragEvent.Create($DragEvent.DRAG_START, null, source);
-	dragEvent.setter("buttonDown", true);
-	source.dispatchEvent(dragEvent);
-	dragEvent.destory();
-
-	var dragProxy = $DragManager.dragProxy();
-	var mouseMove = $MouseEvent.Create($MouseEvent.MOUSE_MOVE);
-	var renderer = null;
-	if(dropIndex != undefined)
-		renderer = target.indexToItemRenderer(dropIndex);
-	
-	if(renderer != null){
-		renderer.dispatchEvent(mouseMove);
-	}else{
-		dragProxy.dispatchEvent(mouseMove);
-	}
-	mouseMove.destory();
-
-	dragProxy.setter("target", target);
-	dragProxy.setter("action", action);
-	dragProxy.dispatchEvent($MouseEvent.Create($MouseEvent.MOUSE_UP));
-};
-
 System.log = function(message) {
 	System.trace(message, "log");
 };
