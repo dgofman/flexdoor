@@ -17,19 +17,25 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_supportClasses_TextBase(classType) 
+function spark_components_TabBar(classType) 
 {
-	/* extendType - spark.components.supportClasses::TextBase */
+	/* extendType - spark.components::TabBar */
 	UIComponent.call(this, classType);
 }
 
-spark_components_supportClasses_TextBase.prototype = new UITextField(spark_components_supportClasses_TextBase);
-spark_components_supportClasses_TextBase.Get = function(o){
+spark_components_TabBar.prototype.Import = function(){
+	return ["spark.components.supportClasses::ButtonBarBase"];
+};
+spark_components_TabBar.prototype.Extends = function(){
+	spark_components_supportClasses_ButtonBarBase.prototype.Extends();
+	spark_components_TabBar.prototype = new spark_components_supportClasses_ButtonBarBase(spark_components_TabBar);
+};
+spark_components_TabBar.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, spark_components_supportClasses_TextBase);
+	ref = UIComponent.Get(o, spark_components_TabBar);
 	return ref;
 };
 
-function $$TextBase() {}
-$$TextBase.Get = spark_components_supportClasses_TextBase.Get;
-$$TextBase.Is = function(target) { return target instanceof spark_components_supportClasses_TextBase; };
+function $$TabBar() {}
+$$TabBar.Get = spark_components_TabBar.Get;
+$$TabBar.Is = function(target) { return target instanceof spark_components_TabBar; };

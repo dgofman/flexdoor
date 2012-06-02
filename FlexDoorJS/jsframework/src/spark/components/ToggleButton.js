@@ -17,19 +17,29 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_supportClasses_TextBase(classType) 
+function spark_components_ToggleButton(classType) 
 {
-	/* extendType - spark.components.supportClasses::TextBase */
+	/* extendType - spark.components::ToggleButton */
 	UIComponent.call(this, classType);
+
+	this.selected = function(){ /* getter and setter */
+		return this.property("selected", arguments);
+	};
 }
 
-spark_components_supportClasses_TextBase.prototype = new UITextField(spark_components_supportClasses_TextBase);
-spark_components_supportClasses_TextBase.Get = function(o){
+spark_components_ToggleButton.prototype.Import = function(){
+	return ["spark.components.supportClasses::ToggleButtonBase"];
+};
+spark_components_ToggleButton.prototype.Extends = function(){
+	spark_components_supportClasses_ToggleButtonBase.prototype.Extends();
+	spark_components_ToggleButton.prototype = new spark_components_supportClasses_ToggleButtonBase(spark_components_ToggleButton);
+};
+spark_components_ToggleButton.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, spark_components_supportClasses_TextBase);
+	ref = UIComponent.Get(o, spark_components_ToggleButton);
 	return ref;
 };
 
-function $$TextBase() {}
-$$TextBase.Get = spark_components_supportClasses_TextBase.Get;
-$$TextBase.Is = function(target) { return target instanceof spark_components_supportClasses_TextBase; };
+function $$ToggleButton() {}
+$$ToggleButton.Get = spark_components_ToggleButton.Get;
+$$ToggleButton.Is = function(target) { return target instanceof spark_components_ToggleButton; };

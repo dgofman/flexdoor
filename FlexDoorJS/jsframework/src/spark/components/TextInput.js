@@ -17,19 +17,25 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_supportClasses_TextBase(classType) 
+function spark_components_TextInput(classType) 
 {
-	/* extendType - spark.components.supportClasses::TextBase */
+	/* extendType - spark.components::TextInput */
 	UIComponent.call(this, classType);
 }
 
-spark_components_supportClasses_TextBase.prototype = new UITextField(spark_components_supportClasses_TextBase);
-spark_components_supportClasses_TextBase.Get = function(o){
+spark_components_TextInput.prototype.Import = function(){
+	return ["spark.components.supportClasses::TextBase"];
+};
+spark_components_TextInput.prototype.Extends = function(){
+	spark_components_supportClasses_TextBase.prototype.Extends();
+	spark_components_TextInput.prototype = new spark_components_supportClasses_TextBase(spark_components_TextInput);
+};
+spark_components_TextInput.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, spark_components_supportClasses_TextBase);
+	ref = UIComponent.Get(o, spark_components_TextInput);
 	return ref;
 };
 
-function $$TextBase() {}
-$$TextBase.Get = spark_components_supportClasses_TextBase.Get;
-$$TextBase.Is = function(target) { return target instanceof spark_components_supportClasses_TextBase; };
+function $$TextInput() {}
+$$TextInput.Get = spark_components_TextInput.Get;
+$$TextInput.Is = function(target) { return target instanceof spark_components_TextInput; };
