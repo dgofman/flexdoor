@@ -286,8 +286,8 @@ FlexDoor.includeAll = function(instance, files, callback) {
 					validateAllClasses();
 					
 					//Validate if all classes are loaded
-					var interval = setInterval(function(files){
-						clearInterval(interval);
+					FlexDoor.TIME_INTERVAL = setInterval(function(files){
+						clearInterval(FlexDoor.TIME_INTERVAL);
 						for(var className in files){
 							System.warn("Class not loaded: " + className);
 						}
