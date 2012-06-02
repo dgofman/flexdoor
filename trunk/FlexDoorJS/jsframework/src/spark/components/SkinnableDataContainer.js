@@ -17,29 +17,25 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_CheckBox(classType) 
+function spark_components_SkinnableDataContainer(classType) 
 {
-	/* extendType - spark.components::CheckBox */
+	/* extendType - spark.components::SkinnableDataContainer */
 	UIComponent.call(this, classType);
-
-	this.selected = function(){ /* getter and setter */
-		return this.property("selected", arguments);
-	};
 }
 
-spark_components_CheckBox.prototype.Import = function(){
-	return ["spark.components.supportClasses::ToggleButtonBase"];
+spark_components_SkinnableDataContainer.prototype.Import = function(){
+	return ["spark.components.supportClasses::SkinnableContainerBase"];
 };
-spark_components_CheckBox.prototype.Extends = function(){
-	spark_components_supportClasses_ToggleButtonBase.prototype.Extends();
-	spark_components_CheckBox.prototype = new spark_components_supportClasses_ToggleButtonBase(spark_components_CheckBox);
+spark_components_SkinnableDataContainer.prototype.Extends = function(){
+	spark_components_supportClasses_SkinnableContainerBase.prototype.Extends();
+	spark_components_SkinnableDataContainer.prototype = new spark_components_supportClasses_SkinnableContainerBase(spark_components_SkinnableDataContainer);
 };
-spark_components_CheckBox.Get = function(o){
+spark_components_SkinnableDataContainer.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, spark_components_CheckBox);
+	ref = UIComponent.Get(o, spark_components_SkinnableDataContainer);
 	return ref;
 };
 
-function $$CheckBox() {}
-$$CheckBox.Get = spark_components_CheckBox.Get;
-$$CheckBox.Is = function(target) { return target instanceof spark_components_CheckBox; };
+function $$SkinnableDataContainer() {}
+$$SkinnableDataContainer.Get = spark_components_SkinnableDataContainer.Get;
+$$SkinnableDataContainer.Is = function(target) { return target instanceof spark_components_SkinnableDataContainer; };
