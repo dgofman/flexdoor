@@ -33,4 +33,3 @@ spark_components_supportClasses_GroupBase.Get = function(o){
 function $$GroupBase() {}
 $$GroupBase.Get = spark_components_supportClasses_GroupBase.Get;
 $$GroupBase.Is = function(target) { return target instanceof spark_components_supportClasses_GroupBase; };
-$$GroupBase.prototype = new UIComponent($$GroupBase);

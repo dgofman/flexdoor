@@ -26,7 +26,7 @@ function flash_events_Event(classType)
 		System.releaseIds([this._refId]);
 	};
 }
-flash_events_Event.prototype = new EventDispatcher();
+flash_events_Event.prototype = new EventDispatcher(flash_events_Event);
 
 flash_events_Event.prototype.Initialize = function(object){
 	this._refId = object.refId;

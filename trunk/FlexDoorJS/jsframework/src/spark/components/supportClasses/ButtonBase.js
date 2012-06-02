@@ -39,4 +39,3 @@ spark_components_supportClasses_ButtonBase.Get = function(o){
 function $$ButtonBase() {}
 $$ButtonBase.Get = spark_components_supportClasses_ButtonBase.Get;
 $$ButtonBase.Is = function(target) { return target instanceof spark_components_supportClasses_ButtonBase; };
-$$ButtonBase.prototype = new UIComponent($$ButtonBase);

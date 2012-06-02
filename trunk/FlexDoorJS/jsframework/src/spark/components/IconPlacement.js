@@ -23,7 +23,7 @@ function spark_components_IconPlacement(classType)
 	EventDispatcher.call(this, classType);
 }
 
-spark_components_IconPlacement.prototype = new EventDispatcher();
+spark_components_IconPlacement.prototype = new EventDispatcher(spark_components_IconPlacement);
 spark_components_IconPlacement.Get = function(o){
 	var ref = this;
 	ref = UIComponent.Get(o, spark_components_IconPlacement);

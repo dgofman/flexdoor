@@ -39,4 +39,3 @@ spark_components_supportClasses_SkinnableContainerBase.Get = function(o){
 function $$SkinnableContainerBase() {}
 $$SkinnableContainerBase.Get = spark_components_supportClasses_SkinnableContainerBase.Get;
 $$SkinnableContainerBase.Is = function(target) { return target instanceof spark_components_supportClasses_SkinnableContainerBase; };
-$$SkinnableContainerBase.prototype = new UIComponent($$SkinnableContainerBase);

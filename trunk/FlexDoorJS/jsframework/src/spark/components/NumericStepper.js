@@ -17,19 +17,25 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_RadioButtonGroup(classType) 
+function spark_components_NumericStepper(classType) 
 {
-	/* extendType - mx.controls::RadioButtonGroup */
-	EventDispatcher.call(this, classType);
+	/* extendType - spark.components::NumericStepper */
+	UIComponent.call(this, classType);
 }
 
-mx_controls_RadioButtonGroup.prototype = new EventDispatcher(mx_controls_RadioButtonGroup);
-mx_controls_RadioButtonGroup.Get = function(o){
+spark_components_NumericStepper.prototype.Import = function(){
+	return ["spark.components::Spinner"];
+};
+spark_components_NumericStepper.prototype.Extends = function(){
+	spark_components_Spinner.prototype.Extends();
+	spark_components_NumericStepper.prototype = new spark_components_Spinner(spark_components_NumericStepper);
+};
+spark_components_NumericStepper.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, mx_controls_RadioButtonGroup);
+	ref = UIComponent.Get(o, spark_components_NumericStepper);
 	return ref;
 };
 
-function $RadioButtonGroup() {}
-$RadioButtonGroup.Get = mx_controls_RadioButtonGroup.Get;
-$RadioButtonGroup.Is = function(target) { return target instanceof mx_controls_RadioButtonGroup; };
+function $$NumericStepper() {}
+$$NumericStepper.Get = spark_components_NumericStepper.Get;
+$$NumericStepper.Is = function(target) { return target instanceof spark_components_NumericStepper; };

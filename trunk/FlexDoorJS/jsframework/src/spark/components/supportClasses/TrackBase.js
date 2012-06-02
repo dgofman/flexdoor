@@ -39,4 +39,3 @@ spark_components_supportClasses_TrackBase.Get = function(o){
 function $$TrackBase() {}
 $$TrackBase.Get = spark_components_supportClasses_TrackBase.Get;
 $$TrackBase.Is = function(target) { return target instanceof spark_components_supportClasses_TrackBase; };
-$$TrackBase.prototype = new UIComponent($$TrackBase);

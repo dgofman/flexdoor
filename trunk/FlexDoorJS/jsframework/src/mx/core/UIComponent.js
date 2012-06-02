@@ -707,7 +707,7 @@ function UIComponent(classType)
 	};
 }
 
-UIComponent.prototype = new EventDispatcher();
+UIComponent.prototype = new EventDispatcher(UIComponent);
 UIComponent.Get = function(o, classType){
 	var ref = this;
 	if(classType == undefined) classType = UIComponent;

@@ -33,4 +33,3 @@ spark_components_supportClasses_TextBase.Get = function(o){
 function $$TextBase() {}
 $$TextBase.Get = spark_components_supportClasses_TextBase.Get;
 $$TextBase.Is = function(target) { return target instanceof spark_components_supportClasses_TextBase; };
-$$TextBase.prototype = new UIComponent($$TextBase);

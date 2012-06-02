@@ -60,7 +60,7 @@ function mx_collections_ListCollectionView(classType)
 	};
 }
 
-mx_collections_ListCollectionView.prototype = new EventDispatcher();
+mx_collections_ListCollectionView.prototype = new EventDispatcher(mx_collections_ListCollectionView);
 mx_collections_ListCollectionView.prototype.toString = function() {
 	return (this.source ? this.source.toString() : []);
 };

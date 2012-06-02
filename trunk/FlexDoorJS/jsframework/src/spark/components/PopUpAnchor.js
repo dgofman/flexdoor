@@ -17,19 +17,19 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_RadioButtonGroup(classType) 
+function spark_components_PopUpAnchor(classType) 
 {
-	/* extendType - mx.controls::RadioButtonGroup */
-	EventDispatcher.call(this, classType);
+	/* extendType - spark.components::PopUpAnchor */
+	UIComponent.call(this, classType);
 }
 
-mx_controls_RadioButtonGroup.prototype = new EventDispatcher(mx_controls_RadioButtonGroup);
-mx_controls_RadioButtonGroup.Get = function(o){
+spark_components_PopUpAnchor.prototype = new UIComponent(spark_components_PopUpAnchor);
+spark_components_PopUpAnchor.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, mx_controls_RadioButtonGroup);
+	ref = UIComponent.Get(o, spark_components_PopUpAnchor);
 	return ref;
 };
 
-function $RadioButtonGroup() {}
-$RadioButtonGroup.Get = mx_controls_RadioButtonGroup.Get;
-$RadioButtonGroup.Is = function(target) { return target instanceof mx_controls_RadioButtonGroup; };
+function $$PopUpAnchor() {}
+$$PopUpAnchor.Get = spark_components_PopUpAnchor.Get;
+$$PopUpAnchor.Is = function(target) { return target instanceof spark_components_PopUpAnchor; };
