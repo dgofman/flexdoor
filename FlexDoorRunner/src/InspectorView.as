@@ -43,6 +43,19 @@
 						if(item.eventClass == selItem.eventClass && item.type == selItem.type)
 							events_lst.dataProvider.removeItemAt(i);
 					}
+				}else{
+					for(var r:uint = 0; r < _componentsDataProvider.length; r++){
+						var data:Object = _componentsDataProvider.getItemAt(r);
+						if(data.uid == event.item.uid){
+							components_lst.verticalScrollPosition = r * components_lst.rowHeight;
+							components_lst.selectedIndex = r;
+							details_txt.htmlText =  '<font color="#3F7F5F">//' + event.item.event + '</font>\n\n' +
+													'<b>EVENT:</b>\n\n' + 
+													'<i>' + event.item.eventClass + '</i>\n\n' +
+													 event.item.params.join('<br>');
+							break;
+						}
+					}
 				}
 			});
 
@@ -51,10 +64,8 @@
 			components_lst.dataProvider = _componentsDataProvider;
 			components_lst.addEventListener(ListEvent.ITEM_ROLL_OVER, _runner.showListTooltip);
 			components_lst.addEventListener(ListEvent.ITEM_ROLL_OUT, _runner.showListTooltip);
-			components_lst.addEventListener(Event.CHANGE, function(event:Event):void{
-				details_txt.htmlText = event.target.selectedItem.code.split('\n').join('<br>');
-			});
 			components_lst.addEventListener(ListEvent.ITEM_CLICK, function(event:ListEvent):void{
+				details_txt.htmlText = event.target.selectedItem.code.split('\n').join('<br>');
 				events_lst.selectedIndex = -1;
 			});
 		}
@@ -87,7 +98,7 @@
 			_componentsDataProvider.addItemAt(item, 0);
 			components_lst.verticalScrollPosition = 0;
 			components_lst.selectedIndex = 0;
-			components_lst.dispatchEvent(new Event(Event.CHANGE));
+			components_lst.dispatchEvent(new ListEvent(ListEvent.ITEM_CLICK, false, false, 0, 0));
 		}
 
 		public function clearAll(event:MouseEvent=null):void{

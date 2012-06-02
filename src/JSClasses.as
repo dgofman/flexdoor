@@ -94,47 +94,76 @@ package
 			];
 		}
 
-		public static function eventInfo(e:*):String{
+		public static function eventInfo(e:Event):Object{
 			var type:XML = describeType(e);
+			var eventType:String;
+			var eventParams:Array;
 			switch(type.@name.toString()){
 				case "flash.events::MouseEvent":
-					return '$MouseEvent' + params(e.type, e.bubbles, e.cancelable, e.buttonDown, e.relatedObject, e.localX, e.localY,
-													e.ctrlKey, e.altKey, e.shiftKey, e.delta);
+					eventType = '$MouseEvent';
+					eventParams = ['type', 'bubbles', 'cancelable', 'buttonDown', 'relatedObject', 'localX', 'localY', 'ctrlKey', 'altKey', 'shiftKey', 'delta'];
+					break;
 				case "mx.events::AdvancedDataGridEvent":
-					return '$AdvancedDataGridEvent' + params(e.type, e.rowIndex, e.columnIndex, e.dataField, e.reason, e.itemRenderer, e.item, e.localX,
-						e.multiColumnSort, e.removeColumnFromSort, e.triggerEvent, e.headerPart, e.bubbles, e.cancelable);
+					eventType = '$AdvancedDataGridEvent';
+					eventParams = ['type', 'rowIndex', 'columnIndex', 'dataField', 'reason', 'itemRenderer', 'item', 'localX',
+															'multiColumnSort', 'removeColumnFromSort', 'triggerEvent', 'headerPart', 'bubbles', 'cancelable'];
+					break;
 				case "mx.events::CollectionEvent":
-					return '$CollectionEvent' + params(e.type, e.kind, e.location, e.oldLocation, 
-																		e.items, e.bubbles, e.cancelable);
+					eventType = '$CollectionEvent';
+					eventParams = ['type', 'kind', 'location', 'oldLocation', 'items', 'bubbles', 'cancelable'];
+					break;
 				case "mx.events::DataGridEvent":
-					return '$DataGridEvent' + params(e.type, e.rowIndex, e.columnIndex, e.dataField, e.reason, 
-																				e.itemRenderer, e.localX, e.bubbles, e.cancelable);
+					eventType = '$DataGridEvent';
+					eventParams = ['type', 'rowIndex', 'columnIndex', 'dataField', 'reason', 'itemRenderer', 'localX', 'bubbles', 'cancelable'];
+					break;
 				case "mx.events::DragEvent":
-					return '$DragEvent' + params(e.type, e.action, e.dragInitiator, e.dragSource,
-																		e.ctrlKey, e.altKey, e.shiftKey, e.bubbles, e.cancelable);
+					eventType = '$DragEvent';
+					eventParams = ['type', 'action', 'dragInitiator', 'dragSource', 'ctrlKey', 'altKey', 'shiftKey', 'bubbles', 'cancelable'];
+					break;
 				case "mx.events::FlexEvent":
-					return '$FlexEvent' + params(e.type, e.bubbles, e.cancelable);
+					eventType = '$FlexEvent';
+					eventParams = ['type', 'bubbles', 'cancelable'];
+					break;
 				case "mx.events::ListEvent":
-					return '$ListEvent' + params(e.type, e.rowIndex, e.columnIndex, e.itemRenderer, e.reason, e.bubbles, e.cancelable);
+					eventType = '$ListEvent';
+					eventParams = ['type', 'rowIndex', 'columnIndex', 'itemRenderer', 'reason', 'bubbles', 'cancelable'];
+					break;
 				case "mx.events::MenuEvent":
-					return '$MenuEvent' + params(e.type, e.index, e.itemRenderer, e.item, e.label, e.menuBar, e.menu, e.bubbles, e.cancelable);
+					eventType = '$MenuEvent';
+					eventParams = ['type', 'index', 'itemRenderer', 'item', 'label', 'menuBar', 'menu', 'bubbles', 'cancelable'];
+					break;
+				default:
+					eventType = '$Event';
+					eventParams = ['type', 'bubbles', 'cancelable'];
+					break;
 			}
-			return '$Event' + params(e.type, e.bubbles, e.cancelable);
+			return {event:eventType + params(e, eventParams), params:eventParams};
 		}
 
-		private static function params(...args):String{
-			for(var i:uint = 0; i < args.length; i++){
-				if(args[i] == null){
-					args[i] = "null";
-				}else if(args[i] is DisplayObject){
+		private static function params(e:Event, params:Array):String{
+			var values:Array = [];
+			for(var i:uint = 0; i < params.length; i++){
+				var name:String = params[i];
+				var value:* = e[name];
+				var htmlValue:* = value;
+				if(value == null){
+					value = 'null';
+					htmlValue = '<font color="#7F0055">null</font>';
+				}else if(typeof(value) == "boolean"){
+					htmlValue = '<font color="#7F0055">' + value + '</font>';
+				}else if(value is DisplayObject){
 					var locators:Array = [];
-					FlexDoorUtil.instance.getComponentInfo(args[i], [], locators, {});
-					args[i] = 'Locator.Get("/' + locators.join('/') + '")';
-				}else if(args[i] is String){
-					args[i] = '"' + args[i] + '"';
+					FlexDoorUtil.instance.getComponentInfo(value, [], locators, {});
+					value = 'Locator.Get("/' + locators.join('/') + '")';
+					htmlValue = 'Locator.Get(<font color="#2A00FF">"/' + locators.join('/') + '"</font>)';
+				}else if(value is String){
+					value = '"' + value + '"';
+					htmlValue = '<font color="#2A00FF">' + value + '</font>';
 				}
+				values.push(value);
+				params[i] = '<b>' + name + '</b> - ' + htmlValue;
 			}
-			return '.Create(' + args.join(', ') + ');';
+			return '.Create(' + values.join(', ') + ');';
 		}
 	}
 }

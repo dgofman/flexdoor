@@ -208,7 +208,8 @@ package
 
 				if(components.length > 0){
 					var uid:String = (uicomponent.hasOwnProperty("uid") ? uicomponent.uid : uicomponent.toString());
-					_content.addNewEvent({event:JSClasses.eventInfo(event), uid:uid, eventClass:getQualifiedClassName(event), type:event.type});
+					var info:Object = JSClasses.eventInfo(event);
+					_content.addNewEvent({event:info.event,  params:info.params, uid:uid, eventClass:getQualifiedClassName(event), type:event.type});
 				}
 			};
 		}
