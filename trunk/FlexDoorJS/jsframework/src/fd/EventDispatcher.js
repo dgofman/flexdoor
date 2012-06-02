@@ -187,4 +187,4 @@ EventDispatcher.prototype.serialize = function(object){
 
 function fd_EventDispatcher(){};
 function flash_events_EventDispatcher(){};
-flash_events_EventDispatcher.prototype = new EventDispatcher();
+flash_events_EventDispatcher.prototype = new EventDispatcher(flash_events_EventDispatcher);

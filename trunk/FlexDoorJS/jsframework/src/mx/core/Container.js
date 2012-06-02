@@ -200,7 +200,7 @@ function Container(classType)
 }
 
 Container.prototype.Extends = function(){
-	Container.prototype = new UIComponent(Container);
+	Container.prototype = new UIComponent(mx_core_Container);
 };
 Container.Get = function(o){
 	var ref = this;
