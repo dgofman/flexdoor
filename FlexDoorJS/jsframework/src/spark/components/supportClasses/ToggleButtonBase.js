@@ -17,29 +17,26 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_CheckBox(classType) 
+function spark_components_supportClasses_ToggleButtonBase(classType) 
 {
-	/* extendType - spark.components::CheckBox */
+	/* extendType - spark.components.supportClasses::ToggleButtonBase */
 	UIComponent.call(this, classType);
-
-	this.selected = function(){ /* getter and setter */
-		return this.property("selected", arguments);
-	};
 }
 
-spark_components_CheckBox.prototype.Import = function(){
-	return ["spark.components.supportClasses::ToggleButtonBase"];
+spark_components_supportClasses_ToggleButtonBase.prototype.Import = function(){
+	return ["spark.components.supportClasses::ButtonBase"];
 };
-spark_components_CheckBox.prototype.Extends = function(){
-	spark_components_supportClasses_ToggleButtonBase.prototype.Extends();
-	spark_components_CheckBox.prototype = new spark_components_supportClasses_ToggleButtonBase(spark_components_CheckBox);
+spark_components_supportClasses_ToggleButtonBase.prototype.Extends = function(){
+	spark_components_supportClasses_ButtonBase.prototype.Extends();
+	spark_components_supportClasses_ToggleButtonBase.prototype = new spark_components_supportClasses_ButtonBase(spark_components_supportClasses_ToggleButtonBase);
 };
-spark_components_CheckBox.Get = function(o){
+spark_components_supportClasses_ToggleButtonBase.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, spark_components_CheckBox);
+	ref = UIComponent.Get(o, spark_components_supportClasses_ToggleButtonBase);
 	return ref;
 };
 
-function $$CheckBox() {}
-$$CheckBox.Get = spark_components_CheckBox.Get;
-$$CheckBox.Is = function(target) { return target instanceof spark_components_CheckBox; };
+function $$ToggleButtonBase() {}
+$$ToggleButtonBase.Get = spark_components_supportClasses_ToggleButtonBase.Get;
+$$ToggleButtonBase.Is = function(target) { return target instanceof spark_components_supportClasses_ToggleButtonBase; };
+$$ToggleButtonBase.prototype = new UIComponent($$ToggleButtonBase);

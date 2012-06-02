@@ -17,29 +17,25 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_CheckBox(classType) 
+function spark_components_supportClasses_ButtonBarBase(classType) 
 {
-	/* extendType - spark.components::CheckBox */
+	/* extendType - spark.components.supportClasses::ButtonBarBase */
 	UIComponent.call(this, classType);
-
-	this.selected = function(){ /* getter and setter */
-		return this.property("selected", arguments);
-	};
 }
 
-spark_components_CheckBox.prototype.Import = function(){
-	return ["spark.components.supportClasses::ToggleButtonBase"];
+spark_components_supportClasses_ButtonBarBase.prototype.Import = function(){
+	return ["spark.components.supportClasses::ListBase"];
 };
-spark_components_CheckBox.prototype.Extends = function(){
-	spark_components_supportClasses_ToggleButtonBase.prototype.Extends();
-	spark_components_CheckBox.prototype = new spark_components_supportClasses_ToggleButtonBase(spark_components_CheckBox);
+spark_components_supportClasses_ButtonBarBase.prototype.Extends = function(){
+	spark_components_supportClasses_ListBase.prototype.Extends();
+	spark_components_supportClasses_ButtonBarBase.prototype = new spark_components_supportClasses_ListBase(spark_components_supportClasses_ButtonBarBase);
 };
-spark_components_CheckBox.Get = function(o){
+spark_components_supportClasses_ButtonBarBase.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, spark_components_CheckBox);
+	ref = UIComponent.Get(o, spark_components_supportClasses_ButtonBarBase);
 	return ref;
 };
 
-function $$CheckBox() {}
-$$CheckBox.Get = spark_components_CheckBox.Get;
-$$CheckBox.Is = function(target) { return target instanceof spark_components_CheckBox; };
+function $$ButtonBarBase() {}
+$$ButtonBarBase.Get = spark_components_supportClasses_ButtonBarBase.Get;
+$$ButtonBarBase.Is = function(target) { return target instanceof spark_components_supportClasses_ButtonBarBase; };

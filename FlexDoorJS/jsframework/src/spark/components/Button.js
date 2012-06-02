@@ -33,12 +33,12 @@ function spark_components_Button(classType)
 }
 
 spark_components_Button.prototype.Import = function(){
-	return ["spark.components.supportClasses::SkinnableComponent",
+	return ["spark.components.supportClasses::ButtonBase",
 	        "flash.events::MouseEvent"];
 };
 spark_components_Button.prototype.Extends = function(){
-	spark_components_supportClasses_SkinnableComponent.prototype.Extends();
-	spark_components_Button.prototype = new spark_components_supportClasses_SkinnableComponent(spark_components_Button);
+	spark_components_supportClasses_ButtonBase.prototype.Extends();
+	spark_components_Button.prototype = new spark_components_supportClasses_ButtonBase(spark_components_Button);
 };
 spark_components_Button.Get = function(o){
 	var ref = this;
