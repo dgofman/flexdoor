@@ -1,5 +1,6 @@
 package
 {
+	import flash.display.DisplayObject;
 	import flash.display.Loader;
 	import flash.display.Sprite;
 	import flash.display.Stage;
@@ -200,15 +201,15 @@ package
 				var uniqKey:String = getQualifiedClassName(event) + '_' + event.type + '_' + uicomponent.toString();
 				delete _queueMap[uniqKey];
 			
-				var components:Array = [];
+				var hierarchy:Array = [];
 				var locators:Array = [];
 				var includes:Object = {};
 				var eventType:XML = describeType(event);
 				includes[eventType.@name.toString()] = 0;
 
-				printComponentInfo(uicomponent, components, locators, includes);
+				printComponentInfo(uicomponent, hierarchy, locators, includes);
 
-				if(components.length > 0){
+				if(hierarchy.length > 0){
 					var uid:String = (uicomponent.hasOwnProperty("uid") ? uicomponent.uid : uicomponent.toString());
 					var info:Object = JSClasses.eventInfo(event);
 					_content.addNewEvent({event:info.event,  params:info.params, uid:uid, eventClass:getQualifiedClassName(event), type:event.type});
@@ -216,12 +217,30 @@ package
 			};
 		}
 
-		public function getComponentInfo(uicomponent:*, components:Array, locators:Array, includes:Object):void{
+		public function getComponentInfo(uicomponent:*, hierarchy:Array, locators:Array, includes:Object):void{
 			var uniqNames:Object = {};
+
+			function getParentRef(parent:*, c:*, variableName:String, alias:String):Boolean{
+				var parentType:XML = describeType(parent);
+				var variables:XMLList = parentType.variable.(@name != c.name);
+				variables += parentType.accessor.(@access != "writeonly");
+				for(var v:uint = 0; v < variables.length(); v++){
+					var variable:XML = variables[v];
+					try{
+						if(parent[variable.@name] == c){
+							var parentName:String = getInfo(parent);
+							hierarchy.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.find(<font color="#2A00FF">"' + variable.@name + '"</font>));');
+							locators.push(variable.@name);
+							return true;
+						}
+					}catch(e:Error){}
+				}
+				return false;
+			};
 
 			function getInfo(c:*, childRef:*=null, childId:String=null):String{
 				var classType:String;
-				var visibleCount:int; 
+				var visibleCount:int;
 				if(c != _application && c != _application.systemManager){
 					var type:XML = describeType(c);
 					var extendsClass:XMLList = <></>;
@@ -245,8 +264,18 @@ package
 								uniqNames[variableName] += 1;
 								variableName += '$' + uniqNames[variableName]; //attach index for repeating variable names
 							}
+
+							//Find in class variable
+							if( getParentRef(c.parent, c, variableName, alias) || 
+								(c.hasOwnProperty('parentDocument') && c['parentDocument'] is DisplayObject &&
+								getParentRef(c['parentDocument'], c, variableName, alias))){
+								return variableName;
+							}
+
 							var parent:* = c.parent;
 							var parentName:String;
+
+							//Find a DataGridRenderer
 							if(iDataRenderer){
 								var rowIndex:int = c.owner.itemRendererToIndex(c);
 								if(rowIndex > -1){
@@ -258,13 +287,14 @@ package
 										}
 									}
 									parentName = getInfo(c.owner);
-									components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.indicesToItemRenderer(' + rowIndex + ', ' + colIndex + '));');
+									hierarchy.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.indicesToItemRenderer(' + rowIndex + ', ' + colIndex + '));');
 									locators.push(':' + rowIndex + ',' + colIndex);
 									return variableName;
 								}
 							}
+
+							//Try to find a parent reference by id
 							if(c.hasOwnProperty('id') && c.id != null){
-								//Try to find a parent reference by id
 								while(parent != null){
 									if( parent.hasOwnProperty(c.id) &&
 										parent[c.id] == c){
@@ -283,10 +313,10 @@ package
 									visibleCount = findIndexByClassType(c, "numChildren", "getChildAt", classType);
 								locators.push('!');
 								if(visibleCount > 0){
-									components.push('<font color="#7F0055">var</font> ' + variableName + ' = <font color="#7F0055">this</font>.app.getPopupWindow(<font color="#2A00FF">"' + classType + '"</font>, ' + visibleCount + ');');
+									hierarchy.push('<font color="#7F0055">var</font> ' + variableName + ' = <font color="#7F0055">this</font>.app.getPopupWindow(<font color="#2A00FF">"' + classType + '"</font>, ' + visibleCount + ');');
 									locators.push('#' + classType + ',' + visibleCount);
 								}else{
-									components.push('<font color="#7F0055">var</font> ' + variableName + ' = <font color="#7F0055">this</font>.app.getPopupWindow(<font color="#2A00FF">"' + classType + '"</font>);');
+									hierarchy.push('<font color="#7F0055">var</font> ' + variableName + ' = <font color="#7F0055">this</font>.app.getPopupWindow(<font color="#2A00FF">"' + classType + '"</font>);');
 									locators.push('#' + classType);
 								}
 							}else{
@@ -295,13 +325,13 @@ package
 										if(parent[c.id] is Array){
 											for(var j:uint = 0; j < parent[c.id].length; j++){
 												if(parent[c.id][j] == c){
-													components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.find(<font color="#2A00FF">"' + c.id + '"</font>, ' + j + '));');
+													hierarchy.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.find(<font color="#2A00FF">"' + c.id + '"</font>, ' + j + '));');
 													locators.push(c.id + "," + j);
 													break;
 												}
 											}
 										}else{
-											components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.find(<font color="#2A00FF">"' + c.id + '"</font>));');
+											hierarchy.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.find(<font color="#2A00FF">"' + c.id + '"</font>));');
 											locators.push(c.id);
 										}
 										return variableName;
@@ -315,16 +345,16 @@ package
 								
 								if(visibleCount != -1){
 									if(visibleCount > 0){
-										components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByType(<font color="#2A00FF">"' + classType + '"</font>, ' + visibleCount + '));');
+										hierarchy.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByType(<font color="#2A00FF">"' + classType + '"</font>, ' + visibleCount + '));');
 										locators.push('#' + classType + ',' + visibleCount);
 									}else{
-										components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByType(<font color="#2A00FF">"' + classType + '"</font>));');
+										hierarchy.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByType(<font color="#2A00FF">"' + classType + '"</font>));');
 										locators.push('#' + classType);
 									}
 									return variableName;
 								}
 								
-								components.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByName(<font color="#2A00FF">"' + c.name + '"</font>));');
+								hierarchy.push('<font color="#7F0055">var</font> ' + variableName + ' = ' + alias + '.Get(' + parentName + '.getChildByName(<font color="#2A00FF">"' + c.name + '"</font>));');
 								locators.push('@' + c.name);
 							}
 							return variableName;
@@ -338,10 +368,10 @@ package
 			getInfo(uicomponent);
 		}
 
-		private function printComponentInfo(uicomponent:*, components:Array, locators:Array, includes:Object):void{
-			getComponentInfo(uicomponent, components, locators, includes);
+		private function printComponentInfo(uicomponent:*, hierarchy:Array, locators:Array, includes:Object):void{
+			getComponentInfo(uicomponent, hierarchy, locators, includes);
 			
-			if(components.length > 0){
+			if(hierarchy.length > 0){
 				var code:String = '<font color="#3F7F5F">//' + uicomponent.toString() + '</font>\n\n' +
 					'<b>LOCATOR:</b>\n\n' + 
 					'<i>Locator.Get</i>(<font color="#2A00FF">"/' + locators.join('/') + '"</font>);\n\n' +
@@ -351,7 +381,7 @@ package
 					packages.push('<font color="#2A00FF">"' + pckg + '"</font>');
 				if(packages.length > 0)
 					code += '<font color="#7F0055">this</font>.include(\n' + packages.join(',\n') + ');\n\n'; 
-				code += components.join('\n');
+				code += hierarchy.join('\n');
 				
 				var uid:String = (uicomponent.hasOwnProperty("uid") ? uicomponent.uid : uicomponent.toString());
 				_content.addComponent({name:uicomponent.name, uid:uid, code:code});
