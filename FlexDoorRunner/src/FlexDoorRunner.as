@@ -70,8 +70,8 @@
 
 			complete_lbl.mouseEnabled = false;
 
-			inspector_mc.mouseEnabled = false;
-			inspector_mc.mouseChildren = false;
+			//inspector_mc.mouseEnabled = false;
+			//inspector_mc.mouseChildren = false;
 			inspector_mc.visible = false;
 			
 			tooltip_mc.mouseEnabled = false;

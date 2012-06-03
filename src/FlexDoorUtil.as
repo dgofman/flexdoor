@@ -67,14 +67,16 @@ package
 
 			_dispatchEventHook = _uiComponent.mx_internal::dispatchEventHook;
 
-			_classMap = {}
-			for(var i:uint = 0; i < JSClasses.list.length; i++){
-				var jsClass:String = JSClasses.list[i];
+			_classMap = {};
+			var jsClasses:Array = JSClasses.list;
+			var jsAliases:Array = JSClasses.aliases;
+			for(var i:uint = 0; i < jsClasses.length; i++){
+				var jsClass:String = jsClasses[i];
 				var lastIndex:uint = jsClass.lastIndexOf('.');
 				var pckgName:String = jsClass.substring(0, lastIndex);
 				var className:String = jsClass.substring(lastIndex + 1);
-				for(var a:uint = 0; a < JSClasses.aliases.length; a++){
-					var o:Object = JSClasses.aliases[a];
+				for(var a:uint = 0; a < jsAliases.length; a++){
+					var o:Object = jsAliases[a];
 					if(pckgName.indexOf(o.prefix) == 0){
 						_classMap[pckgName + '::' + className] = o.alias + className;
 						break;

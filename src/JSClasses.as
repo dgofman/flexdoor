@@ -121,7 +121,6 @@ package
 					"spark.components.SkinnableDataContainer",
 					"spark.components.SkinnablePopUpContainer",
 					"spark.components.Spinner",
-					"spark.components.supportClasses",
 					"spark.components.TabBar",
 					"spark.components.TextArea",
 					"spark.components.TextInput",
