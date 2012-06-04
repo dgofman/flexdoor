@@ -5,6 +5,8 @@
 	import fl.events.ListEvent;
 	import flash.utils.describeType;
 	import fl.data.DataProvider;
+	import flash.display.DisplayObject;
+	import flash.events.Event;
 
 	public class PropertiesView extends MovieClip
 	{
@@ -12,6 +14,13 @@
 	
 		[Embed("../assets/lock_on.png")]   private const _lockOn:Class;
 		[Embed("../assets/lock_off.png")]  private const _lockOff:Class;
+
+		private const TAB:String = "    ";
+
+		private const INFO:uint      = 0;
+		private const VARIABLES:uint = 1;
+		private const ACCESSORS:uint = 2;
+		private const METHODS:uint   = 3;
 
 		public function PropertiesView(){
 			super();
@@ -42,6 +51,12 @@
 			properties_dg.setStyle("cellRenderer", GridRowCellRenderer);
 			properties_dg.addEventListener(ListEvent.ITEM_ROLL_OVER, _runner.showDataGridTooltip);
 			properties_dg.addEventListener(ListEvent.ITEM_ROLL_OUT, _runner.showDataGridTooltip);
+			properties_dg.addEventListener(ListEvent.ITEM_CLICK, function(event:ListEvent):void{
+				updateDetails(event.item);
+			})
+			properties_dg.addEventListener(Event.CHANGE, function(event:Event):void{
+				updateDetails(event.target.selectedItem);
+			});
 
 			components_lst.labelField = "name";
 			components_lst.addEventListener(ListEvent.ITEM_ROLL_OVER, _runner.showListTooltip);
@@ -54,9 +69,9 @@
 					var type:XML = describeType(c);
 					var temp:Array, props:Array = [];
 					props.push({toolTip:"Info", passed:1});
-					props.push({name:"type", toolTip:type.@name});
-					props.push({name:"extends", toolTip:type.extendsClass.@type.toXMLString().split("\n")});
-					props.push({name:"implements", toolTip:type.implementsInterface.@type.toXMLString().split("\n")});
+					props.push({name:"type", toolTip:type.@name, index:INFO});
+					props.push({name:"extends", toolTip:type.extendsClass.@type.toXMLString().split("\n"), index:INFO});
+					props.push({name:"implements", toolTip:type.implementsInterface.@type.toXMLString().split("\n"), index:INFO});
 
 					var variables:XMLList = type.variable;
 					if(variables.length() > 0){
@@ -64,7 +79,7 @@
 						temp = [];
 						for each(var v:XML in variables){
 							try{
-								temp.push({name:v.@name, toolTip:c[v.@name], type:v.@type});
+								temp.push({name:v.@name, toolTip:c[v.@name], type:v.@type, index:VARIABLES});
 							}catch(e:Error){}
 						}
 						temp.sortOn("name");
@@ -77,7 +92,7 @@
 						temp = [];
 						for each(var a:XML in accessors){
 							try{
-								temp.push({name:a.@name, toolTip:c[a.@name], type:a.@type, icon:(a.@access == 'readwrite' ? _lockOff : _lockOn)});
+								temp.push({name:a.@name, toolTip:c[a.@name], type:a.@type, icon:(a.@access == 'readwrite' ? _lockOff : _lockOn), index:ACCESSORS});
 							}catch(e:Error){}
 						}
 						temp.sortOn("name");
@@ -90,7 +105,7 @@
 						temp = [];
 						for each(var m:XML in methods){
 							try{
-								temp.push({name:m.@name, toolTip:m.parameter.@type.toXMLString().split("\n"), type:m.@returnType});
+								temp.push({name:m.@name, toolTip:m.parameter.@type.toXMLString().split("\n"), type:m.@returnType, index:METHODS});
 							}catch(e:Error){}
 						}
 						temp.sortOn("name");
@@ -100,14 +115,78 @@
 					properties_dg.dataProvider = new DataProvider(props);
 				}
 			});
-
-			_runner.addEventListener(ContentEvent.CLEAR_KIND, onClear);
+		}
+		
+		protected function updateDetails(item:Object):void{
+			var value:* = item.toolTip;
+			if(item.index == undefined){
+				details_txt.htmlText = "";
+			}else if(item.index == METHODS){
+				details_txt.htmlText = '<b>' + item.name + '</b> (' + value.join(', ') + ') : <b>' + item.type + '</b>';
+			}else{
+				var o:* = createProxyObject(value);
+				if(value != null && typeof(item.toolTip) == "object"){
+					details_txt.htmlText = "<b>" + describeType(value).@name + "</b>\n" + o;
+				}else{
+					details_txt.htmlText = (o != null ? String(o) : "");
+				}
+			}
 		}
 
-		private function onClear(event:ContentEvent):void{
-			components_lst.dataProvider.removeAll();
+		protected function createProxyObject(ref:*, indent:String=''):*{
+			if(ref is DisplayObject)
+				return DisplayObject(ref).toString();
+			if(ref == null || typeof(ref) != "object"){
+				return ref;
+			}
+
+			var value:*;
+			var out:Array = [];
+			var array:Array = [];
+			var classInfo:XML = describeType(ref);
+			var isDict:Boolean  = (classInfo.@name.toString() == "flash.utils::Dictionary");
+			var dynamic:Boolean = (classInfo.@isDynamic.toString() == "true");
+			if(isDict || dynamic){
+				for(var key:* in ref){
+					value = ref[key];
+					if(value is Array){
+						for(var i:uint = 0; i < value.length; i++)
+							array[i] = createProxyObject(value[i], indent + TAB);
+						out.push('\n' + indent + '<b>' + key + '</b>' + TAB + '[' + array.join(', ') + ']');
+					}else{
+						out.push('\n' + indent + '<b>' + key + '</b>' + TAB + createProxyObject(value, indent + TAB));
+					}
+				}
+			}else{
+				var properties:XMLList;
+				if (typeof(ref) == "xml"){
+					properties = ref.attributes();
+				}else{
+					properties = classInfo..accessor.(@access != "writeonly") + classInfo..variable;
+				}
+				
+				for(var p:uint = 0; p < properties.length(); p++){
+					var item:XML = properties[p];
+					var uri:String = item.@uri.toString();
+					if(uri.length == 0){
+						value = ref[item.@name];
+						if(value is Array){
+							array = [];
+							for(var j:uint = 0; j < value.length; j++)
+								array[j] = createProxyObject(value[j], indent + TAB);
+							out.push('\n' + indent + '<b>' + item.@name + '</b>' + TAB + '[' + array.join(', ') + ']');
+						}else{
+							out.push('\n' + indent + '<b>' + item.@name + '</b>' + TAB + createProxyObject(value, indent + TAB));
+						}
+					}
+				}
+			}
+			return out.join('');
+		}
+
+		public function reset():void{
 			properties_dg.dataProvider.removeAll();
-			details_txt.text = "";
+			details_txt.htmlText = "";
 		}
 	}
 }

@@ -225,6 +225,7 @@
 
 		public function openProperties(event:MouseEvent=null):void{
 			changeView(propertiesView);
+			propertiesView.reset();
 			propertiesView.components_lst.dataProvider = inspectorView.components_lst.dataProvider;
 		}
 
