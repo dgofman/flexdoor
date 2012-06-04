@@ -65,7 +65,7 @@
 			components_lst.addEventListener(ListEvent.ITEM_ROLL_OVER, _runner.showListTooltip);
 			components_lst.addEventListener(ListEvent.ITEM_ROLL_OUT, _runner.showListTooltip);
 			components_lst.addEventListener(ListEvent.ITEM_CLICK, function(event:ListEvent):void{
-				details_txt.htmlText = event.target.selectedItem.code.split('\n').join('<br>');
+				details_txt.htmlText = event.item.code.split('\n').join('<br>');
 				events_lst.selectedIndex = -1;
 			});
 		}
@@ -98,7 +98,7 @@
 			_componentsDataProvider.addItemAt(item, 0);
 			components_lst.verticalScrollPosition = 0;
 			components_lst.selectedIndex = 0;
-			components_lst.dispatchEvent(new ListEvent(ListEvent.ITEM_CLICK, false, false, 0, 0));
+			components_lst.dispatchEvent(new ListEvent(ListEvent.ITEM_CLICK, false, false, 0, 0, 0, components_lst.selectedItem));
 		}
 
 		public function clearAll(event:MouseEvent=null):void{
