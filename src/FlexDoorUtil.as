@@ -384,7 +384,7 @@ package
 				code += hierarchy.join('\n');
 				
 				var uid:String = (uicomponent.hasOwnProperty("uid") ? uicomponent.uid : uicomponent.toString());
-				_content.addComponent({name:uicomponent.name, uid:uid, code:code});
+				_content.addComponent({name:uicomponent.name, uid:uid, code:code, uicomponent:uicomponent});
 			}
 		}
 
@@ -430,7 +430,7 @@ package
 					_content.y = (_stage.stageHeight - _content.height) / 2;
 					_content.addEventListener(ContentEvent.CONTENT_TYPE, contentEventHandler);
 
-					_content.openTestCases();
+					_content.openScripts();
 					loadExcludeEvents();
 				}
 			};

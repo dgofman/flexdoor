@@ -4,6 +4,7 @@
 	import fl.controls.listClasses.ICellRenderer;
 	import fl.core.InvalidationType;
 	import flash.display.Sprite;
+	import flash.text.TextFormat;
 
 	public class GridRowCellRenderer extends CellRenderer implements ICellRenderer{
 
@@ -12,6 +13,15 @@
 		public function GridRowCellRenderer():void {
 			super();
 			setStyle("selectedOverSkin", CellRenderer_selectedUpSkin);
+		}
+
+		override protected function drawTextFormat():void {
+			super.drawTextFormat();
+			if(data && !isNaN(data.passed) && data.passed > 0){
+				var tf:TextFormat = textField.defaultTextFormat;
+				tf.bold = true;
+				textField.setTextFormat(tf);
+			}
 		}
 
 		override public function set data(value:Object):void {

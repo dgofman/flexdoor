@@ -22,6 +22,7 @@
 		public var views:MovieClip;
 
 		private var inspectorView:InspectorView;
+		private var propertiesView:PropertiesView;
 		private var eventFilterView:EventFilterView;
 		private var scriptLoaderView:ScriptLoaderView;
 		
@@ -35,6 +36,7 @@
 		[Embed("../assets/target.swf")] private const _targetSWF:Class;
 		[Embed("../assets/minimize.swf")] private const _minimizeSWF:Class;
 		[Embed("../assets/restore.swf")]  private const _restoreSWF:Class;
+		[Embed("../assets/properties.swf")] private const _propSWF:Class;
 
 		private var _tooltip_ta:TextArea;
 		private var _tooltip_lbl:TextField;
@@ -51,19 +53,22 @@
 			_so = SharedObject.getLocal("flexdoorRunner");
 
 			inspectorView = views.inspectorView;
+			propertiesView = views.propertiesView;
 			eventFilterView = views.eventFilterView;
 			scriptLoaderView = views.scriptLoaderView;
 
-			visibleViews(true);
-			openTestCases();
-
-			if(loaderInfo.url == null || loaderInfo.url.indexOf("file:///") == -1)
+			if(loaderInfo.url == null || loaderInfo.url.indexOf("file:///") == -1){
 				this.visible = false;
+			}else{
+				openScripts();
+			}
+			visibleViews(true);
 			init();
 		}
 
 		protected function init():void{
 			inspectorView.init(this);
+			propertiesView.init(this);
 			eventFilterView.init(this);
 			scriptLoaderView.init(this);
 			alertView.init(this);
@@ -98,10 +103,12 @@
 
 			views.inspector_btn.setStyle("icon", _targetSWF);
 			initButton(views.inspector_btn, openInspector, "Inspect Components and Events");
+			views.properties_btn.setStyle("icon", _propSWF);
+			initButton(views.properties_btn, openProperties, "Component Properties");
 			views.advanced_btn.setStyle("icon", _filterSWF);
-			initButton(views.advanced_btn, openAdvanced, "Filter Events");
+			initButton(views.advanced_btn, openFilters, "Filter Events");
 			views.testcases_btn.setStyle("icon", _folderSWF);
-			initButton(views.testcases_btn, openTestCases, "Load Scripts");
+			initButton(views.testcases_btn, openScripts, "Load Scripts");
 			views.minimize_btn.setStyle("icon", _minimizeSWF);
 			initButton(views.minimize_btn, minimizeWindow, "Minimize");
 			views.about_btn.setStyle("icon", _aboutPNG);
@@ -204,27 +211,31 @@
 			eventFilterView.addtExcludeEvent(event, type);
 		}
 
+		private function changeView(currentView:MovieClip):void{
+			inspectorView.visible = (currentView == inspectorView);
+			propertiesView.visible = (currentView == propertiesView);
+			eventFilterView.visible = (currentView == eventFilterView);
+			scriptLoaderView.visible = (currentView == scriptLoaderView);
+			this.visible = true;
+		}
+
 		public function openInspector(event:MouseEvent=null):void{
-			scriptLoaderView.visible = false;
-			eventFilterView.visible = false;
-			inspectorView.visible = true;
-			this.visible = true;
+			changeView(inspectorView);
 		}
 
-		public function openAdvanced(event:MouseEvent=null):void{
-			scriptLoaderView.visible = false;
-			inspectorView.visible = false;
-			eventFilterView.visible = true;
-			this.visible = true;
+		public function openProperties(event:MouseEvent=null):void{
+			changeView(propertiesView);
+			propertiesView.components_lst.dataProvider = inspectorView.components_lst.dataProvider;
 		}
 
-		public function openTestCases(event:MouseEvent=null):void{
-			inspectorView.visible = false;
-			eventFilterView.visible = false;
-			scriptLoaderView.visible = true;
-			this.visible = true;
+		public function openFilters(event:MouseEvent=null):void{
+			changeView(eventFilterView);
 		}
-		
+
+		public function openScripts(event:MouseEvent=null):void{
+			changeView(scriptLoaderView);
+		}
+
 		public function toolTipHelper(event:MouseEvent=null):void{
 			tooltip_mc.mouseEnabled = tooltip_mc.mouseChildren = (event == null);
 			if(event != null){
