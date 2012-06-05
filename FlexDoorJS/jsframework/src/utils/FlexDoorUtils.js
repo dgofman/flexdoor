@@ -154,8 +154,9 @@ FlexDoorUtils.attachCollectionChangeEvent = function(testCase, grid, preEventCal
 			};
 		}
 		if(preEventCallBack.apply(testCase, [e.kind])){
-			System.removeEventListener(grid, $CollectionEvent.COLLECTION_CHANGE, changeHandler._refId);
-			System.removeEventListener(dataProvider, $CollectionEvent.COLLECTION_CHANGE, changeHandler._refId);
+			var func = $Function.Get(changeHandler.refFunc);
+			System.removeEventListener(grid, $CollectionEvent.COLLECTION_CHANGE, func._refId);
+			System.removeEventListener(dataProvider, $CollectionEvent.COLLECTION_CHANGE, func._refId);
 			testCase.dispatchEvent($CollectionEvent.COLLECTION_CHANGE);
 
 			if(postEventCallBack != undefined){
