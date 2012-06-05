@@ -137,26 +137,35 @@ FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, column
  *  @param testCase - A Test Case instance extended from a FlexDoor class.
  *  
  *  @param grid - DataGrid or AdvancedDataGrid reference.
-
+ *
+ *  @param postEventCallBack - The call back function executed after removing CollectionEvent.COLLECTION_CHANGE event listener (Optional)
+ *
  *  @param preEventCallBack - The call back function executed as soon as CollectionEvent triggered and 
- *                    passing the <code>CollectionEventKind</code>. See: CollectionEvent::CollectionEventKind 
- *  
- *  @param postEventCallBack - The call back function executed after removing CollectionEvent.COLLECTION_CHANGE event listener
- *  
- *  @param attachToDataGrid - indicator, if true addEventListener for data grid otherwise to collection list (Optional)
+ *                    passing the <code>CollectionEventKind</code>. See: CollectionEvent::CollectionEventKind (Optional)
  */
-FlexDoorUtils.attachCollectionChangeEvent = function(testCase, grid, preEventCallBack, postEventCallBack, attachToDataGrid){
-	var target = (attachToDataGrid == true ? grid : grid.dataProvider());
+FlexDoorUtils.attachCollectionChangeEvent = function(testCase, grid, postEventCallBack, preEventCallBack){
+	var dataProvider = grid.dataProvider();
 	var changeHandler = function(e){
+		if(preEventCallBack == undefined){
+			preEventCallBack = function(kind){
+				System.debug("CollectionEventKind=" + kind);
+				return (kind != CollectionEventKind.EXPAND);
+			};
+		}
 		if(preEventCallBack.apply(testCase, [e.kind])){
-			target.removeEventListener($CollectionEvent.COLLECTION_CHANGE, changeHandler);
+			grid.removeEventListener($CollectionEvent.COLLECTION_CHANGE, changeHandler);
+			dataProvider.removeEventListener($CollectionEvent.COLLECTION_CHANGE, changeHandler);
 			testCase.dispatchEvent($CollectionEvent.COLLECTION_CHANGE);
-			
-			if(postEventCallBack != undefined)
+
+			if(postEventCallBack != undefined){
 				postEventCallBack.apply(testCase);
+			}else{
+				testCase.callNextTest();
+			}
 		}
 	};
-	target.addEventListener($CollectionEvent.COLLECTION_CHANGE, changeHandler, this);
+	grid.addEventListener($CollectionEvent.COLLECTION_CHANGE, changeHandler, this);
+	dataProvider.addEventListener($CollectionEvent.COLLECTION_CHANGE, changeHandler, this);
 };
 
 /**
