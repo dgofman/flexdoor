@@ -148,7 +148,7 @@ FlexDoorUtils.attachCollectionChangeEvent = function(testCase, grid, postEventCa
 	var changeHandler = function(e){
 		if(preEventCallBack == undefined){
 			preEventCallBack = function(kind){
-				System.debug("CollectionEventKind=" + kind);
+				System.log("CollectionEventKind=" + kind);
 				return (kind != CollectionEventKind.EXPAND);
 			};
 		}
