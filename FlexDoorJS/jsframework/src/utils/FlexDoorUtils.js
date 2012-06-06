@@ -146,7 +146,7 @@ FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, column
  */
 FlexDoorUtils.attachCollectionChangeEvent = function(testCase, grid, preEventCallBack, postEventCallBack){
 	var dataProvider = grid.dataProvider();
-	var changeHandler = function(e){
+	var dpChangeHandler = dgChangeHandler = function(e){
 		if(preEventCallBack == undefined){
 			preEventCallBack = function(kind){
 				System.log("CollectionEventKind=" + kind);
@@ -154,9 +154,8 @@ FlexDoorUtils.attachCollectionChangeEvent = function(testCase, grid, preEventCal
 			};
 		}
 		if(preEventCallBack.apply(testCase, [e.kind])){
-			var func = $Function.Get(changeHandler.refFunc);
-			System.removeEventListener(grid, $CollectionEvent.COLLECTION_CHANGE, func._refId);
-			System.removeEventListener(dataProvider, $CollectionEvent.COLLECTION_CHANGE, func._refId);
+			dataProvider.removeEventListener($CollectionEvent.COLLECTION_CHANGE, dpChangeHandler);
+			grid.removeEventListener($CollectionEvent.COLLECTION_CHANGE, dgChangeHandler);
 			testCase.dispatchEvent($CollectionEvent.COLLECTION_CHANGE);
 
 			if(postEventCallBack != undefined){
@@ -166,8 +165,8 @@ FlexDoorUtils.attachCollectionChangeEvent = function(testCase, grid, preEventCal
 			}
 		}
 	};
-	grid.addEventListener($CollectionEvent.COLLECTION_CHANGE, changeHandler, this);
-	dataProvider.addEventListener($CollectionEvent.COLLECTION_CHANGE, changeHandler, this);
+	dataProvider.addEventListener($CollectionEvent.COLLECTION_CHANGE, dpChangeHandler, this);
+	grid.addEventListener($CollectionEvent.COLLECTION_CHANGE, dgChangeHandler, this);
 };
 
 /**
