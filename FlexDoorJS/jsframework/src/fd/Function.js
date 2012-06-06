@@ -23,16 +23,16 @@ function fd_Function(object)
 	this._refId = object.refId;
 	this._isEventListener = false;
 
-	this.Initialize = function(classType, funtionName){
+	this.Initialize = function(classType, functionName){
 		this.classType = classType;
-		this.funtionName = funtionName;
+		this.functionName = functionName;
 	};
 
 	this.destroy = function(){
 		System.releaseIds([this._refId]);
 		if( this.classType instanceof Function && 
-			this.classType[this.funtionName] instanceof Function){
-			this.classType[this.funtionName] = null;
+			this.classType[this.functionName] instanceof Function){
+			this.classType[this.functionName] = null;
 		}
 	};
 }
