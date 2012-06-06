@@ -146,10 +146,12 @@ FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, column
  */
 FlexDoorUtils.attachCollectionChangeEvent = function(testCase, grid, preEventCallBack, postEventCallBack){
 	var dataProvider = grid.dataProvider();
-	var dpChangeHandler = dgChangeHandler = function(e){
+	var dpChangeHandler = function(e){changeHandler(e);};
+	var dgChangeHandler = function(e){changeHandler(e);};
+	var changeHandler = function(e){
+		System.log("CollectionEventKind=" + e.kind + ", " + e.target[1].extendTypes[0]);
 		if(preEventCallBack == undefined){
 			preEventCallBack = function(kind){
-				System.log("CollectionEventKind=" + kind);
 				return (kind != CollectionEventKind.EXPAND);
 			};
 		}
