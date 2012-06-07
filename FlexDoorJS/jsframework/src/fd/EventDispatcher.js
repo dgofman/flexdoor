@@ -126,6 +126,7 @@ EventDispatcher.prototype.createFunctionByName = function(classType, functionNam
 };
 
 EventDispatcher.prototype.createFunction = function(){
+	var keepRef = undefined;
 	var listener = undefined;
 	if(arguments.length > 0)
 		listener = arguments[0];
