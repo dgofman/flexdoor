@@ -517,7 +517,7 @@ package
 			return null;
 		}
 
-		protected function js_createFunction(className:String, functionName:String):Object{
+		protected function js_createFunction(className:String, functionName:String, keepRef:Boolean=false):Object{
 			var handler:Function;
 			handler = function(event:*=null):*{
 				if(event is Event)
@@ -525,7 +525,7 @@ package
 				var listenerId:Number = arguments.callee.prototype.listenerId;
 				var className:String = arguments.callee.prototype.className;
 				var functionName:String = arguments.callee.prototype.functionName;
-				serializeAll(arguments);
+				serializeAll(arguments, keepRef);
 				var args:* = (arguments.length == 1 ? arguments[0] : arguments);
 				var result:* = ExternalInterface.call("FlexDoor.executeFunction", className, functionName, args);
 				return result;
@@ -686,10 +686,10 @@ package
 			return [outType, out];
 		}
 		
-		protected function serializeAll(params:*):*{
+		protected function serializeAll(params:*, keepRef:Boolean=false):*{
 			if(params is Array){
 				for(var i:uint = 0; i < params.length; i++)
-					params[i] = serialize(params[i]);
+					params[i] = serialize(params[i], keepRef);
 			}
 			return params;
 		}

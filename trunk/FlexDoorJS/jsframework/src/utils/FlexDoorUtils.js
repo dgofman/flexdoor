@@ -146,17 +146,18 @@ FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, column
  */
 FlexDoorUtils.attachCollectionChangeEvent = function(testCase, grid, preEventCallBack, postEventCallBack){
 	var dataProvider = grid.dataProvider();
-	var dpChangeHandler = function(e){changeHandler(e);};
-	var dgChangeHandler = function(e){changeHandler(e);};
-	var changeHandler = function(e){
-		System.log("CollectionEventKind=" + e.kind + ", " + e.target[1].extendTypes[0]);
+	var dpChangeHandler = dgChangeHandler= function(refId){
+		var kind = System.call(function(flash){
+			return flash.getter(refId, "kind");
+		});
+		System.log("CollectionEventKind=" + kind);
 		if(preEventCallBack == undefined){
 			preEventCallBack = function(kind){
 				return (kind != CollectionEventKind.EXPAND);
 			};
 		}
-		if(preEventCallBack.apply(testCase, [e.kind])){
-			dataProvider.removeEventListener($CollectionEvent.COLLECTION_CHANGE, dpChangeHandler);
+		if(preEventCallBack.apply(testCase, [kind])){
+			dataProvider.removeEventListener($CollectionEvent.COLLECTION_CHANGE, dpChangeHandler, false, false);
 			grid.removeEventListener($CollectionEvent.COLLECTION_CHANGE, dgChangeHandler);
 			testCase.dispatchEvent($CollectionEvent.COLLECTION_CHANGE);
 
@@ -167,8 +168,8 @@ FlexDoorUtils.attachCollectionChangeEvent = function(testCase, grid, preEventCal
 			}
 		}
 	};
-	dataProvider.addEventListener($CollectionEvent.COLLECTION_CHANGE, dpChangeHandler, this);
-	grid.addEventListener($CollectionEvent.COLLECTION_CHANGE, dgChangeHandler, this);
+	dataProvider.addEventListener($CollectionEvent.COLLECTION_CHANGE, dpChangeHandler, this, true);
+	grid.addEventListener($CollectionEvent.COLLECTION_CHANGE, dgChangeHandler, this, true);
 };
 
 /**

@@ -104,71 +104,93 @@ System.waitFor = function(target, func, delay, timeout, params){
 };
 
 System.getLocator = function(path){
-	var flash = Application.application.flash;
-	var object = flash.getLocator(path);
-	return System.deserialize(object);
+	return System.call(function(flash){
+		return flash.getLocator(path);
+	});
 };
 
 System.findById = function(refId, keepRef){
-	var flash = Application.application.flash;
-	var object = flash.findById(refId);
-	return System.deserialize(object, keepRef);
+	return System.call(function(flash){
+		return flash.findById(refId);
+	});
 };
 
 System.find = function(parent, id, index, visibleOnly, keepRef){
-	var flash = Application.application.flash;
-	var object = flash.find(parent._refId, id, index, visibleOnly, keepRef);
-	return System.deserialize(object, parent);
+	return System.call(function(flash){
+		return flash.find(parent._refId, id, index, visibleOnly, keepRef);
+	});
 };
 
 System.getClass = function(className){
-	var flash = Application.application.flash;
-	var object = flash.getClass(className);
-	return System.deserialize(object);
+	return System.call(function(flash){
+		return flash.getClass(className);
+	});
 };
 
 System.getChildByName = function(parent, name, keepRef){
-	var flash = Application.application.flash;
-	var object = flash.getChildByName(parent._refId, name, keepRef);
-	return System.deserialize(object, parent);
+	return System.call(function(flash){
+		return flash.getChildByName(parent._refId, name, keepRef);
+	});
 };
 
 System.getChildByType = function(parent, classType, index, visibleOnly, keepRef){
-	var flash = Application.application.flash;
-	var object = flash.getChildByType(parent._refId, classType, index, visibleOnly, keepRef);
-	return System.deserialize(object, parent);
+	return System.call(function(flash){
+		return flash.getChildByType(parent._refId, classType, index, visibleOnly, keepRef);
+	});
 };
 
 System.setter = function(target, command, value){
-	var flash = Application.application.flash;
-	flash.setter(target._refId, command, value);
+	System.call(function(flash){
+		flash.setter(target._refId, command, value);
+		return fd_System.VOID;
+	});
 };
 
 System.getter = function(target, command, keepRef){
-	var flash = Application.application.flash;
-	var object = flash.getter(target._refId, command, keepRef);
-	return System.deserialize(object);
+	return System.call(function(flash){
+		return flash.getter(target._refId, command, keepRef);
+	});
 };
 
 System.execute = function(target, command, values, keepRef){
 	if(values != null && !(values instanceof Array)) values = [values];
-	var flash = Application.application.flash;
-	var object = flash.execute(target._refId, command, values, keepRef);
-	return System.deserialize(object);
+	return System.call(function(flash){
+		return flash.execute(target._refId, command, values, keepRef);
+	});
 };
 
 System.refValue = function(refId, keys, keepRef){
-	var flash = Application.application.flash;
-	var object = flash.refValue(refId, keys, keepRef);
-	return System.deserialize(object);
+	return System.call(function(flash){
+		return flash.refValue(refId, keys, keepRef);
+	});
 };
 
 System.create = function(extendType, args){
 	if(args != null && !(args instanceof Array)) args = [args];
-	var flash = Application.application.flash;
-	var object = flash.create(extendType, args);
-	return System.deserialize(object);
+	return System.call(function(flash){
+		return flash.create(extendType, args);
+	});
 };
+
+System.createFunction = function(classType, functionName, keepRef){
+	return System.call(function(flash){
+		return flash.createFunction(classType, functionName, keepRef);
+	});
+};
+
+System.call = function(handler){
+	try{
+		var flash = Application.application.flash;
+		var object = handler(flash);
+		if(object != fd_System.VOID)
+			return System.deserialize(object);
+	}catch(e){
+		System.error(System.call.caller.toString());
+		System.info(System.call.caller.arguments);
+		throw e;
+	}
+};
+
 
 //type is optional get any event types if type is undefined
 //listenerId - is not remove event dispatcher hook
@@ -225,12 +247,6 @@ System.setSearchFunction = function(collection, func){
 	asFunction.destroy();
 	if(filterFunc != null)
 		filterFunc.destroy();
-};
-
-System.createFunction = function(classType, functionName){
-	var flash = Application.application.flash;
-	var object = flash.createFunction(classType, functionName);
-	return System.deserialize(object);
 };
 
 System.serialize = function(object){
@@ -333,6 +349,7 @@ function fd_System(){};
 fd_System.Class = function(object){
 	this._refId = object.refId;
 };
+fd_System.VOID      = -1;
 fd_System.NULL      = 0;
 fd_System.ERROR     = 1;
 fd_System.OBJECT    = 2;
