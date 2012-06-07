@@ -113,12 +113,12 @@ EventDispatcher.prototype.create = function(className){
 	return System.create(className, System.getParams(arguments, 1, true));
 };
 
-EventDispatcher.prototype.createFunctionByName = function(classType, functionName){
+EventDispatcher.prototype.createFunctionByName = function(classType, functionName, keepRef){
 	if( classType instanceof Function && 
 		classType[functionName] instanceof Function){
 		//Create ActionScript function and map to JS function via ExternalInterface
 		var className = classType.toString().match(/function\s*(\w+)/)[1];
-		var func = $Function.Get(System.createFunction(className, functionName));
+		var func = $Function.Get(System.createFunction(className, functionName, keepRef));
 		func.Initialize(classType, functionName);
 		classType[functionName].refFunc = func;
 		return func;
@@ -131,10 +131,12 @@ EventDispatcher.prototype.createFunction = function(){
 		listener = arguments[0];
 
 	if(listener instanceof Function){
+		if(arguments.length > 1)
+			keepRef = arguments[1];
 		var classType = EventDispatcher;
 		var functionName = "FunctionHandler" + new Date().getTime();
 		classType[functionName] = listener;
-		return this.createFunctionByName(classType, functionName);
+		return this.createFunctionByName(classType, functionName, keepRef);
 	}
 	return listener;
 };
@@ -151,7 +153,7 @@ EventDispatcher.prototype.dispatchEventHook = function(listener, target, type){
 	System.dispatchEventHook(this, this.serialize(asFunction), type);
 };
 
-EventDispatcher.prototype.addEventListener = function(type, listener, target, useWeakReference, useCapture, priority){
+EventDispatcher.prototype.addEventListener = function(type, listener, target, keepRef, useWeakReference, useCapture, priority){
 	var asFunction = null;
 	if(useWeakReference == undefined) useWeakReference = false;
 	if(useCapture == undefined) useCapture = false;
@@ -162,18 +164,19 @@ EventDispatcher.prototype.addEventListener = function(type, listener, target, us
 		asFunction = this.createFunction(function(){
 			listener.refFunc = asFunction;
 			listener.apply(target, arguments);
-		});
+		}, keepRef);
 	}
 	asFunction._isEventListener = true;
 	System.addEventListener(this, type, this.serialize(asFunction), useCapture, priority, useWeakReference);
 };
 
-EventDispatcher.prototype.removeEventListener = function(type, listener, useCapture){
+EventDispatcher.prototype.removeEventListener = function(type, listener, useCapture, destroy){
 	if(listener instanceof Function && listener.refFunc instanceof fd_Function){
 		if(useCapture == undefined) useCapture = false;
 		var func = $Function.Get(listener.refFunc);
 		System.removeEventListener(this, type, func._refId, useCapture);
-		func.destroy();
+		if(destroy != false)
+			func.destroy();
 	}
 };
 
