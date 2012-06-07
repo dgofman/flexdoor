@@ -382,6 +382,7 @@
 		}
 
 		public function playPauseTestCases(event:MouseEvent=null):void{
+			stop_btn.enabled = true;
 			if(_startTime == null)
 				_startTime = new Date();
 			if(event == null)
@@ -399,6 +400,7 @@
 
 		public function stopTestCases(event:MouseEvent=null):void{
 			if(stop_btn.enabled){
+				stop_btn.enabled = false;
 				overlay_mc.visible = false;
 				play_pause_btn.selected = false;
 				testcases_dg.selectedIndex = -1;
