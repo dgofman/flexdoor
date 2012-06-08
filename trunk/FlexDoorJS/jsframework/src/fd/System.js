@@ -269,6 +269,8 @@ System.deserialize = function(params, parent){
 	var object = params[1];
 	switch(type){
 		case fd_System.NULL:
+		case fd_System.PRIMITIVE:
+			return object;
 		case fd_System.OBJECT:
 			return System.json(object);
 		case fd_System.REFERENCE:
@@ -352,10 +354,11 @@ fd_System.Class = function(object){
 fd_System.VOID      = -1;
 fd_System.NULL      = 0;
 fd_System.ERROR     = 1;
-fd_System.OBJECT    = 2;
-fd_System.ARRAY     = 3;
-fd_System.EVENT     = 4;
-fd_System.CLASS     = 5;
-fd_System.FUNCTION  = 6;
-fd_System.REFERENCE = 7;
-fd_System.ANY       = 8;
+fd_System.PRIMITIVE = 2;
+fd_System.OBJECT    = 3;
+fd_System.ARRAY     = 4;
+fd_System.EVENT     = 5;
+fd_System.CLASS     = 6;
+fd_System.FUNCTION  = 7;
+fd_System.REFERENCE = 8;
+fd_System.ANY       = 9;

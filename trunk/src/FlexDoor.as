@@ -57,15 +57,18 @@ package
 	[SWF(backgroundColor="#FFFFFF")]
 	public class FlexDoor extends Sprite
 	{
+		private static const SKIP:String = "SKIP";
+
 		private static const NULL:uint      = 0;
 		private static const ERROR:uint     = 1;
-		private static const OBJECT:uint    = 2;
-		private static const ARRAY:uint     = 3;
-		private static const EVENT:uint     = 4;
-		private static const CLASS:uint     = 5;
-		private static const FUNCTION:uint  = 6;
-		private static const REFERENCE:uint = 7;
-		private static const ANY:uint       = 8;
+		private static const PRIMITIVE:uint = 2;
+		private static const OBJECT:uint    = 3;
+		private static const ARRAY:uint     = 4;
+		private static const EVENT:uint     = 5;
+		private static const CLASS:uint     = 6;
+		private static const FUNCTION:uint  = 7;
+		private static const REFERENCE:uint = 8;
+		private static const ANY:uint       = 9;
 
 		
 		protected var _application:*;
@@ -527,7 +530,7 @@ package
 				var functionName:String = arguments.callee.prototype.functionName;
 				serializeAll(arguments, keepRef);
 				var args:* = (arguments.length == 1 ? arguments[0] : arguments);
-				var result:* = ExternalInterface.call("FlexDoor.executeFunction", className, functionName, args);
+				var result:* = ExternalInterface.call("parent.FlexDoor.executeFunction", className, functionName, args);
 				return result;
 			};
 			var obj:Object = serialize(handler);
@@ -647,7 +650,7 @@ package
 					array[j] = serialize(ref[j])[1];
 				return [ARRAY, array];
 			}else if(typeof(ref) != "object"){
-				return [OBJECT, ref]; //Number, uint, int, String, Boolean
+				return [PRIMITIVE, ref]; //Number, uint, int, String, Boolean
 			}else if(ref is Class){
 				outType = CLASS;
 			}else{
@@ -665,15 +668,18 @@ package
 				}
 				
 				var type:XML = describeType(ref);
+				var proxyMap:Dictionary = new Dictionary();
 				var extendTypes:Array = [type.@name.toString()];
 				for(var i:uint = 0; i < type.extendsClass.length(); i++)
 					extendTypes.push(type.extendsClass[i].@type.toString());
 
-				if(extendTypes.length < 2 || extendTypes[0] == "Object")
-					return [OBJECT, ref];
+				if(extendTypes.length < 2 || extendTypes[0] == "Object"){
+					var proxy:* = createProxyObject(ref, proxyMap);
+					return [OBJECT, proxy];
+				}
 
 				out.extendTypes = extendTypes;
-				out.ref = createProxyObject(ref);
+				out.ref = createProxyObject(ref, proxyMap);
 			}
 
 			//get next available id
@@ -718,18 +724,23 @@ package
 			return params;
 		}
 
-		protected function createProxyObject(ref:*, includeNamespaces:Boolean=false):*{
+		protected function createProxyObject(ref:*, proxyMap:Dictionary, includeNamespaces:Boolean=false):*{
 			if(ref is DisplayObject)
 				return '"' + DisplayObject(ref).toString() + '"';
 			if(ref == null || typeof(ref) != "object"){
 				if(ref is String){
 					ref = String(ref).split(/\\/).join('\\\\\\\\');
 					ref = String(ref).replace(/"/g, '\\\\"');
+					ref = String(ref).replace(/\r\n|\n|\r/g, '\\\\n').replace(/\t/g, '\\\\t');
 				}
 				return ref is String || ref is Function || isNaN(ref) || ref == undefined ? '"' + ref + '"' : ref;
 			}
 
-			var value:*;
+			if(proxyMap[ref] != null)
+				return proxyMap[ref];
+			proxyMap[ref] = SKIP; //do not repeat already defined references
+
+			var value:*, proxy:*;
 			var out:Array = [];
 			var array:Array = [];
 			var classInfo:XML = describeType(ref);
@@ -739,11 +750,16 @@ package
 				for(var key:* in ref){
 					value = ref[key];
 					if(value is Array){
-						for(var i:uint = 0; i < value.length; i++)
-							array[i] = toJson(createProxyObject(value[i]));
+						for(var i:uint = 0; i < value.length; i++){
+							proxy = createProxyObject(value[i], proxyMap);
+							if(proxy != SKIP)
+								array.push(toJson(proxy));
+						}
 						out.push('"' + key + '":[' + array.join(', ') + ']');
 					}else{
-						out.push('"' + key + '":' + toJson(createProxyObject(value)));
+						proxy = createProxyObject(value, proxyMap);
+						if(proxy != SKIP)
+							out.push('"' + key + '":' + toJson(proxy));
 					}
 				}
 			}else{
@@ -761,20 +777,25 @@ package
 						value = ref[item.@name];
 						if(value is Array){
 							array = [];
-							for(var j:uint = 0; j < value.length; j++)
-								array[j] = toJson(createProxyObject(value[j]));
+							for(var j:uint = 0; j < value.length; j++){
+								proxy = createProxyObject(value[j], proxyMap);
+								if(proxy != SKIP)
+									array.push(toJson(proxy));
+							}
 							out.push('"' + item.@name + '":[' + array.join(', ') + ']');
 						}else{
-							out.push('"' + item.@name + '":' + toJson(createProxyObject(value)));
+							proxy = createProxyObject(value, proxyMap);
+							if(proxy != SKIP)
+								out.push('"' + item.@name + '":' + toJson(proxy));
 						}
 					}
 				}
 			}
-			return '{' + out.join(', ') + '}';
+			return proxyMap[ref] = '{' + out.join(', ') + '}';
 		}
-		
-		protected function toJson(o:*):*{
-			return o is Array ? '[' + o.join(', ') + ']' : o;
+
+		protected function toJson(proxy:*):*{
+			return proxy is Array ? '[' + proxy.join(', ') + ']' : proxy;
 		}
 
 		protected function validateCommand(object:*, command:String):Boolean{

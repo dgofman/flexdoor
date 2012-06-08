@@ -227,6 +227,8 @@
 			changeView(propertiesView);
 			propertiesView.reset();
 			propertiesView.components_lst.dataProvider = inspectorView.components_lst.dataProvider;
+			propertiesView.components_lst.selectedIndex = inspectorView.components_lst.selectedIndex;
+			propertiesView.updateProperties(inspectorView.components_lst.selectedItem);
 		}
 
 		public function openFilters(event:MouseEvent=null):void{

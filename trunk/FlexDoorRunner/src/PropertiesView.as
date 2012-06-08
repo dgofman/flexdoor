@@ -62,61 +62,65 @@
 			components_lst.addEventListener(ListEvent.ITEM_ROLL_OVER, _runner.showListTooltip);
 			components_lst.addEventListener(ListEvent.ITEM_ROLL_OUT, _runner.showListTooltip);
 			components_lst.addEventListener(ListEvent.ITEM_CLICK, function(event:ListEvent):void{
-				var c:* = event.item.uicomponent;
-				properties_dg.dataProvider.removeAll();
-				details_txt.text = "";
-				if(c != null){
-					var type:XML = describeType(c);
-					var temp:Array, props:Array = [];
-					props.push({toolTip:"Info", passed:1});
-					props.push({name:"type", toolTip:type.@name, index:INFO});
-					props.push({name:"extends", toolTip:type.extendsClass.@type.toXMLString().split("\n"), index:INFO});
-					props.push({name:"implements", toolTip:type.implementsInterface.@type.toXMLString().split("\n"), index:INFO});
-
-					var variables:XMLList = type.variable;
-					if(variables.length() > 0){
-						props.push({toolTip:"Variables", passed:1});
-						temp = [];
-						for each(var v:XML in variables){
-							try{
-								temp.push({name:v.@name, toolTip:c[v.@name], type:v.@type, index:VARIABLES});
-							}catch(e:Error){}
-						}
-						temp.sortOn("name");
-						props = props.concat(temp);
-					}
-
-					var accessors:XMLList = type.accessor.(@access != "writeonly");
-					if(accessors.length() > 0){
-						props.push({toolTip:"Accessors", passed:1});
-						temp = [];
-						for each(var a:XML in accessors){
-							try{
-								temp.push({name:a.@name, toolTip:c[a.@name], type:a.@type, icon:(a.@access == 'readwrite' ? _lockOff : _lockOn), index:ACCESSORS});
-							}catch(e:Error){}
-						}
-						temp.sortOn("name");
-						props = props.concat(temp);
-					}
-
-					var methods:XMLList = type.method;
-					if(methods.length() > 0){
-						props.push({toolTip:"Methods", passed:1});
-						temp = [];
-						for each(var m:XML in methods){
-							try{
-								temp.push({name:m.@name, toolTip:m.parameter.@type.toXMLString().split("\n"), type:m.@returnType, index:METHODS});
-							}catch(e:Error){}
-						}
-						temp.sortOn("name");
-						props = props.concat(temp);
-					}
-
-					properties_dg.dataProvider = new DataProvider(props);
-				}
+				updateProperties(event.item);
 			});
 		}
-		
+
+		public function updateProperties(item:Object):void{
+			var c:* = item.uicomponent;
+			properties_dg.dataProvider.removeAll();
+			details_txt.text = "";
+			if(c != null){
+				var type:XML = describeType(c);
+				var temp:Array, props:Array = [];
+				props.push({toolTip:"Info", passed:1});
+				props.push({name:"type", toolTip:type.@name, index:INFO});
+				props.push({name:"extends", toolTip:type.extendsClass.@type.toXMLString().split("\n"), index:INFO});
+				props.push({name:"implements", toolTip:type.implementsInterface.@type.toXMLString().split("\n"), index:INFO});
+				
+				var variables:XMLList = type.variable;
+				if(variables.length() > 0){
+					props.push({toolTip:"Variables", passed:1});
+					temp = [];
+					for each(var v:XML in variables){
+						try{
+							temp.push({name:v.@name, toolTip:c[v.@name], type:v.@type, index:VARIABLES});
+						}catch(e:Error){}
+					}
+					temp.sortOn("name");
+					props = props.concat(temp);
+				}
+				
+				var accessors:XMLList = type.accessor.(@access != "writeonly");
+				if(accessors.length() > 0){
+					props.push({toolTip:"Accessors", passed:1});
+					temp = [];
+					for each(var a:XML in accessors){
+						try{
+							temp.push({name:a.@name, toolTip:c[a.@name], type:a.@type, icon:(a.@access == 'readwrite' ? _lockOff : _lockOn), index:ACCESSORS});
+						}catch(e:Error){}
+					}
+					temp.sortOn("name");
+					props = props.concat(temp);
+				}
+				
+				var methods:XMLList = type.method;
+				if(methods.length() > 0){
+					props.push({toolTip:"Methods", passed:1});
+					temp = [];
+					for each(var m:XML in methods){
+						try{
+							temp.push({name:m.@name, toolTip:m.parameter.@type.toXMLString().split("\n"), type:m.@returnType, index:METHODS});
+						}catch(e:Error){}
+					}
+					temp.sortOn("name");
+					props = props.concat(temp);
+				}
+				
+				properties_dg.dataProvider = new DataProvider(props);
+			}
+		}
+
 		protected function updateDetails(item:Object):void{
 			var value:* = item.toolTip;
 			if(item.index == undefined){
