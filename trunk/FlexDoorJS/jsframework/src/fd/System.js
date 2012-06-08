@@ -270,7 +270,7 @@ System.deserialize = function(params, parent){
 	switch(type){
 		case fd_System.NULL:
 		case fd_System.OBJECT:
-			return object;
+			return System.json(object);
 		case fd_System.REFERENCE:
 			return object.refId;
 		case fd_System.CLASS:
