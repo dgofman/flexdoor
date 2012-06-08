@@ -321,6 +321,7 @@ FlexDoor.LOAD_FILES = {};
 FlexDoor.TIME_INTERVAL;
 FlexDoor.INIT_PHASE = 0;
 FlexDoor.AUTO_START = false;
+FlexDoor.BREAKPOINT = false;
 
 if(FlexDoor.LIB_PATH == undefined){
 	var scripts = document.getElementsByTagName("script");
@@ -503,6 +504,10 @@ FlexDoor.addScriptToHead = function(id, src, text, listener){
 
 FlexDoor.externalCall = function(command, params){
 	FlexDoor[command].apply(null, params);
+};
+
+FlexDoor.setErrorBreakpoint = function(state){
+	FlexDoor.BREAKPOINT = state;
 };
 
 //Loading depended libraries

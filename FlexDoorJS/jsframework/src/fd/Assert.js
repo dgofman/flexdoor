@@ -35,6 +35,8 @@ Assert.assertEquals = function(actual, expected, message) {
 	}else{
 		System.trace(str1 + str2, error ? "warn" : "log");
 	}
+
+	if(error && FlexDoor.BREAKPOINT) debugger;
 };
 
 Assert.assertTrue = function(actual, message) {
@@ -54,6 +56,7 @@ Assert.fail = function(message) {
 		flash.assertResult(true, message);
 	}
 	System.error(message);
+	if(FlexDoor.BREAKPOINT) debugger;
 };
 
 function fd_Assert(){};

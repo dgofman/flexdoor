@@ -157,6 +157,7 @@
 			stop_btn.setStyle("overIcon", "StopButtonOver");
 			stop_btn.setStyle("disabledIcon", "StopButtonDisabled");
 
+			_runner.initButton(breackpoint_chb, errorBreakPoint, "Set Error Breakpoint");
 			_runner.initButton(open_testcases_btn, openTestCases, "Open TestCases");
 			_runner.initButton(load_testcases_btn, loadTestCases, "Load TestCases");
 			_runner.initButton(play_pause_btn, playPauseTestCases, "Play/Pause TestCases Ctrl+Alt+P");
@@ -536,6 +537,10 @@
 				delete testcases_dg.selectedItem.passed;
 			}
 			return newIndex;
+		}
+
+		private function errorBreakPoint(event:MouseEvent):void{
+			_runner.dispatchEvent(new ContentEvent(ContentEvent.BREAKPOINT, breackpoint_chb.selected));
 		}
 
 		private function externalCall(command:String, ...params):uint{

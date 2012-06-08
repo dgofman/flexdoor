@@ -8,6 +8,7 @@ package
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
+	import flash.external.ExternalInterface;
 	import flash.geom.Point;
 	import flash.text.TextField;
 	import flash.ui.Mouse;
@@ -459,6 +460,9 @@ package
 				case ContentEvent.CLOSE_KIND:
 					clear();
 					inspectEvents(false);
+					break;
+				case ContentEvent.BREAKPOINT:
+					ExternalInterface.call("parent.FlexDoor.setErrorBreakpoint", event.state);
 					break;
 			}
 		}
