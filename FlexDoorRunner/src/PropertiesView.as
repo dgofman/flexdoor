@@ -77,6 +77,8 @@
 				props.push({name:"type", toolTip:type.@name, index:INFO});
 				props.push({name:"extends", toolTip:type.extendsClass.@type.toXMLString().split("\n"), index:INFO});
 				props.push({name:"implements", toolTip:type.implementsInterface.@type.toXMLString().split("\n"), index:INFO});
+				if(c.parent != null)
+					props.push({name:"parent", toolTip:c.parent.toString(), index:INFO, parent:c.parent});
 				
 				var variables:XMLList = type.variable;
 				if(variables.length() > 0){
@@ -125,6 +127,14 @@
 			var value:* = item.toolTip;
 			if(item.index == undefined){
 				details_txt.htmlText = "";
+			}else if(item.index == INFO && item.name == "parent"){
+				details_txt.htmlText = "<b>" + describeType(item.parent).@name + "</b>\n" + item.toolTip;
+				if(components_lst.selectedItem.addParent != false && item.parent != null && item.parent.name != null){
+					components_lst.selectedItem.addParent = false;
+					var name:String = components_lst.selectedItem["name"];
+					var indent:String = new Array(name.search(/(?!\s)/) + 3).join(" ");
+					components_lst.addItemAt({name:indent + item.parent.name, uicomponent:item.parent}, components_lst.selectedIndex + 1);
+				}
 			}else if(item.index == METHODS){
 				details_txt.htmlText = '<b>' + item.name + '</b> (' + value.join(', ') + ') : <b>' + item.type + '</b>';
 			}else{

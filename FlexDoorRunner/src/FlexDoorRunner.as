@@ -148,10 +148,12 @@
 			var items:Array = [];
 			for(var i:uint = 0; i < dp.length; i++){
 				var item:Object = dp.getItemAt(i);
-				if(key == null)
-					items.push(item);
-				else
-					items.push(item[key]);
+				if(key != null)
+					item = item[key];
+				var clone:Object = {};
+				for(var name:String in item)
+					clone[name] = item[name];
+				items.push(clone);
 			}
 			return items;
 		}
@@ -226,7 +228,7 @@
 		public function openProperties(event:MouseEvent=null):void{
 			changeView(propertiesView);
 			propertiesView.reset();
-			propertiesView.components_lst.dataProvider = inspectorView.components_lst.dataProvider;
+			propertiesView.components_lst.dataProvider = new DataProvider(toArray(inspectorView.components_lst.dataProvider));
 			propertiesView.components_lst.selectedIndex = inspectorView.components_lst.selectedIndex;
 			propertiesView.updateProperties(inspectorView.components_lst.selectedItem);
 		}
