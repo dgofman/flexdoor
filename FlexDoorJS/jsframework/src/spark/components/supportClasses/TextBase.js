@@ -23,7 +23,10 @@ function spark_components_supportClasses_TextBase(classType)
 	UIComponent.call(this, classType);
 }
 
-spark_components_supportClasses_TextBase.prototype = new UITextField(spark_components_supportClasses_TextBase);
+spark_components_supportClasses_TextBase.prototype.Extends = function(){
+	UITextField.prototype.Extends();
+	spark_components_supportClasses_TextBase.prototype = new UITextField(spark_components_supportClasses_TextBase);
+}; 
 spark_components_supportClasses_TextBase.Get = function(o){
 	var ref = this;
 	ref = UIComponent.Get(o, spark_components_supportClasses_TextBase);
