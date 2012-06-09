@@ -525,7 +525,6 @@ package
 			handler = function(event:*=null):*{
 				if(event is Event)
 					Event(event).preventDefault();
-				var listenerId:Number = arguments.callee.prototype.listenerId;
 				var className:String = arguments.callee.prototype.className;
 				var functionName:String = arguments.callee.prototype.functionName;
 				serializeAll(arguments, keepRef);
@@ -536,7 +535,6 @@ package
 			var obj:Object = serialize(handler);
 			handler.prototype.className = className;
 			handler.prototype.functionName = functionName;
-			handler.prototype.listenerId = obj.refId;
 			return obj;
 		}
 

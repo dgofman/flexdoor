@@ -125,7 +125,7 @@ FlexDoor.prototype.initializeApplication = function(args, files){
 		this.app = System.deserialize(args, this);
 		this.app.systemManager = System.deserialize(flash.systemManager(), this.app);
 		this.app.flash = flash;
-		
+
 		refIds = System.refIds();
 
 		if(testCase instanceof FlexDoor.ACTIVE_TESTCASE.prototype.constructor){
