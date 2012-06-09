@@ -29,7 +29,7 @@
 		private var _testCases:Array;
 		private var _selectedKeys:Object;
 		private var _validateInterval:Number;
-		
+
 		private var _startTime:Date;
 
 		private static const EMPTY_COLOR:Number = 0x999999;
@@ -315,7 +315,7 @@
 				var testcase:Object = _testCases[i];
 				dp.addItem(initItem({jsFile:testcase.jsFile, testCaseName:testcase.testCaseName, data:testcase.script, tests:testcase.tests, index:i}));
 				for(var t:uint = 1; t < testcase.tests.length; t++){
-					dp.addItem(initItem({jsFile:testcase.jsFile, testCaseName:testcase.testCaseName, testName:testcase.tests[t], testIndex:t - 1}));
+					dp.addItem(initItem({jsFile:testcase.jsFile, testCaseName:testcase.testCaseName, testName:testcase.tests[t], tests:testcase.tests, testIndex:t - 1}));
 				}
 			}
 			testcases_dg.dataProvider = dp;
@@ -523,6 +523,7 @@
 				for(var i:uint = testcases_dg.selectedIndex + 1; i < dp.length; i++){
 					testcases_dg.selectedIndex = i;
 					var item:Object = testcases_dg.selectedItem;
+					newIndex = item["tests"].length;
 					if(item["testCaseName"] == testCaseName && item["testName"] != null && item["include"] != false){
 						testcases_dg.verticalScrollPosition = ((i - 5) * testcases_dg.rowHeight);
 						newIndex = item["testIndex"];  //returns next available test index

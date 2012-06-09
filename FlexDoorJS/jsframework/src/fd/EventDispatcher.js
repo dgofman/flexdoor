@@ -162,8 +162,7 @@ EventDispatcher.prototype.addEventListener = function(type, listener, target, ke
 	if(listener instanceof fd_Function){
 		asFunction = listener;
 	}else{
-		asFunction = this.createFunction(function(){
-			listener.refFunc = asFunction;
+		listener.refFunc = asFunction = this.createFunction(function(){
 			listener.apply(target, arguments);
 		}, keepRef);
 	}

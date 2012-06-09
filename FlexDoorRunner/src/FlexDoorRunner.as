@@ -289,6 +289,7 @@
 		public function attachToolTip(clip:*, toolTip:String, autoHide:Boolean=true):void{
 			clip.buttonMode = true;
 			clip.useHandCursor = true;
+			clip.mouseChildren = false;
 			clip.addEventListener(MouseEvent.ROLL_OVER, function(event:MouseEvent){
 				showTooltip(event, true, mouseMoveToolTipHandler, function():String{
 					return toolTip;
@@ -368,6 +369,7 @@
 						}else{
 							_tooltip_help.visible = false;
 						}
+						mouseMoveListHandler();
 						tooltip_mc.visible = true;
 						stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseEventHandler);
 						if(autoHide)
