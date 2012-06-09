@@ -69,11 +69,11 @@
 		public function updateProperties(item:Object):void{
 			var c:* = item.uicomponent;
 			properties_dg.dataProvider.removeAll();
-			details_txt.text = "";
+			details_txt.htmlText = c.toString();
 			if(c != null){
 				var type:XML = describeType(c);
 				var temp:Array, props:Array = [];
-				props.push({toolTip:"Info", passed:1});
+				props.push({toolTip:c.toString(), index:INFO, passed:1});
 				props.push({name:"type", toolTip:type.@name, index:INFO});
 				props.push({name:"extends", toolTip:type.extendsClass.@type.toXMLString().split("\n"), index:INFO});
 				props.push({name:"implements", toolTip:type.implementsInterface.@type.toXMLString().split("\n"), index:INFO});
