@@ -166,7 +166,6 @@ EventDispatcher.prototype.addEventListener = function(type, listener, target, ke
 			listener.apply(target, arguments);
 		}, keepRef);
 	}
-	asFunction._isEventListener = true;
 	System.addEventListener(this, type, this.serialize(asFunction), useCapture, priority, useWeakReference);
 };
 

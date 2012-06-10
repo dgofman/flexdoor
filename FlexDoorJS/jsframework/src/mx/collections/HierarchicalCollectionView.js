@@ -22,13 +22,12 @@ function mx_collections_HierarchicalCollectionView(classType)
 	/* extendType - mx.collections::HierarchicalCollectionView */
 	EventDispatcher.call(this, classType);
 
-	this.filterFunction = function(){ /* getter and setter */
-		return this.property("filterFunction", 
-				arguments.length ? [this.createFunction.apply(this, arguments)] : null);
-	};
-
 	this.refresh = function(){
 		return this.execute("refresh");
+	};
+
+	this.filterFunction = function(){ /* getter and setter */
+		return System.setFunctionProperty(this, "filterFunction", arguments);
 	};
 
 	this.setSearchFunction = function(func){

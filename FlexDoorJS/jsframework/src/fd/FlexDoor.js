@@ -334,16 +334,20 @@ if(FlexDoor.LIB_PATH == undefined){
 	}
 }
 
-FlexDoor.executeFunction = function(className, functionName, params){
-	var args = System.deserialize(params, this);
+FlexDoor.executeFunction = function(className, functionName, params, listenerId){
 	var classType = window[className];
 	if(classType instanceof Function && classType[functionName] instanceof Function){
 		var func = classType[functionName];
-		if(func.refFunc instanceof fd_Function && func.refFunc._isEventListener){
+		if(params == null && listenerId != undefined){
 			setTimeout(function(){
-				func.call(classType, args);
+				var args = System.call(function(flash){
+					return flash.eventArguments(listenerId, className, functionName);
+				}, false);
+				if(args != null)
+					func.call(classType, System.deserialize(args));
 			}, 1);
 		}else{
+			var args = System.deserialize(params, this);
 			return func.call(classType, args);
 		}
 	}

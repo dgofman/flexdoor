@@ -74,7 +74,7 @@ $AdvancedDataGridEvent.HEADER_DROP_OUTSIDE = "headerDropOutside";
 $AdvancedDataGridEvent.HEADER_RELEASE = "headerRelease";
 $AdvancedDataGridEvent.SORT = "sort";
 
-AdvancedDataGridEventReason = {};
+var AdvancedDataGridEventReason = {};
 AdvancedDataGridEventReason.CANCELLED = "cancelled";
 AdvancedDataGridEventReason.OTHER = "other";
 AdvancedDataGridEventReason.NEW_COLUMN = "newColumn";

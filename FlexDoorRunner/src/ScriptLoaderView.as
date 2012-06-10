@@ -524,11 +524,13 @@
 				for(var i:uint = testcases_dg.selectedIndex + 1; i < dp.length; i++){
 					testcases_dg.selectedIndex = i;
 					var item:Object = testcases_dg.selectedItem;
-					newIndex = item["tests"].length;
-					if(item["testCaseName"] == testCaseName && item["testName"] != null && item["include"] != false){
-						testcases_dg.verticalScrollPosition = ((i - 5) * testcases_dg.rowHeight);
-						newIndex = item["testIndex"];  //returns next available test index
-						break;
+					if(item["testCaseName"] == testCaseName){
+						newIndex = item["tests"].length;
+						if(item["testName"] != null && item["include"] != false){
+							testcases_dg.verticalScrollPosition = ((i - 5) * testcases_dg.rowHeight);
+							newIndex = item["testIndex"];  //returns next available test index
+							break;
+						}
 					}else if(item["testCaseName"] != testCaseName){
 						break;
 					}
