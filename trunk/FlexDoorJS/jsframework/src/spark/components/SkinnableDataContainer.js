@@ -21,6 +21,10 @@ function spark_components_SkinnableDataContainer(classType)
 {
 	/* extendType - spark.components::SkinnableDataContainer */
 	UIComponent.call(this, classType);
+	
+	this.dataProvider = function(){ /* getter and setter */
+		return this.property("dataProvider", arguments);
+	};
 }
 
 spark_components_SkinnableDataContainer.prototype.Import = function(){

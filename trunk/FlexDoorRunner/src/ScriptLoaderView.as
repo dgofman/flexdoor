@@ -455,6 +455,7 @@
 			var urlLoader:URLLoader = new URLLoader();
 			urlLoader.dataFormat = URLLoaderDataFormat.BINARY; 
 			urlLoader.addEventListener(Event.COMPLETE, onComplete);
+			urlLoader.addEventListener(IOErrorEvent.IO_ERROR, errorHandler);
 			urlLoader.load(request); 
 		}
 
