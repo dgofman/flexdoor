@@ -45,7 +45,6 @@ package
 	import flash.utils.describeType;
 	import flash.utils.flash_proxy;
 	import flash.utils.getDefinitionByName;
-	import flash.utils.setTimeout;
 	
 	import mx.core.mx_internal;
 	import mx.events.FlexEvent;
@@ -148,6 +147,7 @@ package
 				ExternalInterface.addCallback("refValue", js_refValue);
 				ExternalInterface.addCallback("create",  js_create);
 				ExternalInterface.addCallback("createFunction",  js_createFunction);
+				ExternalInterface.addCallback("eventArguments",  js_eventArguments);
 				ExternalInterface.addCallback("dispatchEventHook", js_dispatchEventHook);
 				ExternalInterface.addCallback("addEventListener", js_addEventListener);
 				ExternalInterface.addCallback("removeEventListener", js_removeEventListener);
@@ -248,23 +248,43 @@ package
 			return ids;
 		}
 
-		protected function js_releaseIds(ids:Array=null, except:Boolean = false):void{
+		protected function js_releaseIds(ids:Array=null, except:Boolean = false, isFunction:Boolean = false):void{
 			var newMap:Dictionary = new Dictionary();
+			var id:*;
 			if(ids == null || ids.length == 0){
+				for(id in _refMap){
+					if(removeReferences(id, isFunction) == false)
+						newMap[id] = _refMap[id];
+				}
 				_refMap = newMap;
 			}else{
 				if(except == false){
-					for(var i:uint = 0; i < ids.length; i++)
-						delete _refMap[ids[i]];
+					for(var i:uint = 0; i < ids.length; i++){
+						if(removeReferences(ids[i], isFunction))
+							delete _refMap[ids[i]];
+					}
 				}else{
-					for(var id:* in _refMap){
+					for(id in _refMap){
 						if(ids.indexOf(id) != -1){
 							newMap[id] = _refMap[id];
+						}else{
+							if(removeReferences(id, isFunction) == false)
+								newMap[id] = _refMap[id];
 						}
 					}
 					_refMap = newMap;
 				}
 			}
+		}
+
+		protected function removeReferences(id:uint, isFunction:Boolean):Boolean{
+			var item:Object = _refMap[id];
+			if(item && item.outType == FUNCTION){
+				if(isFunction == false) return false;
+				if(item.target != null)
+					item.target.removeEventListener(item.type, item.ref);
+			}
+			return true;
 		}
 
 		protected function js_application():Object{
@@ -279,7 +299,7 @@ package
 			try{
 				return serialize(getRef(refId), keepRef);
 			}catch(e:Error){
-				return serializeError(e);
+				return serialize(e);
 			}
 			return null;
 		}
@@ -304,27 +324,26 @@ package
 				}
 				return serialize(o, keepRef);
 			}catch(e:Error){
-				return serializeError(e);
+				return serialize(e);
 			}
 		}
 
 		/**
 		 *  Locator /@name
 		 */
-		protected function js_childByName(refId:Number, name:String, keepRef:Boolean=false):Object{
+		protected function js_childByName(refId:Number, name:String, keepRef:Boolean=false):*{
 			try{
 				var target:DisplayObjectContainer = getRef(refId);
 				return serialize(target.getChildByName(name), keepRef);
 			}catch(e:Error){
-				return serializeError(e);
+				return serialize(e);
 			}
-			return null;
 		}
 
 		/**
 		 *  Locator /#type:index
 		 */
-		protected function js_childByType(refId:Number, classType:String, index:uint, visibleOnly:Boolean, keepRef:Boolean=false):Object{
+		protected function js_childByType(refId:Number, classType:String, index:uint, visibleOnly:Boolean, keepRef:Boolean=false):*{
 			try{
 				var target:* = getRef(refId);
 				var child:* = findChildByClassType(target, "numElements", "getElementAt", classType, index, visibleOnly);
@@ -332,15 +351,16 @@ package
 					child = findChildByClassType(target, "numChildren", "getChildAt", classType, index, visibleOnly);
 				return serialize(child, keepRef);
 			}catch(e:Error){
-				return serializeError(e);
+				return serialize(e);
 			}
-			return null;
 		}
 
-		protected function js_locator(path:String):Object{
+		protected function js_locator(refId:*, path:String):Object{
+			var pair:Array;
 			var items:Array = path.split('/');
 			var child:* = _application;
-			var pair:Array;
+			if(refId != null)
+				child = getRef(refId);
 			for(var i:uint = 1; i < items.length; i++){
 				var item:String = items[i];
 				try{
@@ -373,7 +393,7 @@ package
 							break;
 					}
 				}catch(e:Error){
-					return serializeError(e);
+					return serialize(e);
 				}
 			}
 			return serialize(child);
@@ -407,7 +427,7 @@ package
 		/**
 		 *  Locator /+command
 		 */
-		protected function js_setter(refId:Number, command:String, value:*):void{
+		protected function js_setter(refId:Number, command:String, value:*):Object{
 			try{
 				var target:Object = getRef(refId);
 				if(validateCommand(target, command)){
@@ -415,8 +435,9 @@ package
 					target[command] = actualValue;
 				}
 			}catch(e:Error){
-				serializeError(e);
+				return serialize(e);
 			}
+			return serialize(null);
 		}
 
 		/**
@@ -429,11 +450,11 @@ package
 					return serialize(target[command], keepRef);
 				return serialize(new Error("Error 1011: Reference or command is invalid: " + target + "::" + command), false);
 			}catch(e:Error){
-				return serializeError(e);
+				return serialize(e);
 			}
 		}
 
-		protected function js_execute(refId:Number, command:String, values:Array, keepRef:Boolean=false):Object{
+		protected function js_execute(refId:Number, command:String, values:Array, keepRef:Boolean=false):*{
 			try{
 				var target:* = getRef(refId);
 				var pair:Array = command.split("::");
@@ -448,31 +469,29 @@ package
 						}
 						return serialize(ret, keepRef);
 					}catch(e:Error){
-						return serializeError(e);
+						return serialize(e);
 					}
 				}
 				return serialize(new Error("Error 1012: Cannot execute a command: " + target + "::" + command), false);
 			}catch(e:Error){
-				return serializeError(e);
+				return serialize(e);
 			}
-			return null;
 		}
 
-		protected function js_refValue(refId:Number, keys:Array, keepRef:Boolean=false):Object{
+		protected function js_refValue(refId:Number, keys:Array, keepRef:Boolean=false):*{
 			try{
 				var target:* = getRef(refId);
 				for(var i:uint = 0; i < keys.length; i++){
 					try{
 						target = target[keys[i]];
 					}catch(e:Error){
-						return serializeError(e);
+						return serialize(e);
 					}
 				}
 				return serialize(target, keepRef);
 			}catch(e:Error){
-				return serializeError(e);
+				return serialize(e);
 			}
-			return null;
 		}
 
 		protected function getFunction(target:*, pair:Array):Function{
@@ -507,7 +526,7 @@ package
 			return classRef;
 		}
 
-		protected function js_create(className:String, args:Array):Object{
+		protected function js_create(className:String, args:Array):*{
 			try{
 				var classRef:Class = js_class(className, false) as Class;
 				if(classRef != null){
@@ -515,9 +534,8 @@ package
 					return serialize(obj);
 				}
 			}catch(e:Error){
-				return serializeError(e);
+				return serialize(e);
 			}
-			return null;
 		}
 
 		protected function js_createFunction(className:String, functionName:String, keepRef:Boolean=false):Object{
@@ -527,18 +545,41 @@ package
 					Event(event).preventDefault();
 				var className:String = arguments.callee.prototype.className;
 				var functionName:String = arguments.callee.prototype.functionName;
-				serializeAll(arguments, keepRef);
-				var args:* = (arguments.length == 1 ? arguments[0] : arguments);
-				var result:* = ExternalInterface.call("parent.FlexDoor.executeFunction", className, functionName, args);
-				return result;
+				var listenerId:uint = arguments.callee.prototype.listenerId;
+				if(_refMap[listenerId] == null) return;
+
+				var refEvent:Object = _refMap[listenerId];
+				if(refEvent.isEventListener == true){
+					refEvent.arguments = arguments;
+					refEvent.keepRef = keepRef;
+					refEvent.className = className; 
+					refEvent.functionName = functionName; 
+					ExternalInterface.call("parent.FlexDoor.executeFunction", className, functionName, null, listenerId);
+				}else{
+					var args:Array = serializeAll(arguments, keepRef);
+					var result:* = ExternalInterface.call("parent.FlexDoor.executeFunction", 
+													className, functionName, (args.length == 1 ? args[0] : args));
+					return result;
+				}
 			};
 			var obj:Object = serialize(handler);
 			handler.prototype.className = className;
 			handler.prototype.functionName = functionName;
+			handler.prototype.listenerId = obj[1].refId;
 			return obj;
 		}
 
-		protected function js_dispatchEventHook(refId:Number=NaN, listenerRef:Array=null, type:String=null):void{
+		protected function js_eventArguments(listenerId:uint, className:String, functionName:String):Object{
+			var refEvent:Object = _refMap[listenerId];
+			if(refEvent != null && refEvent.className == className && refEvent.functionName == functionName){
+				var args:Array = serializeAll(refEvent.arguments, refEvent.keepRef);
+				return (args.length == 1 ? args[0] : args);
+			}else{
+				return null;
+			}
+		}
+
+		protected function js_dispatchEventHook(refId:Number=NaN, listenerRef:Array=null, type:String=null):Object{
 			var uiComponent:* = getClassByName("mx.core::UIComponent");
 			if(uiComponent != null){
 				if(isNaN(refId) && listenerRef == null){
@@ -555,43 +596,51 @@ package
 							}
 						};
 					}catch(e:Error){
-						serializeError(e);
+						return serialize(e);
 					}
 				}
 			}
+			return serialize(null);
 		}
 
 		protected function js_addEventListener(refId:Number, type:String, listenerRef:Array, 
-											   useWeakReference:Boolean, useCapture:Boolean, priority:int):void{
+											   useWeakReference:Boolean, useCapture:Boolean, priority:int):Object{
 			try{
 				var target:Object = getRef(refId);
 				var listener:Function = deserialize(listenerRef);
+				var listenerId:uint = listenerRef[2];
+				_refMap[listenerId].isEventListener = true;
+				_refMap[listenerId].type = type;
+				_refMap[listenerId].target = target;
 				target.addEventListener(type, listener, useCapture, priority, useWeakReference);
 			}catch(e:Error){
-				serializeError(e);
+				return serialize(e);
 			}
+			return serialize(null);
 		}
 
-		protected function js_removeEventListener(refId:Number, type:String, listenerId:uint, useCapture:Boolean):void{
+		protected function js_removeEventListener(refId:Number, type:String, listenerId:uint, useCapture:Boolean):Object{
 			try{
 				var target:Object = getRef(refId);
 				var listener:Function = getRef(listenerId);
 				if(target && listener is Function)
 					target.removeEventListener(type, listener, useCapture);
 			}catch(e:Error){
-				serializeError(e);
+				return serialize(e);
 			}
+			return serialize(null);
 		}
 
-		protected function js_dispatchEvent(refId:Number, eventRefId:uint):Boolean{
+		protected function js_dispatchEvent(refId:Number, eventRefId:uint):Object{
+			var result:Boolean = false;
 			try{
 				var target:Object = getRef(refId);
 				var event:Event =  getRef(eventRefId);
-				return EventDispatcher(target).dispatchEvent(event);
+				result = target.dispatchEvent(event);
 			}catch(e:Error){
-				return serializeError(e);
+				return serialize(e);
 			}
-			return false;
+			return serialize(result);
 		}
 
 		protected function js_assertResult(error:Boolean, message:String):void{
@@ -690,12 +739,13 @@ package
 			return [outType, out];
 		}
 		
-		protected function serializeAll(params:*, keepRef:Boolean=false):*{
+		protected function serializeAll(params:*, keepRef:Boolean=false):Array{
+			var args:Array = [params];
 			if(params is Array){
 				for(var i:uint = 0; i < params.length; i++)
-					params[i] = serialize(params[i], keepRef);
+					args[i] = serialize(params[i], keepRef);
 			}
-			return params;
+			return args;
 		}
 		
 		protected function deserialize(ref:Object):*{

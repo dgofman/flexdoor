@@ -51,7 +51,7 @@ $CollectionEvent.Create = function(type, kind, location, oldLocation, items, bub
 };
 $CollectionEvent.COLLECTION_CHANGE = "collectionChange";
 
-CollectionEventKind = {};
+var CollectionEventKind = {};
 CollectionEventKind.ADD = "add";
 CollectionEventKind.MOVE = "move";
 CollectionEventKind.REFRESH = "refresh";

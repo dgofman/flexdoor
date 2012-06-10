@@ -141,8 +141,7 @@ System.getChildByType = function(parent, classType, index, visibleOnly, keepRef)
 
 System.setter = function(target, command, value){
 	System.call(function(flash){
-		flash.setter(target._refId, command, value);
-		return fd_System.VOID;
+		return flash.setter(target._refId, command, value);
 	});
 };
 
@@ -178,15 +177,17 @@ System.createFunction = function(classType, functionName, keepRef){
 	});
 };
 
-System.call = function(handler){
+System.call = function(handler, deserialize){
 	try{
 		var flash = Application.application.flash;
 		var object = handler(flash);
-		if(object != fd_System.VOID)
+		if(deserialize != false)
 			return System.deserialize(object);
+		return object;
 	}catch(e){
-		System.error(System.call.caller.toString());
+		Assert.fail(e.message);
 		System.info(System.call.caller.arguments);
+		System.error(System.call.caller.toString());
 		throw e;
 	}
 };
@@ -195,34 +196,40 @@ System.call = function(handler){
 //type is optional get any event types if type is undefined
 //listenerId - is not remove event dispatcher hook
 System.dispatchEventHook = function(target, listenerId, type){
-	var flash = Application.application.flash;
-	flash.dispatchEventHook(target._refId, listenerId, type);
+	System.call(function(flash){
+		return flash.dispatchEventHook(target._refId, listenerId, type);
+	});
 };
 
 System.addEventListener = function(target, type, listenerId, useWeakReference, useCapture, priority){
-	var flash = Application.application.flash;
-	flash.addEventListener(target._refId, type, listenerId, useWeakReference, useCapture, priority);
+	System.call(function(flash){
+		return flash.addEventListener(target._refId, type, listenerId, useWeakReference, useCapture, priority);
+	});
 };
 
 System.removeEventListener = function(target, type, listenerId, useCapture){
-	var flash = Application.application.flash;
-	flash.removeEventListener(target._refId, type, listenerId, useCapture);
+	System.call(function(flash){
+		return flash.removeEventListener(target._refId, type, listenerId, useCapture);
+	});
 };
 
 System.dispatchEvent = function(target, event){
-	var flash = Application.application.flash;
-	return flash.dispatchEvent(target._refId, event._refId);
+	return System.call(function(flash){
+		return flash.dispatchEvent(target._refId, event._refId);
+	});
 };
 
 System.refIds = function(){
-	var flash = Application.application.flash;
-	return flash.refIds();
+	return System.call(function(flash){
+		return flash.refIds();
+	}, false);
 };
 
-System.releaseIds = function(ids, except){
+System.releaseIds = function(ids, except, isFunction){
 	if(except == undefined) except = false;
-	var flash = Application.application.flash;
-	return flash.releaseIds(ids, except);
+	return System.call(function(flash){
+		return flash.releaseIds(ids, except, isFunction);
+	}, false);
 };
 
 System.releaseItems = function(){
@@ -230,6 +237,16 @@ System.releaseItems = function(){
 	for(var i = 0; i < arguments.length; i++)
 		ids.push(arguments[i]._refId);
 	return System.releaseIds(ids);
+};
+
+System.setFunctionProperty = function(target, command, args){
+	if(args.length > 0){
+		var func = target.createFunction.apply(target, args);
+		target.setter(command, func);
+		return func;
+	}else{
+		return target.getter(command);
+	}
 };
 
 System.setSearchFunction = function(collection, func){
@@ -264,7 +281,7 @@ System.serialize = function(object){
 
 System.deserialize = function(params, parent){
 	if(!(params instanceof Array))
-		throw new Error("Invalid the deserializable argument");
+		Assert.fail("Invalid the deserializable argument");
 	var type   = params[0];
 	var object = params[1];
 	switch(type){
@@ -282,6 +299,7 @@ System.deserialize = function(params, parent){
 		case fd_System.ERROR:
 			var classType = FlexDoor.classType(object.extendTypes[0]);
 			if(classType == null) classType = Error;
+			Assert.fail(object.message);
 			throw new classType(object.message);
 			break;
 		case fd_System.ARRAY:
@@ -311,10 +329,10 @@ System.deserialize = function(params, parent){
 					return component;
 				}
 			}
-			return object;
 		default:
-			throw new Error("Invalid serialization type");
+			Assert.fail("Invalid serialization type");
 	}
+	return object;
 };
 
 System.json = function(value){
@@ -351,7 +369,6 @@ function fd_System(){};
 fd_System.Class = function(object){
 	this._refId = object.refId;
 };
-fd_System.VOID      = -1;
 fd_System.NULL      = 0;
 fd_System.ERROR     = 1;
 fd_System.PRIMITIVE = 2;

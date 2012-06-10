@@ -62,7 +62,7 @@ $DataGridEvent.ITEM_EDITOR_CREATE = "itemEditorCreate";
 $DataGridEvent.COLUMN_STRETCH = "columnStretch";
 $DataGridEvent.HEADER_RELEASE = "headerRelease";
 
-DataGridEventReason = {};
+var DataGridEventReason = {};
 DataGridEventReason.CANCELLED = "cancelled";
 DataGridEventReason.OTHER = "other";
 DataGridEventReason.NEW_COLUMN = "newColumn";

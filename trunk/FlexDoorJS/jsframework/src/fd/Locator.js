@@ -33,9 +33,14 @@ Locator.Get = function(){
 	}else if(value instanceof EventDispatcher){
 		refId = value._refId;
 		value = "";
+	}else if(value.charAt(0) != "/"){
+		value = "/" + value;
 	}
-	for(var i = 1; i < arguments.length; i++)
-		value += arguments[i];
+
+	for(var i = 1; i < arguments.length; i++){
+		var path = arguments[i];
+		value += (path.charAt(0) == '/' ? path : '/' + path);
+	}
 	this.path = value;
 	ref = System.getLocator(refId, this.path);
 
