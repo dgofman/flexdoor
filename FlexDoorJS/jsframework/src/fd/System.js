@@ -103,9 +103,9 @@ System.waitFor = function(target, func, delay, timeout, params){
 	}, timeout);
 };
 
-System.getLocator = function(path){
+System.getLocator = function(refId, path){
 	return System.call(function(flash){
-		return flash.getLocator(path);
+		return flash.getLocator(refId, path);
 	});
 };
 

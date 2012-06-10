@@ -17,22 +17,27 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function Locator() {
-	this.path;
+function Locator(path) {
+	this.path = path;
 }
 Locator.CLASS_NAME = "Locator";
 
 Locator.prototype = new EventDispatcher();
 Locator.Get = function(){
 	var ref = this;
-	
+
+	var refId = null;
 	var value = arguments[0];
-	if(value instanceof Locator)
-		path = value.path;
+	if(value instanceof Locator){
+		value = value.path;
+	}else if(value instanceof EventDispatcher){
+		refId = value._refId;
+		value = "";
+	}
 	for(var i = 1; i < arguments.length; i++)
 		value += arguments[i];
 	this.path = value;
-	ref = System.getLocator(this.path);
+	ref = System.getLocator(refId, this.path);
 
 	return ref;
 };

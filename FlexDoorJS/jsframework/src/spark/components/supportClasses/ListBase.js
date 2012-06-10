@@ -21,6 +21,19 @@ function spark_components_supportClasses_ListBase(classType)
 {
 	/* extendType - spark.components.supportClasses::ListBase */
 	UIComponent.call(this, classType);
+
+	this.selectedIndex = function(){  /* getter and setter */
+		return this.property("selectedIndex", arguments, function(value){
+			//this.fireEvent($ListEvent.Create($ListEvent.CHANGE, value, 0, this.indexToItemRenderer(value)));
+		});
+	};
+
+	this.selectedItem = function(){  /* getter and setter */
+		return this.property("selectedItem", arguments, function(value){
+			//var rowIndex = this.selectedIndex();
+			//this.fireEvent($ListEvent.Create($ListEvent.CHANGE, rowIndex, 0, this.indexToItemRenderer(rowIndex)));
+		});
+	};
 }
 
 spark_components_supportClasses_ListBase.prototype.Import = function(){
