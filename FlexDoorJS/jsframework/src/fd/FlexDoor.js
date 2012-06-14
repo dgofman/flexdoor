@@ -97,8 +97,10 @@ FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
 
 FlexDoor.prototype.include = function() {
 	var flash =  System.getFlash(this.flashPlayerId);
-	if(flash == undefined)
-		Assert.fail("You must provide a valid Flash Player Object ID");
+	if(flash == undefined){
+		alert("You must provide a valid Flash Player Object ID");
+		throw new Error("You must provide a valid Flash Player Object ID");
+	}
 	
 	var args = flash.application();
 	if(args.length == 2){
