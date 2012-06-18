@@ -68,6 +68,7 @@
 				details_txt.htmlText = event.item.code.split('\n').join('<br>');
 				events_lst.selectedIndex = -1;
 			});
+			clearAll();
 		}
 
 		private function targetMouseEventHandler(event:MouseEvent):void{
@@ -83,6 +84,8 @@
 
 		public function addComponent(item){
 			moveItemTop(item.uid, item);
+			_runner.views.properties_btn.enabled = true;
+			_runner.views.properties_btn.alpha = 1;
 		}
 
 		private function moveItemTop(uid:String, item:Object):void{
@@ -105,6 +108,10 @@
 			_componentsDataProvider.removeAll();
 			_eventsDataProvider.removeAll();
 			details_txt.htmlText = "";
+			components_lst.maxHorizontalScrollPosition = 0;
+			_runner.views.propertiesView.components_lst.maxHorizontalScrollPosition = 0;
+			_runner.views.properties_btn.enabled = false;
+			_runner.views.properties_btn.alpha = .3;
 			_runner.dispatchEvent(new ContentEvent(ContentEvent.CLEAR_KIND));
 		}
 
