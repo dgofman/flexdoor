@@ -46,7 +46,7 @@ spark_events_IndexChangeEvent.Get = function(o){
 function $$IndexChangeEvent() {}
 $$IndexChangeEvent.Get = spark_events_IndexChangeEvent.Get;
 $$IndexChangeEvent.Is = function(target) { return target instanceof spark_events_IndexChangeEvent; };
-$$IndexChangeEvent.Create = function(type, newIndex, oldIndex, cancelable){
+$$IndexChangeEvent.Create = function(type, newIndex, oldIndex, bubbles, cancelable){
 	if(newIndex == undefined) newIndex = -1;
 	if(oldIndex == undefined) oldIndex = -1;
 	return System.create("spark.events::IndexChangeEvent", 
