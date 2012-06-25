@@ -23,14 +23,14 @@ function spark_components_supportClasses_ListBase(classType)
 	UIComponent.call(this, classType);
 
 	this.selectedIndex = function(){  /* getter and setter */
-		var oldIndex = this.selectedIndex();
+		if(value != undefined) var oldIndex = this.selectedIndex();
 		return this.property("selectedIndex", arguments, function(value){
 			this.fireEvent($$IndexChangeEvent.Create($$IndexChangeEvent.CHANGE, value, oldIndex));
 		});
 	};
 
 	this.selectedItem = function(){  /* getter and setter */
-		var oldIndex = this.selectedIndex();
+		if(value != undefined) var oldIndex = this.selectedIndex();
 		return this.property("selectedItem", arguments, function(value){
 			var rowIndex = this.selectedIndex();
 			this.fireEvent($$IndexChangeEvent.Create($$IndexChangeEvent.CHANGE, this.selectedIndex(), oldIndex));
