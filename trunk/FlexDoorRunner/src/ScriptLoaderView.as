@@ -157,7 +157,9 @@
 			stop_btn.setStyle("overIcon", "StopButtonOver");
 			stop_btn.setStyle("disabledIcon", "StopButtonDisabled");
 
-			_runner.initButton(breackpoint_chb, errorBreakPoint, "Set Error Breakpoint");
+			_runner.initButton(local_rb, null, "Load Local Files");
+			_runner.initButton(remote_rb, null, "Load File-List from Network");
+			_runner.initButton(breakpoint_chb, errorBreakPoint, "Set Error Breakpoint");
 			_runner.initButton(open_testcases_btn, openTestCases, "Open TestCases");
 			_runner.initButton(load_testcases_btn, loadTestCases, "Load TestCases");
 			_runner.initButton(play_pause_btn, playPauseTestCases, "Play/Pause TestCases Ctrl+Alt+P");
@@ -183,7 +185,7 @@
 			location_cmb.dropdown.dispatchEvent(new Event(Event.CHANGE));
 
 			if(remote_rb.selected){
-				location_cmb.prompt = "http://domain/properties.txt";
+				location_cmb.prompt = "http://domain/filelist.txt";
 			}else{
 				location_cmb.prompt = "http://domain/flexDoorProxy (Optional)";
 			}
@@ -544,7 +546,7 @@
 		}
 
 		private function errorBreakPoint(event:MouseEvent):void{
-			_runner.dispatchEvent(new ContentEvent(ContentEvent.BREAKPOINT, breackpoint_chb.selected));
+			_runner.dispatchEvent(new ContentEvent(ContentEvent.BREAKPOINT, breakpoint_chb.selected));
 		}
 
 		private function externalCall(command:String, ...params):uint{
