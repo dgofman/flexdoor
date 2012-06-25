@@ -23,21 +23,23 @@ function spark_components_supportClasses_ListBase(classType)
 	UIComponent.call(this, classType);
 
 	this.selectedIndex = function(){  /* getter and setter */
+		var oldIndex = this.selectedIndex();
 		return this.property("selectedIndex", arguments, function(value){
-			//this.fireEvent($ListEvent.Create($ListEvent.CHANGE, value, 0, this.indexToItemRenderer(value)));
+			this.fireEvent($$IndexChangeEvent.Create($$IndexChangeEvent.CHANGE, value, oldIndex));
 		});
 	};
 
 	this.selectedItem = function(){  /* getter and setter */
+		var oldIndex = this.selectedIndex();
 		return this.property("selectedItem", arguments, function(value){
-			//var rowIndex = this.selectedIndex();
-			//this.fireEvent($ListEvent.Create($ListEvent.CHANGE, rowIndex, 0, this.indexToItemRenderer(rowIndex)));
+			var rowIndex = this.selectedIndex();
+			this.fireEvent($$IndexChangeEvent.Create($$IndexChangeEvent.CHANGE, this.selectedIndex(), oldIndex));
 		});
 	};
 }
 
 spark_components_supportClasses_ListBase.prototype.Import = function(){
-	return ["spark.components::SkinnableDataContainer"];
+	return ["spark.events::IndexChangeEvent", "spark.components::SkinnableDataContainer"];
 };
 spark_components_supportClasses_ListBase.prototype.Extends = function(){
 	spark_components_SkinnableDataContainer.prototype.Extends();
