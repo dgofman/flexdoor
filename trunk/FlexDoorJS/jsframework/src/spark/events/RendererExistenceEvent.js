@@ -17,40 +17,38 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_events_IndexChangeEvent(classType) 
+function spark_events_RendererExistenceEvent(classType) 
 {
-	/* extendType - spark.events::IndexChangeEvent */
+	/* extendType - spark.events::RendererExistenceEvent */
 	flash_events_Event.call(this, classType);
 
 	this.Initialize = function(object){
 		flash_events_Event.prototype.Initialize.call(this, object);
-		this.oldIndex = this.ref.oldIndex;
-		this.newIndex = this.ref.newIndex;
+		this.index = this.ref.index;
+		this.data = this.ref.data;
+		this.renderer = this.ref.renderer;
 	};
 }
 
-spark_events_IndexChangeEvent.prototype.Import = function(){
+spark_events_RendererExistenceEvent.prototype.Import = function(){
 	return ["flash.events::Event"];
 };
-spark_events_IndexChangeEvent.prototype.Extends = function(){
-	spark_events_IndexChangeEvent.prototype = new flash_events_Event(spark_events_IndexChangeEvent);
+spark_events_RendererExistenceEvent.prototype.Extends = function(){
+	spark_events_RendererExistenceEvent.prototype = new flash_events_Event(spark_events_RendererExistenceEvent);
 };
-spark_events_IndexChangeEvent.Get = function(o){
+spark_events_RendererExistenceEvent.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, spark_events_IndexChangeEvent);
+	ref = UIComponent.Get(o, spark_events_RendererExistenceEvent);
 	return ref;
 };
 
-function $$IndexChangeEvent() {}
-$$IndexChangeEvent.Get = spark_events_IndexChangeEvent.Get;
-$$IndexChangeEvent.Is = function(target) { return target instanceof spark_events_IndexChangeEvent; };
-$$IndexChangeEvent.Create = function(type, newIndex, oldIndex, bubbles, cancelable){
-	if(newIndex == undefined) newIndex = -1;
-	if(oldIndex == undefined) oldIndex = -1;
-	return System.create("spark.events::IndexChangeEvent", 
-			$Event.Params(type, bubbles, cancelable, oldIndex, newIndex));
+function $$RendererExistenceEvent() {}
+$$RendererExistenceEvent.Get = spark_events_RendererExistenceEvent.Get;
+$$RendererExistenceEvent.Is = function(target) { return target instanceof spark_events_RendererExistenceEvent; };
+$$RendererExistenceEvent.Create = function(type, index, data, renderer, bubbles, cancelable){
+	return System.create("spark.events::RendererExistenceEvent", 
+			$Event.Params(type, bubbles, cancelable, renderer, index, data));
 };
 
-$$IndexChangeEvent.CHANGE = "change";
-$$IndexChangeEvent.CHANGING = "changing";
-$$IndexChangeEvent.CARET_CHANGE = "caretChange";
+$$RendererExistenceEvent.RENDERER_ADD = "rendererAdd";
+$$RendererExistenceEvent.RENDERER_REMOVE = "rendererRemove";

@@ -17,40 +17,36 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_events_IndexChangeEvent(classType) 
+function mx_events_ResizeEvent(classType) 
 {
-	/* extendType - spark.events::IndexChangeEvent */
+	/* extendType - mx.events::ResizeEvent */
 	flash_events_Event.call(this, classType);
 
 	this.Initialize = function(object){
 		flash_events_Event.prototype.Initialize.call(this, object);
-		this.oldIndex = this.ref.oldIndex;
-		this.newIndex = this.ref.newIndex;
+		this.oldWidth = this.ref.oldWidth;
+		this.oldHeight = this.ref.oldHeight;
 	};
 }
 
-spark_events_IndexChangeEvent.prototype.Import = function(){
+mx_events_ResizeEvent.prototype.Import = function(){
 	return ["flash.events::Event"];
 };
-spark_events_IndexChangeEvent.prototype.Extends = function(){
-	spark_events_IndexChangeEvent.prototype = new flash_events_Event(spark_events_IndexChangeEvent);
+mx_events_ResizeEvent.prototype.Extends = function(){
+	mx_events_ResizeEvent.prototype = new flash_events_Event(mx_events_ResizeEvent);
 };
-spark_events_IndexChangeEvent.Get = function(o){
+mx_events_ResizeEvent.Get = function(o){
 	var ref = this;
-	ref = UIComponent.Get(o, spark_events_IndexChangeEvent);
+	ref = UIComponent.Get(o, mx_events_ResizeEvent);
 	return ref;
 };
 
-function $$IndexChangeEvent() {}
-$$IndexChangeEvent.Get = spark_events_IndexChangeEvent.Get;
-$$IndexChangeEvent.Is = function(target) { return target instanceof spark_events_IndexChangeEvent; };
-$$IndexChangeEvent.Create = function(type, newIndex, oldIndex, bubbles, cancelable){
-	if(newIndex == undefined) newIndex = -1;
-	if(oldIndex == undefined) oldIndex = -1;
-	return System.create("spark.events::IndexChangeEvent", 
-			$Event.Params(type, bubbles, cancelable, oldIndex, newIndex));
+function $ResizeEvent() {}
+$ResizeEvent.Get = mx_events_ResizeEvent.Get;
+$ResizeEvent.Is = function(target) { return target instanceof mx_events_ResizeEvent; };
+$ResizeEvent.Create = function(type, oldWidth, oldHeight, bubbles, cancelable){
+	return System.create("mx.events::ResizeEvent", 
+			$Event.Params(type, bubbles, cancelable, oldWidth, oldHeight));
 };
 
-$$IndexChangeEvent.CHANGE = "change";
-$$IndexChangeEvent.CHANGING = "changing";
-$$IndexChangeEvent.CARET_CHANGE = "caretChange";
+$ResizeEvent.RESIZE = "resize";

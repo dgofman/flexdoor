@@ -81,6 +81,7 @@ package
 					"mx.events.FlexEvent",
 					"mx.events.ListEvent",
 					"mx.events.MenuEvent",
+					"mx.events::ResizeEvent",
 					"mx.managers.DragManager",
 					"spark.components.Application",
 					"spark.components.BorderContainer",
@@ -145,7 +146,9 @@ package
 					"spark.components.supportClasses.SliderBase",
 					"spark.components.supportClasses.TextBase",
 					"spark.components.supportClasses.ToggleButtonBase",
-					"spark.components.supportClasses.TrackBase"
+					"spark.components.supportClasses.TrackBase",
+					"spark.events::IndexChangeEvent",
+					"spark.events::RendererExistenceEvent"
 			];
 		}
 
@@ -187,6 +190,19 @@ package
 					eventType = '$MenuEvent';
 					eventParams = ['type', 'index', 'itemRenderer', 'item', 'label', 'menuBar', 'menu', 'bubbles', 'cancelable'];
 					break;
+				case "mx.events::ResizeEvent":
+					eventType = '$ResizeEvent';
+					eventParams = ['type', 'oldWidth', 'oldHeight', 'bubbles', 'cancelable'];
+					break
+				//Spark
+				case "spark.events::IndexChangeEvent":
+					eventType = '$$IndexChangeEvent';
+					eventParams = ['type', 'newIndex', 'oldIndex', 'bubbles', 'cancelable'];
+					break
+				case "spark.events::RendererExistenceEvent":
+					eventType = '$$RendererExistenceEvent';
+					eventParams = ['type', 'index', 'data', 'renderer', 'bubbles', 'cancelable'];
+					break
 				default:
 					eventType = '$Event';
 					eventParams = ['type', 'bubbles', 'cancelable'];
