@@ -74,7 +74,7 @@ function mx_controls_ComboBase(classType)
 }
 
 mx_controls_ComboBase.prototype.Extends = function(){
-	mx_controls_ComboBase.prototype = new UIComponent(mx_controls_Button);
+	mx_controls_ComboBase.prototype = new UIComponent(mx_controls_ComboBase);
 };
 mx_controls_ComboBase.Get = function(o){
 	var ref = this;

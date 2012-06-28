@@ -27,13 +27,13 @@ function mx_controls_DateField(classType)
 	};
 
 	this.click = function(){
-		var downArrowButton = Button.Get(this.getter('downArrowButton'));
+		var downArrowButton = this.getter('downArrowButton');
 		downArrowButton.fireEvent($MouseEvent.Create($MouseEvent.MOUSE_DOWN));
 	};
 }
 
 mx_controls_DateField.prototype.Import = function(){
-	return ["mx.controls::Button", "mx.controls::ComboBase"];
+	return ["mx.controls::ComboBase"];
 };
 mx_controls_DateField.prototype.Extends = function(){
 	mx_controls_ComboBase.prototype.Extends();
