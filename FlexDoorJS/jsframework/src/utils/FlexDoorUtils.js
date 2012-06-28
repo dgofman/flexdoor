@@ -95,6 +95,7 @@ FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, column
 	var columns = grid.columns();
 	Assert.assertTrue(columns != null);
 	Assert.assertTrue(columns.length > columnIndex);
+	var visibleColumns = grid.getter("visibleColumns");
 	var dataField = columns[columnIndex].ref.dataField;
 	var itemRenderer = grid.indicesToItemRenderer(rowIndex, columnIndex);
 	
