@@ -21,6 +21,34 @@ function mx_controls_DateChooser(classType)
 {
 	/* extendType - mx.controls::DateChooser */
 	UIComponent.call(this, classType);
+	
+	this.monthDisplay = function(){
+		return this.getter("monthDisplay");
+	};
+
+	this.yearDisplay = function(){
+		return this.getter("yearDisplay");
+	};
+
+	this.upYearButton = function(){
+		return this.getter("upYearButton");
+	};
+
+	this.downYearButton = function(){
+		return this.getter("downYearButton");
+	};
+
+	this.fwdMonthButton = function(){
+		return this.getter("fwdMonthButton");
+	};
+
+	this.backMonthButton = function(){
+		return this.getter("backMonthButton");
+	};
+
+	this.calendarLayout = function(){
+		return this.getter("dateGrid");
+	};
 }
 
 mx_controls_DateChooser.prototype.Extends = function(){
