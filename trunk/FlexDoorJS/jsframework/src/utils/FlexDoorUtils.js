@@ -113,6 +113,7 @@ FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, column
 
 		preEventCallBack.apply(testCase, [itemEditor]);//call test function
 
+		itemRenderer = grid.indicesToItemRenderer(rowIndex, columnIndex);
 		if(grid._extendTypes.indexOf("mx.controls::AdvancedDataGrid") != -1){
 			testCase.fireEvent(grid, $AdvancedDataGridEvent.Create($AdvancedDataGridEvent.ITEM_EDIT_END, rowIndex, columnIndex, 
 																		dataField, AdvancedDataGridEventReason.OTHER, itemRenderer));
