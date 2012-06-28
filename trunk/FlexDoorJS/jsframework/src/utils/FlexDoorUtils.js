@@ -102,6 +102,7 @@ FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, column
 		for(var i = 0; i < visibleColumns.length; i++){
 			if(visibleColumns[columnIndex].ref.dataField == dataField){
 				colIndex = i;
+				break;
 			}
 		}
 	}
