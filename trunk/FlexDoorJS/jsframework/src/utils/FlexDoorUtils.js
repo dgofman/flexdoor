@@ -106,7 +106,7 @@ FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, column
 			}
 		}
 	}
-	var itemRenderer = grid.indicesToItemRenderer(rowIndex, columnIndex);
+	var itemRenderer = grid.indicesToItemRenderer(rowIndex, colIndex);
 	
 	if(grid._extendTypes.indexOf("mx.controls::AdvancedDataGrid") != -1){
 		testCase.fireEvent(grid, $AdvancedDataGridEvent.Create($AdvancedDataGridEvent.ITEM_EDIT_BEGINNING, rowIndex, columnIndex, 
