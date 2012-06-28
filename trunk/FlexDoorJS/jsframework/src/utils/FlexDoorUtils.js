@@ -97,6 +97,14 @@ FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, column
 	Assert.assertTrue(columns.length > columnIndex);
 	var visibleColumns = grid.getter("visibleColumns");
 	var dataField = columns[columnIndex].ref.dataField;
+	var colIndex = columnIndex;
+	if(visibleColumns != null){
+		for(var i = 0; i < visibleColumns.length; i++){
+			if(visibleColumns[columnIndex].ref.dataField == dataField){
+				colIndex = i;
+			}
+		}
+	}
 	var itemRenderer = grid.indicesToItemRenderer(rowIndex, columnIndex);
 	
 	if(grid._extendTypes.indexOf("mx.controls::AdvancedDataGrid") != -1){
@@ -114,7 +122,6 @@ FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, column
 
 		preEventCallBack.apply(testCase, [itemEditor]);//call test function
 
-		itemRenderer = grid.indicesToItemRenderer(rowIndex, columnIndex);
 		if(grid._extendTypes.indexOf("mx.controls::AdvancedDataGrid") != -1){
 			testCase.fireEvent(grid, $AdvancedDataGridEvent.Create($AdvancedDataGridEvent.ITEM_EDIT_END, rowIndex, columnIndex, 
 																		dataField, AdvancedDataGridEventReason.OTHER, itemRenderer));
