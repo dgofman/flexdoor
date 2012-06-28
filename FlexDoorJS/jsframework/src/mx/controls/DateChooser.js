@@ -49,6 +49,10 @@ function mx_controls_DateChooser(classType)
 	this.calendarLayout = function(){
 		return this.getter("dateGrid");
 	};
+
+	this.selectedDate = function(){ /* getter and setter */
+		return this.property("selectedDate", arguments);
+	};
 }
 
 mx_controls_DateChooser.prototype.Extends = function(){
