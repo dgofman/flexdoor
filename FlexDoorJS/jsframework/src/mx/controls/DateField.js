@@ -35,7 +35,7 @@ function mx_controls_DateField(classType)
 	};
 
 	this.click = function(){
-		this.downArrowButton.fireEvent($MouseEvent.Create($MouseEvent.MOUSE_DOWN));
+		this.downArrowButton().fireEvent($MouseEvent.Create($MouseEvent.MOUSE_DOWN));
 	};
 }
 
