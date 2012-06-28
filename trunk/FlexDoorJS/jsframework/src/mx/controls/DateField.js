@@ -21,6 +21,10 @@ function mx_controls_DateField(classType)
 {
 	/* extendType - mx.controls::DateField */
 	UIComponent.call(this, classType);
+
+	this.selectedDate = function(){ /* getter and setter */
+		return this.property("selectedDate", arguments);
+	};
 }
 
 mx_controls_DateField.prototype.Import = function(){
