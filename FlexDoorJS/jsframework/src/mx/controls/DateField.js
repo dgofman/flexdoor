@@ -25,6 +25,11 @@ function mx_controls_DateField(classType)
 	this.selectedDate = function(){ /* getter and setter */
 		return this.property("selectedDate", arguments);
 	};
+
+	this.click = function(){
+		var downArrowButton = this.getter('downArrowButton');
+		downArrowButton.fireEvent($MouseEvent.Create($MouseEvent.MOUSE_DOWN));
+	};
 }
 
 mx_controls_DateField.prototype.Import = function(){
