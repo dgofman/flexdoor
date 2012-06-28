@@ -22,13 +22,20 @@ function mx_controls_DateField(classType)
 	/* extendType - mx.controls::DateField */
 	UIComponent.call(this, classType);
 
+	this.downArrowButton = function(){
+		return this.getter('downArrowButton');
+	};
+
+	this.dropdown = function(){ //DateChooser
+		return this.getter('dropdown');
+	};
+
 	this.selectedDate = function(){ /* getter and setter */
 		return this.property("selectedDate", arguments);
 	};
 
 	this.click = function(){
-		var downArrowButton = this.getter('downArrowButton');
-		downArrowButton.fireEvent($MouseEvent.Create($MouseEvent.MOUSE_DOWN));
+		this.downArrowButton.fireEvent($MouseEvent.Create($MouseEvent.MOUSE_DOWN));
 	};
 }
 
