@@ -441,7 +441,7 @@ FlexDoor.runTestCase = function(testCaseName){
 };
 
 FlexDoor.run = function(testCaseName){
-	if(FlexDoor.INIT_PHASE >= 2){
+	if(FlexDoor.INIT_PHASE >= 2 || testCaseName != undefined){
 		FlexDoor.ACTIVE_TESTCASE = null;
 		FlexDoor.runTestCase(testCaseName);
 	}
