@@ -58,7 +58,7 @@ function flash_net_SharedObject(classType)
 	this.setData = function(key, value){
 		if(this.dataRefIf == undefined)
 			this.dataRefIf = System.getter(this, "data", true);
-		this.refValue(this.dataRefIf, [key], [value]);
+		this.refValue(this.dataRefIf, value, key);
 	};
 
 	this.clear = function(){
