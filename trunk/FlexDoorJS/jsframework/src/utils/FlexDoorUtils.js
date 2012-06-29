@@ -169,7 +169,8 @@ FlexDoorUtils.attachCollectionChangeEvent = function(testCase, grid, preEventCal
 			};
 		}
 		if(preEventCallBack.apply(testCase, [kind])){
-			dataProvider.removeEventListener($CollectionEvent.COLLECTION_CHANGE, dpChangeHandler);
+			if(dataProvider != undefined)
+				dataProvider.removeEventListener($CollectionEvent.COLLECTION_CHANGE, dpChangeHandler);
 			grid.removeEventListener($CollectionEvent.COLLECTION_CHANGE, dgChangeHandler);
 			testCase.dispatchEvent($CollectionEvent.COLLECTION_CHANGE);
 
@@ -180,7 +181,8 @@ FlexDoorUtils.attachCollectionChangeEvent = function(testCase, grid, preEventCal
 			}
 		}
 	};
-	dataProvider.addEventListener($CollectionEvent.COLLECTION_CHANGE, dpChangeHandler, this, true);
+	if(dataProvider != undefined)
+		dataProvider.addEventListener($CollectionEvent.COLLECTION_CHANGE, dpChangeHandler, this, true);
 	grid.addEventListener($CollectionEvent.COLLECTION_CHANGE, dgChangeHandler, this, true);
 };
 
