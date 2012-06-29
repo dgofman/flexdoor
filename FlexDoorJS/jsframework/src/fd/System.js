@@ -158,9 +158,9 @@ System.execute = function(target, command, values, keepRef){
 	});
 };
 
-System.refValue = function(refId, keys, keepRef){
+System.refValue = function(refId, keys, value, keepRef){
 	return System.call(function(flash){
-		return flash.refValue(refId, keys, keepRef);
+		return flash.refValue(refId, keys, value, keepRef);
 	});
 };
 

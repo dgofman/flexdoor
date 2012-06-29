@@ -105,8 +105,13 @@ EventDispatcher.prototype.execute = function(command){
 	return System.execute(this, command, System.getParams(arguments, 1, true));
 };
 
-EventDispatcher.prototype.refValue = function(refId){
-	return System.refValue(refId, System.getParams(arguments, 1));
+/*
+	refId
+	value is optional set to null
+	arguments - key(s)
+*/
+EventDispatcher.prototype.refValue = function(refId, value){
+	return System.refValue(refId, System.serialize(value), System.getParams(arguments, 2));
 };
 
 EventDispatcher.prototype.create = function(className){
