@@ -18,18 +18,80 @@
  */
 
 
+/**
+ * The SharedObject class is used to read and store limited amounts of data on a user's computer or on a server. 
+ * Shared objects offer real-time data sharing between multiple client SWF files and objects that are persistent 
+ * on the local computer or remote server. Local shared objects are similar to browser cookies and remote shared 
+ * objects are similar to real-time data transfer devices. To use remote shared objects, you need Adobe Flash Media Server. 
+ * 
+ * 
+ * The following code creates (and on subsequent executions, retrieves) a SharedObject object using an id with the value
+ *  of hostName. A property named username is added to the data property of the SharedObject object. 
+ *  The flush() method is then called, followed by a check to see if the string pending, or 
+ *  a boolean value of true or false was returned. One should be aware that all open 
+ *  SharedObject instances will automatically be flushed whenever the current instance of the Flash Player is closed. 
+ * 
+ * Example usage:
+ *
+ *    @example
+ *       var hostName = "yourDomain";
+ *       var username = "yourUsername";
+ *
+ *       var so = $SharedObject.getLocal(hostName);
+ *       so.setData("username", username, false);
+ *       var flushResult = so.flush();
+ *       alert("flushResult: " + flushResult);
+ *       alert(so.getData("username")); // yourUsername
+ *
+ * The following code creates a SharedObject object using an id "thehobbit". 
+ * A property named username is added to the data property of the SharedObject object. 
+ * The size property is then traced, which returns the value indicated. 
+ * 
+ * Example usage:
+ *
+ *    @example
+ *       var so = $SharedObject.getLocal("thehobbit");
+ *       so.setData("username", "bilbobaggins");
+ *       alert(so.size()); // 55
+ *
+ *       var so = $SharedObject.getLocal("thehobbit");
+ *       var data = so.data();
+ *       for(var key in data)
+ *          System.info(key + "=" + data[key]);
+*/
+
 function flash_net_SharedObject(classType) 
 {
 	/* extendType - flash.net::SharedObject */
 	EventDispatcher.call(this, classType);
 
 	//Public Properties
+	
+	/**
+	 * @property {Object} client
+	 * 
+	 * Indicates the object on which callback methods are invoked. 
+	 * The default object is this. You can set the client property to another object, 
+	 * and callback methods will be invoked on that other object.
+	 * @readonly 
+	 */
 	this.client = function(){
 		return this.getter("client");
 	};
 
+	/**
+	 * @property {Object} data
+	 *
+	 * The collection of attributes assigned to the data property of the object; 
+	 * these attributes can be shared and stored. Each attribute can be an object of any 
+	 * ActionScript or JavaScript type — Array, Number, Boolean, ByteArray, XML, and so on. 
+	 * For example, the following lines assign values to various aspects of a shared object: 
+	 * @readonly
+	 */
 	this.data = function(){
-		return this.getter("data");
+		if(this.dataRefIf == undefined)
+			this.dataRefIf = System.getter(this, "data", true);
+		return this.js_findById(this.dataRefIf);
 	};
 
 	this.defaultObjectEncoding = function(){
