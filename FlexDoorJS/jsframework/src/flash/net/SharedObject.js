@@ -66,9 +66,11 @@ $SharedObject.Get = flash_events_Event.Get;
 $SharedObject.Is = function(target) { return target instanceof flash_net_SharedObject; };
 
 $SharedObject.getLocal = function(name, localPath, secure){
-	return System.execute(this, "getLocal", [name, localPath, secure]);
+	var clazz = System.getClass("flash.net::SharedObject");
+	return System.execute(clazz, "getLocal", [name, localPath, secure]);
 };
 
 $SharedObject.getRemote = function(name, remotePath, persistence, secure){
-	return System.execute(this, "getLocal", [name, remotePath, persistence, secure]);
+	var clazz = System.getClass("flash.net::SharedObject");
+	return System.execute(clazz, "getRemote", [name, remotePath, persistence, secure]);
 };
