@@ -257,5 +257,5 @@ FlexDoorUtils.getCookie = function(name) {
 			return unescape(document.cookie.substring(c_start, c_end));
 		}
 	}
-	return "";
+	return undefined;
 };
