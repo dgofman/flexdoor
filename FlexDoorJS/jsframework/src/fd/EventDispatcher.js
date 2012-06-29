@@ -111,7 +111,7 @@ EventDispatcher.prototype.execute = function(command){
 	arguments - key(s)
 */
 EventDispatcher.prototype.refValue = function(refId, value){
-	return System.refValue(refId, System.serialize(value), System.getParams(arguments, 2));
+	return System.refValue(refId, System.getParams(arguments, 2), System.serialize(value));
 };
 
 EventDispatcher.prototype.create = function(className){
