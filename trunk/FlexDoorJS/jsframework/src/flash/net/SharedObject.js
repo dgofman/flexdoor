@@ -89,9 +89,8 @@ function flash_net_SharedObject(classType)
 	 * @readonly
 	 */
 	this.data = function(){
-		if(this.dataRefIf == undefined)
-			this.dataRefIf = System.getter(this, "data", true);
-		return this.findById(this.dataRefIf);
+		System.releaseIds([this.dataRefIf]);
+		return this.getter(this, "data");
 	};
 
 	this.defaultObjectEncoding = function(){
@@ -112,14 +111,14 @@ function flash_net_SharedObject(classType)
 
 	//Public Methods
 	this.getData = function(key){
-		if(this.dataRefIf == undefined)
-			this.dataRefIf = System.getter(this, "data", true);
+		System.releaseIds([this.dataRefIf]);
+		this.dataRefIf = System.getter(this, "data", true);
 		return this.refValue(this.dataRefIf, null, key);
 	};
 
 	this.setData = function(key, value, autoFlush){
-		if(this.dataRefIf == undefined)
-			this.dataRefIf = System.getter(this, "data", true);
+		System.releaseIds([this.dataRefIf]);
+		this.dataRefIf = System.getter(this, "data", true);
 		this.refValue(this.dataRefIf, value, key);
 		if(autoFlush != false) this.flush();
 	};
