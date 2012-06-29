@@ -53,6 +53,14 @@ function mx_controls_DateChooser(classType)
 	this.selectedDate = function(){ /* getter and setter */
 		return this.property("selectedDate", arguments);
 	};
+
+	this.selectedRanges = function(){ /* getter and setter */
+		return this.property("selectedRanges", arguments);
+	};
+
+	this.showToday = function(){ /* getter and setter */
+		return this.property("showToday", arguments);
+	};
 }
 
 mx_controls_DateChooser.prototype.Extends = function(){
