@@ -88,9 +88,11 @@ FlexDoor.prototype.async = function(event, delay, timeout){
 	TestEvent.Get(event).set({type:this.asyncEventType, delay:delay, timeout:timeout});
 };
 
-FlexDoor.prototype.save = function(component){
-	if(component instanceof EventDispatcher)
+FlexDoor.prototype.save = function(component, varname){
+	if(component instanceof EventDispatcher){
+		if(varname != undefined) this[varname] = component;
 		testCase.__refIds__.push(component._refId);
+	}
 };
 
 FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
