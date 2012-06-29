@@ -88,6 +88,11 @@ FlexDoor.prototype.async = function(event, delay, timeout){
 	TestEvent.Get(event).set({type:this.asyncEventType, delay:delay, timeout:timeout});
 };
 
+FlexDoor.prototype.save = function(component){
+	if(component instanceof EventDispatcher)
+		testCase.__refIds__.push(component._refId);
+};
+
 FlexDoor.prototype.init = function(flashPlayerId, testCaseTitle)
 {
 	System.info(testCaseTitle);
@@ -136,6 +141,7 @@ FlexDoor.prototype.initializeApplication = function(args, files){
 				if(name.indexOf("test_") == 0 && typeof(testCase[name]) == "function")
 					tests.push(name);
 			}
+			testCase.__refIds__ = [];
 
 			var runTest = function(testEvent){
 				if(testEvent.order >= tests.length){
@@ -146,7 +152,7 @@ FlexDoor.prototype.initializeApplication = function(args, files){
 					//Run Next TestCase
 					FlexDoor.runTestCase();
 				}else{
-					var releaseRefId = [].concat(refIds); //clone exisitng ids
+					var releaseRefId = testCase.__refIds__.concat(refIds); //clone exisitng ids
 
 					//Execute Test
 					try{
