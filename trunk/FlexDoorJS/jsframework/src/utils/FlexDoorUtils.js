@@ -149,7 +149,7 @@ FlexDoorUtils.createItemEditRenderer = function(testCase, grid, rowIndex, column
  *  @param grid - DataGrid or AdvancedDataGrid reference.
  *
  *  @param preEventCallBack - The call back function executed as soon as CollectionEvent triggered and 
- *                    passing the <code>CollectionEventKind</code>. See: CollectionEvent::CollectionEventKind (Optional)
+ *					passing the <code>CollectionEventKind</code>. See: CollectionEvent::CollectionEventKind (Optional)
  *
  *  @param postEventCallBack - The call back function executed after removing CollectionEvent.COLLECTION_CHANGE event listener (Optional)
  *
@@ -238,4 +238,24 @@ FlexDoorUtils.compareObjects = function(source, target, errorList, exclude){
 			}
 		}
 	}	
+};
+
+
+
+
+FlexDoorUtils.setCookie = function(name, value){
+	document.cookie = name + "=" + escape(value);
+};
+
+FlexDoorUtils.getCookie = function(name) {
+	if (document.cookie.length > 0){
+		var c_start=document.cookie.indexOf(c_name + "=");
+		if (c_start != -1) {
+			c_start = c_start + c_name.length + 1;
+			c_end = document.cookie.indexOf(";", c_start);
+			if (c_end==-1) c_end = document.cookie.length;
+			return unescape(document.cookie.substring(c_start, c_end));
+		}
+	}
+	return "";
 };
