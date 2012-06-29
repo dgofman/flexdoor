@@ -18,7 +18,7 @@
  */
 
 
-function flash_net_SharedObject() 
+function flash_net_SharedObject(classType) 
 {
 	/* extendType - flash.net::SharedObject */
 	EventDispatcher.call(this, classType);
