@@ -154,8 +154,6 @@ FlexDoor.prototype.initializeApplication = function(args, files){
 					//Run Next TestCase
 					FlexDoor.runTestCase();
 				}else{
-					var releaseRefId = testCase.__refIds__.concat(refIds); //clone exisitng ids
-
 					//Execute Test
 					try{
 						if(FlexDoor.ACTIVE_TESTCASE.prototype.setUp != undefined)
@@ -165,7 +163,7 @@ FlexDoor.prototype.initializeApplication = function(args, files){
 							//call finalizeFunction after dispatchEvent
 							var asyncEventHandler = function(){
 								testCase.removeEventListener(eventType, asyncEventHandler);
-								System.timer(null, testCase.delegate(finalizeFunction, testEvent, releaseRefId), testEvent.delay);
+								System.timer(null, testCase.delegate(finalizeFunction, testEvent, true), testEvent.delay);
 							};
 							testCase.addEventListener(eventType, asyncEventHandler);
 						};
@@ -189,7 +187,7 @@ FlexDoor.prototype.initializeApplication = function(args, files){
 
 						//execute finalizeFunction by exist from a test
 						if(testEvent.type == TestEvent.SYNCHRONOUS){
-							System.timer(null, testCase.delegate(finalizeFunction, testEvent, releaseRefId), testEvent.delay);
+							System.timer(null, testCase.delegate(finalizeFunction, testEvent, true), testEvent.delay);
 						}
 					}catch(e){
 						if(e.fileName != undefined && e.lineNumber != undefined){
@@ -197,15 +195,15 @@ FlexDoor.prototype.initializeApplication = function(args, files){
 						}else{
 							Assert.fail(e.message);
 						}
-						finalizeFunction(testEvent, releaseRefId);
+						finalizeFunction(testEvent, true);
 					}
 				}
 			};
 
-			var finalizeFunction = function(testEvent, releaseRefId){
+			var finalizeFunction = function(testEvent, completed){
 				System.killTimers();
 
-				if(releaseRefId == undefined){ //finalizeFunction called by timeout timer
+				if(completed != true){ //finalizeFunction called by timeout timer
 					Assert.fail("Test timed out: " + testEvent.functionName);
 				}
 				
@@ -220,7 +218,8 @@ FlexDoor.prototype.initializeApplication = function(args, files){
 				nextTestEvent.testArgs = testEvent.nextTestArgs;
 				
 				//Keep references to the next function argument
-				if(releaseRefId != undefined){
+				if(completed == true){
+					var releaseRefId = testCase.__refIds__.concat(refIds); //clone exisitng ids
 					if(nextTestEvent.testArgs instanceof ARGS){
 						var items = nextTestEvent.testArgs.source;
 						var exisitngIds = {};
