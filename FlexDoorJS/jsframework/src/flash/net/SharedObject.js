@@ -23,54 +23,78 @@ function flash_net_SharedObject()
 	/* extendType - flash.net::SharedObject */
 	EventDispatcher.call(this, classType);
 
+	//Public Properties
+	this.client = function(){
+		return this.getter("client");
+	};
+
+	this.data = function(){ /* getter and setter */
+		return this.property("data", arguments);
+	};
+
+	this.defaultObjectEncoding = function(){
+		return this.getter("defaultObjectEncoding");
+	};
+
+	this.fps = function(){
+		return this.getter("fps");
+	};
+
+	this.objectEncoding = function(){
+		return this.getter("objectEncoding");
+	};
+
+	this.size = function(){
+		return this.getter("size");
+	};
+
+	//Public Methods
 	this.clear = function(){
-		System.execute(this, "clear");
+		this.execute("clear");
 	};
 
 	this.close = function(){
-		System.execute(this, "close");
+		this.execute("close");
 	};
 
 	this.connect = function(myConnection, params){
-		System.execute(this, "connect", [myConnection, params]);
+		this.execute("connect", myConnection, params);
 	};
 
 	this.flush = function(minDiskSpace){
 		if(minDiskSpace == undefined) minDiskSpace = 0;
-		return System.execute(this, "flush", [minDiskSpace]);
+		return this.execute("flush", minDiskSpace);
 	};
 
 	this.send = function(){
-		System.execute(this, "send", System.getParams(arguments, 0, true));
+		this.execute("send", System.getParams(arguments, 0, false));
 	};
 
 	this.setDirty = function(propertyName){
-		System.execute(this, "setDirty", [propertyName]);
+		this.execute("setDirty", propertyName);
 	};
 
 	this.setProperty = function(propertyName, value){
-		System.execute(this, "setProperty", [propertyName, value]);
+		this.execute("setProperty", propertyName, value);
 	};
 }
 
 flash_net_SharedObject.prototype = new EventDispatcher(flash_net_SharedObject);
 
-flash_net_SharedObject.Get = function(o){
+flash_net_SharedObject.getLocal = function(name, localPath, secure){
 	var ref = this;
-	ref = UIComponent.Get(o, flash_net_SharedObject);
+	var clazz = System.getClass("flash.net::SharedObject");
+	ref = System.execute(clazz, "getLocal", [name, localPath, secure]);
+	return ref;
+};
+
+flash_net_SharedObject.getRemote = function(name, remotePath, persistence, secure){
+	var ref = this;
+	var clazz = System.getClass("flash.net::SharedObject");
+	ref = System.execute(clazz, "getRemote", [name, remotePath, persistence, secure]);
 	return ref;
 };
 
 function $SharedObject(){}
-$SharedObject.Get = flash_events_Event.Get;
-$SharedObject.Is = function(target) { return target instanceof flash_net_SharedObject; };
-
-$SharedObject.getLocal = function(name, localPath, secure){
-	var clazz = System.getClass("flash.net::SharedObject");
-	return System.execute(clazz, "getLocal", [name, localPath, secure]);
-};
-
-$SharedObject.getRemote = function(name, remotePath, persistence, secure){
-	var clazz = System.getClass("flash.net::SharedObject");
-	return System.execute(clazz, "getRemote", [name, remotePath, persistence, secure]);
-};
+$SharedObject.getLocal = flash_net_SharedObject.getLocal;
+$SharedObject.getRemote = flash_net_SharedObject.getRemote;
