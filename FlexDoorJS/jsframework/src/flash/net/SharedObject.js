@@ -55,10 +55,11 @@ function flash_net_SharedObject(classType)
 		return this.refValue(this.dataRefIf, null, key);
 	};
 
-	this.setData = function(key, value){
+	this.setData = function(key, value, autoFlush){
 		if(this.dataRefIf == undefined)
 			this.dataRefIf = System.getter(this, "data", true);
 		this.refValue(this.dataRefIf, value, key);
+		if(autoFlush != false) this.flush();
 	};
 
 	this.clear = function(){
