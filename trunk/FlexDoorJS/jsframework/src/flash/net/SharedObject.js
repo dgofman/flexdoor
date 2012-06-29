@@ -28,8 +28,8 @@ function flash_net_SharedObject(classType)
 		return this.getter("client");
 	};
 
-	this.data = function(){ /* getter and setter */
-		return this.property("data", arguments);
+	this.data = function(){
+		return this.getter("data");
 	};
 
 	this.defaultObjectEncoding = function(){
@@ -49,6 +49,18 @@ function flash_net_SharedObject(classType)
 	};
 
 	//Public Methods
+	this.getData = function(key){
+		if(this.dataRefIf == undefined)
+			this.dataRefIf = System.getter(this, "data", true);
+		this.refValue(this.dataRefIf, [key]);
+	};
+
+	this.setData = function(key, value){
+		if(this.dataRefIf == undefined)
+			this.dataRefIf = System.getter(this, "data", true);
+		this.refValue(this.dataRefIf, [key], [value]);
+	};
+
 	this.clear = function(){
 		this.execute("clear");
 	};
