@@ -89,8 +89,7 @@ function flash_net_SharedObject(classType)
 	 * @readonly
 	 */
 	this.data = function(){
-		System.releaseIds([this.dataRefIf]);
-		return this.getter(this, "data");
+		return getDataRef(this, false);
 	};
 
 	this.defaultObjectEncoding = function(){
@@ -111,15 +110,11 @@ function flash_net_SharedObject(classType)
 
 	//Public Methods
 	this.getData = function(key){
-		System.releaseIds([this.dataRefIf]);
-		this.dataRefIf = System.getter(this, "data", true);
-		return this.refValue(this.dataRefIf, null, key);
+		return this.refValue(getDataRef(this, true), null, key);
 	};
 
 	this.setData = function(key, value, autoFlush){
-		System.releaseIds([this.dataRefIf]);
-		this.dataRefIf = System.getter(this, "data", true);
-		this.refValue(this.dataRefIf, value, key);
+		this.refValue(getDataRef(this, true), null, key);
 		if(autoFlush != false) this.flush();
 	};
 
@@ -151,6 +146,13 @@ function flash_net_SharedObject(classType)
 	this.setProperty = function(propertyName, value){
 		this.execute("setProperty", propertyName, value);
 	};
+
+	//Private function
+	function getDataRef(instance, keepRef){
+		if(!isNaN(instance.dataRef))
+			System.releaseIds([instance.dataRef]);
+		return instance.dataRef = System.getter(instance, "data", keepRef);
+	}
 }
 
 flash_net_SharedObject.prototype = new EventDispatcher(flash_net_SharedObject);
