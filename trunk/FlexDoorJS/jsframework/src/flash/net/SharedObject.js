@@ -91,7 +91,7 @@ function flash_net_SharedObject(classType)
 	this.data = function(){
 		if(this.dataRefIf == undefined)
 			this.dataRefIf = System.getter(this, "data", true);
-		return this.js_findById(this.dataRefIf);
+		return this.findById(this.dataRefIf);
 	};
 
 	this.defaultObjectEncoding = function(){
