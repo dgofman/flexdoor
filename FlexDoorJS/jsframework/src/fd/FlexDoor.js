@@ -91,7 +91,7 @@ FlexDoor.prototype.async = function(event, delay, timeout){
 FlexDoor.prototype.save = function(component, varname){
 	if(component instanceof EventDispatcher){
 		if(varname != undefined) this[varname] = component;
-		testCase.__refIds__.push(component._refId);
+		this.__refIds__.push(component._refId);
 	}
 };
 
