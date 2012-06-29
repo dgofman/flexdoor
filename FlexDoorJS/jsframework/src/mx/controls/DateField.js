@@ -31,7 +31,17 @@ function mx_controls_DateField(classType)
 	};
 
 	this.selectedDate = function(){ /* getter and setter */
-		return this.property("selectedDate", arguments);
+		return this.property("selectedDate", arguments, function(value){
+			this.fireEvent($CalendarLayoutChangeEvent.Create($CalendarLayoutChangeEvent.CHANGE, value));
+		});
+	};
+
+	this.open = function(){
+		this.execute("open");
+	};
+
+	this.close = function(){
+		this.execute("close");
 	};
 
 	this.click = function(){
@@ -40,7 +50,7 @@ function mx_controls_DateField(classType)
 }
 
 mx_controls_DateField.prototype.Import = function(){
-	return ["mx.controls::ComboBase"];
+	return ["mx.controls::ComboBase", "mx.events::CalendarLayoutChangeEvent"];
 };
 mx_controls_DateField.prototype.Extends = function(){
 	mx_controls_ComboBase.prototype.Extends();
