@@ -21,10 +21,16 @@ function spark_components_supportClasses_ToggleButtonBase(classType)
 {
 	/* extendType - spark.components.supportClasses::ToggleButtonBase */
 	UIComponent.call(this, classType);
+
+	this.selected = function(){ /* getter and setter */
+		return this.property("selected", arguments, function(value){
+			this.fireEvent($FlexEvent.Create($FlexEvent.VALUE_COMMIT));
+		});
+	};
 }
 
 spark_components_supportClasses_ToggleButtonBase.prototype.Import = function(){
-	return ["spark.components.supportClasses::ButtonBase"];
+	return ["mx.events::FlexEvent", "spark.components.supportClasses::ButtonBase"];
 };
 spark_components_supportClasses_ToggleButtonBase.prototype.Extends = function(){
 	spark_components_supportClasses_ButtonBase.prototype.Extends();

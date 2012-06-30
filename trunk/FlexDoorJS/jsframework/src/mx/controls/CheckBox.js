@@ -21,12 +21,6 @@ function mx_controls_CheckBox(classType)
 {
 	/* extendType - mx.controls::CheckBox */
 	UIComponent.call(this, classType);
-
-	this.selected = function(){ /* getter and setter */
-		return this.property("selected", arguments, function(value){
-			this.fireEvent($Event.Create($Event.CHANGE));
-		});
-	};
 }
 
 mx_controls_CheckBox.prototype.Import = function(){

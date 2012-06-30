@@ -26,6 +26,12 @@ function mx_controls_Button(classType)
 		return this.property("label", arguments);
 	};
 
+	this.selected = function(){ /* getter and setter */
+		return this.property("selected", arguments, function(value){
+			this.fireEvent($Event.Create($Event.CHANGE));
+		});
+	};
+
 	this.click = function(type){
 		if(type == undefined) type = $MouseEvent.CLICK;
 		System.fireEvent(this, $MouseEvent.Create(type));
