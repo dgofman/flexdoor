@@ -1,7 +1,7 @@
 /**
  * FlexDoor Automation Library
  *
- * Copyright © 2012 David Gofman.
+ * Copyright ï¿½ 2012 David Gofman.
  *   Permission is granted to copy, and distribute verbatim copies
  *   of this license document, but changing it is not allowed.
  *
@@ -23,7 +23,9 @@ function mx_controls_CheckBox(classType)
 	UIComponent.call(this, classType);
 
 	this.selected = function(){ /* getter and setter */
-		return this.property("selected", arguments);
+		return this.property("selected", arguments, function(value){
+			this.fireEvent($Event.Create($Event.CHANGE));
+		});
 	};
 }
 
