@@ -21,6 +21,11 @@ function spark_components_supportClasses_ButtonBarBase(classType)
 {
 	/* extendType - spark.components.supportClasses::ButtonBarBase */
 	UIComponent.call(this, classType);
+
+	this.click = function(type){
+		if(type == undefined) type = $MouseEvent.CLICK;
+		System.fireEvent(this, $MouseEvent.Create(type));
+	};
 }
 
 spark_components_supportClasses_ButtonBarBase.prototype.Import = function(){

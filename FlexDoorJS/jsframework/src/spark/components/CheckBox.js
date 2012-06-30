@@ -21,10 +21,6 @@ function spark_components_CheckBox(classType)
 {
 	/* extendType - spark.components::CheckBox */
 	UIComponent.call(this, classType);
-
-	this.selected = function(){ /* getter and setter */
-		return this.property("selected", arguments);
-	};
 }
 
 spark_components_CheckBox.prototype.Import = function(){
