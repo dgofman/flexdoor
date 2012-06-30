@@ -64,8 +64,7 @@ System.getParams = function(args, index, isSerializable){
 System.timer = function(timeInterval, func, delay){
 	if(timeInterval == undefined){
 		System.TIMERS[timeInterval = setInterval(function(){
-			if( System.TIMERS == undefined && 
-				System.TIMERS[timeInterval] != undefined)
+			if(System.TIMERS && System.TIMERS[timeInterval] != undefined)
 				func();
 		}, delay)] = new Date();
 		return timeInterval;
