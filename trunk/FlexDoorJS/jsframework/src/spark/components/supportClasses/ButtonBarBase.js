@@ -28,7 +28,6 @@ function spark_components_supportClasses_ButtonBarBase(classType)
 	};
 }
 
-
 spark_components_supportClasses_ButtonBarBase.prototype.Import = function(){
 	return ["spark.components.supportClasses::ListBase"];
 };
