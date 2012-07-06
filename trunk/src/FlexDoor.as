@@ -5,7 +5,7 @@
  *   Permission is granted to copy, and distribute verbatim copies
  *   of this license document, but changing it is not allowed.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS' 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS'
  * AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
  * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
  * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
@@ -32,7 +32,6 @@ package
 	import flash.events.EventDispatcher;
 	import flash.events.SecurityErrorEvent;
 	import flash.events.TimerEvent;
-	import flash.events.UncaughtErrorEvent;
 	import flash.external.ExternalInterface;
 	import flash.net.URLRequest;
 	import flash.net.URLVariables;
@@ -45,7 +44,7 @@ package
 	import flash.utils.describeType;
 	import flash.utils.flash_proxy;
 	import flash.utils.getDefinitionByName;
-	
+
 	import mx.core.mx_internal;
 	import mx.events.FlexEvent;
 
@@ -69,7 +68,7 @@ package
 		private static const REFERENCE:uint = 8;
 		private static const ANY:uint       = 9;
 
-		
+
 		protected var _application:*;
 		protected var _loader:Loader;
 
@@ -118,7 +117,7 @@ package
 			stage.quality = StageQuality.BEST;
 			stage.addEventListener(Event.RESIZE, onResize);
 			onResize();
-			
+
 			_loader = new Loader();
 			_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onCompleteHandler);
 			_loader.contentLoaderInfo.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
@@ -168,12 +167,12 @@ package
 					_fdUtil = new FlexDoorUtil(this, _application);
 				}
 
-				_application.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, uncaughtErrorHandler);
+				_application.loaderInfo.uncaughtErrorEvents.addEventListener("uncaughtError", uncaughtErrorHandler);
 			}
 		}
 
-		protected function uncaughtErrorHandler(e:UncaughtErrorEvent):void{
-			serializeError(e.error);
+		protected function uncaughtErrorHandler(event:Event):void{
+			serializeError(event["error"]); //UncaughtErrorEvent.UNCAUGHT_ERROR
 		}
 
 		protected function addJavaScript(src:String):void{
@@ -181,7 +180,7 @@ package
 				"var head = document.getElementsByTagName('head').item(0);" +
 				"var script = document.createElement('script');" +
 				"script.setAttribute('type', 'text/javascript');" +
-				"script.src = '" + src + "';" + 
+				"script.src = '" + src + "';" +
 				"head.appendChild(script);" +
 				"}()");
 		}
@@ -200,7 +199,7 @@ package
 				_src = loaderInfo.parameters["__src__"];
 				if(_src && _src.lastIndexOf('?__src__=') != -1) //FlexDoor reloaded
 					_src = _src.substring(_src.lastIndexOf('?__src__=') + 9);
-				
+
 				if(_src != null){
 					var request:URLRequest = new URLRequest(_src);
 					var variables:URLVariables = new URLVariables();
@@ -305,7 +304,7 @@ package
 		}
 
 		/**
-		 *  Locator /id 
+		 *  Locator /id
 		 */
 		protected function js_find(refId:Number, id:String, index:uint, visibleOnly:Boolean, keepRef:Boolean=false):*{
 			try{
@@ -401,8 +400,8 @@ package
 
 		protected function findChildByClassType(target:*, numName:String, funName:String,
 											  classType:String, index:uint, visibleOnly:Boolean):*{
-			if( target.hasOwnProperty(numName) && 
-				target.hasOwnProperty(funName) && 
+			if( target.hasOwnProperty(numName) &&
+				target.hasOwnProperty(funName) &&
 				target[funName] is Function){
 				var visibleCount:uint = 0;
 				var length:uint = target[numName];
@@ -413,7 +412,7 @@ package
 					if(visibleOnly == true && child.visible != true)
 						continue;
 					var type:XML = describeType(child);
-					if( type.@base.toString() == classType || 
+					if( type.@base.toString() == classType ||
 						type.@name.toString() == classType){
 						if(visibleCount == index)
 							return child;
@@ -517,7 +516,7 @@ package
 				try{
 					var moduleManager:* = _application.loaderInfo.applicationDomain.getDefinition("mx.modules::ModuleManager");
 					var obj:* = moduleManager.getAssociatedFactory(className); //FlexModuleFactory
-					if(obj != null) 
+					if(obj != null)
 						classRef = obj.getDefinitionByName(className);
 				}catch(refError:ReferenceError){}
 			}
@@ -552,12 +551,12 @@ package
 				if(refEvent.isEventListener == true){
 					refEvent.arguments = arguments;
 					refEvent.keepRef = keepRef;
-					refEvent.className = className; 
-					refEvent.functionName = functionName; 
+					refEvent.className = className;
+					refEvent.functionName = functionName;
 					ExternalInterface.call("parent.FlexDoor.executeFunction", className, functionName, null, listenerId);
 				}else{
 					var args:Array = serializeAll(arguments, keepRef);
-					var result:* = ExternalInterface.call("parent.FlexDoor.executeFunction", 
+					var result:* = ExternalInterface.call("parent.FlexDoor.executeFunction",
 													className, functionName, (args.length == 1 ? args[0] : args));
 					return result;
 				}
@@ -603,7 +602,7 @@ package
 			return serialize(null);
 		}
 
-		protected function js_addEventListener(refId:Number, type:String, listenerRef:Array, 
+		protected function js_addEventListener(refId:Number, type:String, listenerRef:Array,
 											   useWeakReference:Boolean, useCapture:Boolean, priority:int):Object{
 			try{
 				var target:Object = getRef(refId);
@@ -654,7 +653,7 @@ package
 		protected function js_getTestIndex(index:uint, testCaseName:String):int{
 			return _fdUtil.getTestIndex(index, testCaseName);
 		}
-		
+
 		protected function serializeError(e:Error):Object{
 			trace(e.getStackTrace());
 			if(_fdUtil != null)
@@ -670,15 +669,15 @@ package
 
 		protected function serialize(ref:Object, keepRef:Boolean=false):Array{
 			if(ref == null) return [NULL, null];
-			
+
 			var id:*;
 			//validate if object already exists
 			for(id in _refMap){
-				var cacheRef:* = _refMap[id]; 
+				var cacheRef:* = _refMap[id];
 				if(cacheRef.ref == ref)
 					return [cacheRef.outType, cacheRef.out];
 			}
-			
+
 			var out:Object = {};
 			var outType:uint;
 			if(keepRef == true){
@@ -713,7 +712,7 @@ package
 					if(ref.hasOwnProperty('name'))
 						out.name = ref.name;
 				}
-				
+
 				var type:XML = describeType(ref);
 				var proxyMap:Dictionary = new Dictionary();
 				var extendTypes:Array = [type.@name.toString()];
@@ -738,7 +737,7 @@ package
 			_refMap[id] = {ref:ref, outType:outType, out:out};
 			return [outType, out];
 		}
-		
+
 		protected function serializeAll(params:*, keepRef:Boolean=false):Array{
 			var args:Array = [params];
 			if(params is Array){
@@ -747,7 +746,7 @@ package
 			}
 			return args;
 		}
-		
+
 		protected function deserialize(ref:Object):*{
 			if(ref is Array && ref.length == 3 && ref[0] == "FLEXDOOR_SERIALIZE"){
 				var type:uint = ref[1];
@@ -763,7 +762,7 @@ package
 			}
 			return ref;
 		}
-		
+
 		protected function deserializeAll(params:Array):Array{
 			if(params is Array){
 				for(var i:uint = 0; i < params.length; i++)
