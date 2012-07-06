@@ -5,7 +5,7 @@
  *   Permission is granted to copy, and distribute verbatim copies
  *   of this license document, but changing it is not allowed.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS' 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS'
  * AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
  * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
  * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
@@ -17,29 +17,29 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_supportClasses_ToggleButtonBase(classType) 
+function spark_components_supportClasses_ToggleButtonBase(classType)
 {
-	/* extendType - spark.components.supportClasses::ToggleButtonBase */
-	UIComponent.call(this, classType);
+    /* extendType - spark.components.supportClasses::ToggleButtonBase */
+    UIComponent.call(this, classType);
 
-	this.selected = function(){ /* getter and setter */
-		return this.property("selected", arguments, function(value){
-			this.fireEvent($FlexEvent.Create($FlexEvent.VALUE_COMMIT));
-		});
-	};
+    this.selected = function(){ /* getter and setter */
+        return this.property("selected", arguments, function(value){
+            this.fireEvent($Event.Create($Event.CHANGE));
+        });
+    };
 }
 
 spark_components_supportClasses_ToggleButtonBase.prototype.Import = function(){
-	return ["mx.events::FlexEvent", "spark.components.supportClasses::ButtonBase"];
+    return ["spark.components.supportClasses::ButtonBase"];
 };
 spark_components_supportClasses_ToggleButtonBase.prototype.Extends = function(){
-	spark_components_supportClasses_ButtonBase.prototype.Extends();
-	spark_components_supportClasses_ToggleButtonBase.prototype = new spark_components_supportClasses_ButtonBase(spark_components_supportClasses_ToggleButtonBase);
+    spark_components_supportClasses_ButtonBase.prototype.Extends();
+    spark_components_supportClasses_ToggleButtonBase.prototype = new spark_components_supportClasses_ButtonBase(spark_components_supportClasses_ToggleButtonBase);
 };
 spark_components_supportClasses_ToggleButtonBase.Get = function(o){
-	var ref = this;
-	ref = UIComponent.Get(o, spark_components_supportClasses_ToggleButtonBase);
-	return ref;
+    var ref = this;
+    ref = UIComponent.Get(o, spark_components_supportClasses_ToggleButtonBase);
+    return ref;
 };
 
 function $$ToggleButtonBase() {}
