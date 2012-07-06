@@ -90,6 +90,7 @@ System.callLater = function(target, func, delay, params){
 
 System.waitFor = function(target, func, delay, timeout, params){
     if(delay == undefined) delay = TestEvent.TEST_DELAY;
+    if(timeout == undefined) timeout = TestEvent.TIMEOUT;
     var timer1 = System.timer(null, function(){
         if(func.apply(target, params) == true){
             System.timer(timer1);
