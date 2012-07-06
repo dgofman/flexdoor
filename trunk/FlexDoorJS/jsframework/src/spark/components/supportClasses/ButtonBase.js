@@ -5,7 +5,7 @@
  *   Permission is granted to copy, and distribute verbatim copies
  *   of this license document, but changing it is not allowed.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS' 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS'
  * AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
  * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
  * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
@@ -17,23 +17,28 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_supportClasses_ButtonBase(classType) 
+function spark_components_supportClasses_ButtonBase(classType)
 {
-	/* extendType - spark.components.supportClasses::ButtonBase */
-	UIComponent.call(this, classType);
+    /* extendType - spark.components.supportClasses::ButtonBase */
+    UIComponent.call(this, classType);
+
+    this.click = function(type){
+        if(type == undefined) type = $MouseEvent.CLICK;
+        System.fireEvent(this, $MouseEvent.Create(type));
+    };
 }
 
 spark_components_supportClasses_ButtonBase.prototype.Import = function(){
-	return ["spark.components.supportClasses::SkinnableComponent"];
+    return ["spark.components.supportClasses::SkinnableComponent", "flash.events::MouseEvent"];
 };
 spark_components_supportClasses_ButtonBase.prototype.Extends = function(){
-	spark_components_supportClasses_SkinnableComponent.prototype.Extends();
-	spark_components_supportClasses_ButtonBase.prototype = new spark_components_supportClasses_SkinnableComponent(spark_components_supportClasses_ButtonBase);
+    spark_components_supportClasses_SkinnableComponent.prototype.Extends();
+    spark_components_supportClasses_ButtonBase.prototype = new spark_components_supportClasses_SkinnableComponent(spark_components_supportClasses_ButtonBase);
 };
 spark_components_supportClasses_ButtonBase.Get = function(o){
-	var ref = this;
-	ref = UIComponent.Get(o, spark_components_supportClasses_ButtonBase);
-	return ref;
+    var ref = this;
+    ref = UIComponent.Get(o, spark_components_supportClasses_ButtonBase);
+    return ref;
 };
 
 function $$ButtonBase() {}
