@@ -311,6 +311,8 @@ System.deserialize = function(params, parent){
         case fd_System.ANY:
             for(var i = 0; object.extendTypes.length; i++){
                 var extendType = object.extendTypes[i];
+                if(extendType == "Object")
+                    break;
                 var pair = extendType.split("::");
                 var className = pair[0];
                 if(pair.length == 2)
@@ -324,9 +326,9 @@ System.deserialize = function(params, parent){
                     var component = new classType(classType);
                     if(component instanceof EventDispatcher ||
                         component.Initialize instanceof Function){
+                        object.ref = System.json(object.ref);
                         component.Initialize(object, parent);
                     }
-                    component.ref = System.json(object.ref);
                     return component;
                 }
             }
