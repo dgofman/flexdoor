@@ -313,14 +313,6 @@ System.deserialize = function(params, parent){
         case fd_System.ANY:
             for(var i = 0; object.extendTypes.length; i++){
                 var extendType = object.extendTypes[i];
-                if(extendType == "Object"){
-                    var ref = System.json(object.ref);
-                    if(typeof(ref) == "object"){
-                        ref.__ref__ = object; //keep for debugging
-                        return ref;
-                    }
-                    break;
-                }
                 var pair = extendType.split("::");
                 var className = pair[0];
                 if(pair.length == 2)
@@ -331,7 +323,12 @@ System.deserialize = function(params, parent){
                      !(classType.prototype instanceof UIComponent)){
                         classType.prototype.Extends();
                     }
-                    var component = new classType(classType);
+                    var component = null;
+                    if(extendType == "Object"){ //Object is not defined in JavaScript
+                        component = new EventDispatcher();
+                    }else{
+                        component = new classType(classType);
+                    }
                     if(component instanceof EventDispatcher ||
                         component.Initialize instanceof Function){
                         object.ref = System.json(object.ref);
