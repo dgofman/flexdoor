@@ -281,8 +281,10 @@ System.serialize = function(object){
 };
 
 System.deserialize = function(params, parent){
-    if(!(params instanceof Array))
+    if(!(params instanceof Array)){
+        if(FlexDoor.BREAKPOINT) debugger;
         Assert.fail("Invalid the deserializable argument");
+    }
     var type   = params[0];
     var object = params[1];
     switch(type){
@@ -314,7 +316,7 @@ System.deserialize = function(params, parent){
                 if(extendType == "Object"){
                     var ref = System.json(object.ref);
                     if(typeof(ref) == "object"){
-                        ref.__params__ = params;
+                        ref.__ref__ = object; //keep for debugging
                         return ref;
                     }
                     break;
