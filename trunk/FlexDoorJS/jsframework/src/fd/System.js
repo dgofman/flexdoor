@@ -311,8 +311,17 @@ System.deserialize = function(params, parent){
         case fd_System.ANY:
             for(var i = 0; object.extendTypes.length; i++){
                 var extendType = object.extendTypes[i];
-                if(extendType == "Object")
-                    return System.json(object.ref);
+                if(extendType == "Object"){
+                    var ref = System.json(object.ref);
+                    if(typeof(ref) == "object"){
+                        for(var name in object){
+                            if(name != "ref" && ref[name] === undefined)
+                                ref[name] = object[name];
+                        }
+                        return ref;
+                    }
+                    break;
+                }
                 var pair = extendType.split("::");
                 var className = pair[0];
                 if(pair.length == 2)
