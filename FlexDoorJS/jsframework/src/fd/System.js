@@ -314,10 +314,7 @@ System.deserialize = function(params, parent){
                 if(extendType == "Object"){
                     var ref = System.json(object.ref);
                     if(typeof(ref) == "object"){
-                        for(var name in object){
-                            if(name != "ref" && ref[name] === undefined)
-                                ref[name] = object[name];
-                        }
+                        ref.__params__ = params;
                         return ref;
                     }
                     break;
