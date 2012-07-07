@@ -324,9 +324,9 @@ System.deserialize = function(params, parent){
                     var component = new classType(classType);
                     if(component instanceof EventDispatcher ||
                         component.Initialize instanceof Function){
-                        object.ref = System.json(object.ref);
                         component.Initialize(object, parent);
                     }
+                    component.ref = System.json(object.ref);
                     return component;
                 }
             }
