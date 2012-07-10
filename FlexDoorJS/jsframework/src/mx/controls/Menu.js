@@ -5,7 +5,7 @@
  *   Permission is granted to copy, and distribute verbatim copies
  *   of this license document, but changing it is not allowed.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS' 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS'
  * AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
  * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
  * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
@@ -17,27 +17,27 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function mx_controls_Menu(classType) 
+function mx_controls_Menu(classType)
 {
 	/* extendType - mx.controls::Menu */
 	UIComponent.call(this, classType);
-	
+
 	this.parentMenu = function(){/* getter and setter */
 		return this.property("parentMenu", arguments);
 	};
-	
+
 	this.dataDescriptor = function(){/* getter and setter */
 		return this.property("dataDescriptor", arguments);
 	};
-	
+
 	this.showRoot = function(){/* getter and setter */
 		return this.property("showRoot", arguments);
 	};
-	
+
 	this.hasRoot = function(){
 		return this.getter("hasRoot");
 	};
-	
+
 	this.subMenus = function(){
 		return this.getter("subMenus");
 	};
@@ -49,11 +49,23 @@ function mx_controls_Menu(classType)
 	this.getRootMenu = function(){
 		return this.execute("mx_internal::getRootMenu");
 	};
-	
+
 	this.selectedIndex = function(){  /* getter and setter */
 		return this.property("selectedIndex", arguments, function(value){
 			this.fireEvent($ListEvent.Create($ListEvent.ITEM_CLICK, value, 0, this.indexToItemRenderer(value)));
 		});
+	};
+
+	this.show = function(xShow, yShow){
+		this.execute("show", xShow, yShow);
+	};
+
+	this.hide = function(){
+		this.execute("hide");
+	};
+
+	this.hideAllMenus = function(){
+		this.execute("mx_internal::hideAllMenus");
 	};
 }
 
