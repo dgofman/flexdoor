@@ -5,7 +5,7 @@
  *   Permission is granted to copy, and distribute verbatim copies
  *   of this license document, but changing it is not allowed.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS' 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS'
  * AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
  * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
  * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
@@ -17,25 +17,25 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-function spark_components_HGroup(classType) 
+function spark_components_NavigatorContent(classType)
 {
-	/* extendType - spark.components::HGroup */
-	UIComponent.call(this, classType);
+    /* extendType - spark.components::NavigatorContent */
+    UIComponent.call(this, classType);
 }
 
-spark_components_HGroup.prototype.Import = function(){
-	return ["spark.components::Group"];
+spark_components_NavigatorContent.prototype.Import = function(){
+    return ["spark.components::SkinnableContainer"];
 };
-spark_components_HGroup.prototype.Extends = function(){
-	spark_components_Group.prototype.Extends();
-	spark_components_HGroup.prototype = new spark_components_Group(spark_components_HGroup);
+spark_components_NavigatorContent.prototype.Extends = function(){
+    spark_components_SkinnableContainer.prototype.Extends();
+    spark_components_NavigatorContent.prototype = new spark_components_SkinnableContainer(spark_components_NavigatorContent);
 };
-spark_components_HGroup.Get = function(o){
-	var ref = this;
-	ref = UIComponent.Get(o, spark_components_HGroup);
-	return ref;
+spark_components_NavigatorContent.Get = function(o){
+    var ref = this;
+    ref = UIComponent.Get(o, spark_components_NavigatorContent);
+    return ref;
 };
 
-function $$HGroup() {}
-$$HGroup.Get = spark_components_HGroup.Get;
-$$HGroup.Is = function(target) { return target instanceof spark_components_HGroup; };
+function $$NavigatorContent() {}
+$$NavigatorContent.Get = spark_components_NavigatorContent.Get;
+$$NavigatorContent.Is = function(target) { return target instanceof spark_components_NavigatorContent; };
